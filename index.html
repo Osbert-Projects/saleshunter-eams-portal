@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-#networkBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:1;background:#FFFFFF;}
+#stitchBg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#FFFFFF;}
 #portal,#loginScreen{position:relative;z-index:1;}
 .sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
@@ -206,7 +206,7 @@ main{background:transparent;}
 </style>
 </head>
 <body>
-<canvas id="networkBg" aria-hidden="true"></canvas>
+<canvas id="stitchBg" aria-hidden="true"></canvas>
 <div id="loadBar"></div>
 <div id="toast"></div>
 
@@ -933,7 +933,7 @@ function showPortal(){
   const p=document.getElementById('portal');p.style.display='flex'
   const u=JSON.parse(localStorage.getItem(LS_USR)||'{}')
   document.getElementById('sidebarUser').textContent=u.name||u.email||'User'
-  initNetworkBg()
+  initStitchBg()
   init()
 }
 
@@ -1530,58 +1530,78 @@ async function submitRating() {
   loadRegistrations();
 }
 
-async function init(){setupRealtime();initNetworkBg();await loadSection('dashboard')}
+async function init(){setupRealtime();initStitchBg();await loadSection('dashboard')}
 
-// ── Network canvas background ──
-let netAnim=null
-function initNetworkBg(){
-  const canvas=document.getElementById('networkBg')
-  if(!canvas||netAnim)return
+// ── Corporate dotted stitch background (static, redraw on resize) ──
+function initStitchBg(){
+  const canvas=document.getElementById('stitchBg')
+  if(!canvas)return
   const ctx=canvas.getContext('2d')
-  let nodes=[],W=0,H=0
-  const resize=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
-  resize();window.addEventListener('resize',resize)
-  const N=48
-  const dotBlue='rgba(37,99,235,'
-  const dotBlack='rgba(17,24,39,'
-  const lineBlue='rgba(30,64,175,'
-  for(let i=0;i<N;i++)nodes.push({
-    x:Math.random()*W,y:Math.random()*H,
-    vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
-    r:1.4+Math.random()*2,
-    dark:Math.random()<.35
-  })
-  const draw=()=>{
+  const SP=32
+  const dotR=1.35
+  let W=0,H=0
+
+  function paint(){
+    W=canvas.width=window.innerWidth
+    H=canvas.height=window.innerHeight
     ctx.fillStyle='#FFFFFF'
     ctx.fillRect(0,0,W,H)
-    for(const n of nodes){
-      n.x+=n.vx;n.y+=n.vy
-      if(n.x<0||n.x>W)n.vx*=-1
-      if(n.y<0||n.y>H)n.vy*=-1
-    }
-    for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
-      const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.hypot(dx,dy)
-      if(d<175){
-        const a=(1-d/175)*.55
-        ctx.strokeStyle=`${lineBlue}${Math.max(a,.12)})`
-        ctx.lineWidth=1.25
+
+    const cols=Math.ceil(W/SP)+3
+    const rows=Math.ceil(H/SP)+2
+
+    ctx.lineCap='round'
+    ctx.setLineDash([5,7])
+
+    for(let r=0;r<rows-1;r++){
+      const y1=r*SP
+      const y2=(r+1)*SP
+      const off1=(r%2)*(SP/2)
+      const off2=((r+1)%2)*(SP/2)
+      for(let c=-1;c<cols;c++){
+        const x1=c*SP+off1
+        const x2a=(c)*SP+off2
+        const x2b=(c+1)*SP+off2
+        ctx.strokeStyle='rgba(148,163,184,0.38)'
+        ctx.lineWidth=1
         ctx.beginPath()
-        ctx.moveTo(nodes[i].x,nodes[i].y)
-        ctx.lineTo(nodes[j].x,nodes[j].y)
+        ctx.moveTo(x1,y1)
+        ctx.lineTo(x2a,y2)
         ctx.stroke()
+        if((c+r)%2===0){
+          ctx.strokeStyle='rgba(191,219,254,0.5)'
+          ctx.lineWidth=.85
+          ctx.beginPath()
+          ctx.moveTo(x1,y1)
+          ctx.lineTo(x2b,y2)
+          ctx.stroke()
+        }
       }
     }
-    for(const n of nodes){
-      ctx.fillStyle=n.dark?`${dotBlack}.42)`: `${dotBlue}.55)`
-      ctx.beginPath()
-      ctx.arc(n.x,n.y,n.r,0,Math.PI*2)
-      ctx.fill()
+    ctx.setLineDash([])
+
+    for(let r=0;r<rows;r++){
+      const y=r*SP
+      const off=(r%2)*(SP/2)
+      for(let c=-1;c<cols;c++){
+        const x=c*SP+off
+        const accent=(c+r)%6===0
+        ctx.beginPath()
+        ctx.arc(x,y,dotR,0,Math.PI*2)
+        ctx.fillStyle=accent?'rgba(30,64,175,0.3)':'rgba(71,85,105,0.2)'
+        ctx.fill()
+      }
     }
-    netAnim=requestAnimationFrame(draw)
   }
-  draw()
+
+  paint()
+  let tid
+  window.addEventListener('resize',()=>{
+    clearTimeout(tid)
+    tid=setTimeout(paint,120)
+  })
 }
-initNetworkBg()
+initStitchBg()
 checkAuth()
 
 /* ═══════════════════════════════════════════════
