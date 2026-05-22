@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-#networkBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;}
+#networkBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;}
 #portal,#loginScreen{position:relative;z-index:1;}
 .sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
@@ -1542,7 +1542,15 @@ function initNetworkBg(){
   const resize=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
   resize();window.addEventListener('resize',resize)
   const N=48
-  for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:1.2+Math.random()*1.8})
+  const dotBlue='rgba(37,99,235,'
+  const dotBlack='rgba(17,24,39,'
+  const lineBlue='rgba(29,78,216,'
+  for(let i=0;i<N;i++)nodes.push({
+    x:Math.random()*W,y:Math.random()*H,
+    vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
+    r:1.4+Math.random()*2,
+    dark:Math.random()<.35
+  })
   const draw=()=>{
     ctx.clearRect(0,0,W,H)
     for(const n of nodes){
@@ -1552,9 +1560,22 @@ function initNetworkBg(){
     }
     for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
       const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.hypot(dx,dy)
-      if(d<140){ctx.strokeStyle=`rgba(99,102,241,${(1-d/140)*.14})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke()}
+      if(d<140){
+        const a=(1-d/140)*.18
+        ctx.strokeStyle=`${lineBlue}${a})`
+        ctx.lineWidth=.75
+        ctx.beginPath()
+        ctx.moveTo(nodes[i].x,nodes[i].y)
+        ctx.lineTo(nodes[j].x,nodes[j].y)
+        ctx.stroke()
+      }
     }
-    for(const n of nodes){ctx.fillStyle='rgba(99,102,241,.35)';ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill()}
+    for(const n of nodes){
+      ctx.fillStyle=n.dark?`${dotBlack}.42)`: `${dotBlue}.55)`
+      ctx.beginPath()
+      ctx.arc(n.x,n.y,n.r,0,Math.PI*2)
+      ctx.fill()
+    }
     netAnim=requestAnimationFrame(draw)
   }
   draw()
