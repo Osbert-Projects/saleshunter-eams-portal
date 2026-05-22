@@ -20,6 +20,20 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
 .nav-item:hover{background:#1F2937;color:#F9FAFB;}.nav-item.active{background:#FFCC00;color:#111827;font-weight:700;}
+.nav-group{margin:2px 10px 4px;}
+.nav-parent{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.nav-parent-row{flex:1;min-width:0;text-align:left;}
+.nav-chevron{font-size:11px;color:#6B7280;transition:transform .22s ease;flex-shrink:0;line-height:1;}
+.nav-group.collapsed .nav-chevron{transform:rotate(-90deg);}
+.nav-group.has-active .nav-parent{color:#F9FAFB;font-weight:600;}
+.nav-group.has-active .nav-parent:hover{background:#1F2937;}
+.nav-sublist{overflow:hidden;max-height:420px;transition:max-height .25s ease,opacity .2s ease;opacity:1;}
+.nav-group.collapsed .nav-sublist{max-height:0;opacity:0;pointer-events:none;}
+.nav-sub{display:flex;align-items:center;width:calc(100% - 8px);margin:1px 0 1px 8px;padding:7px 12px 7px 28px;border:none;border-radius:8px;background:transparent;color:#9CA3AF;font-size:12px;font-weight:500;cursor:pointer;text-align:left;transition:all .15s;position:relative;}
+.nav-sub::before{content:'';position:absolute;left:12px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:#4B5563;}
+.nav-sub:hover{background:#1F2937;color:#F9FAFB;}
+.nav-sub.active{background:#374151;color:#FFCC00;font-weight:700;}
+.nav-sub.active::before{background:#FFCC00;box-shadow:0 0 6px rgba(255,204,0,.45);}
 .card{background:var(--surface);border-radius:16px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.06);}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
 .btn-primary{background:#FFCC00;color:#111827;}.btn-primary:hover{background:#F5C400;}
@@ -199,11 +213,38 @@ main{background:transparent;}
 @media(max-width:640px){.sh-upload-grid,.sh-charts-row{grid-template-columns:1fr;}.sh-kpi-grid{grid-template-columns:repeat(2,1fr);}}
 .reg-tab{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:#9CA3AF;border-bottom:3px solid transparent;margin-bottom:-2px;}
 .reg-tab-active{color:#F9FAFB;border-bottom-color:#FFCC00;font-weight:700;}
-.lp-tab-bar{display:flex;gap:0;border-bottom:2px solid #E5E7EB;margin-bottom:20px;flex-wrap:wrap;overflow-x:auto;}
-.lp-tab{padding:10px 14px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:#6B7280;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;}
-.lp-tab:hover{color:#374151;}
-.lp-tab-active{color:#4F46E5;border-bottom-color:#6366F1;}
-.lp-panel{display:none;}.lp-panel.show{display:block;}
+.lp-panel{display:none;animation:lpFadeIn .18s ease;}
+.lp-panel.show{display:block;}
+@keyframes lpFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.lp-module{padding:0;}
+.lp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.lp-stat{background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px 14px;}
+.lp-stat-val{font-size:22px;font-weight:800;color:#111827;line-height:1;}
+.lp-stat-lbl{font-size:11px;color:#6B7280;font-weight:600;margin-top:4px;}
+.lp-toolbar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.lp-view-toggle{display:inline-flex;border:1px solid #E5E7EB;border-radius:9px;overflow:hidden;background:#F9FAFB;}
+.lp-view-btn{padding:6px 12px;border:none;background:transparent;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;}
+.lp-view-btn.active{background:#fff;color:#4F46E5;box-shadow:0 1px 2px rgba(0,0,0,.06);}
+.lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.lp-card{background:#fff;border:1px solid #E8EDF5;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,border-color .15s,transform .15s;position:relative;}
+.lp-card:hover{border-color:#C7D2FE;box-shadow:0 8px 24px rgba(99,102,241,.08);}
+.lp-card-sel{border-color:#6366F1;background:linear-gradient(180deg,#FAFAFF,#fff);box-shadow:0 0 0 1px #6366F1 inset;}
+.lp-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.lp-card-check{margin-top:4px;accent-color:#6366F1;}
+.lp-score{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;border:3px solid transparent;}
+.lp-score-hot{background:#DCFCE7;color:#15803D;border-color:#86EFAC;}
+.lp-score-warm{background:#FEF3C7;color:#B45309;border-color:#FDE68A;}
+.lp-score-cold{background:#FEE2E2;color:#B91C1C;border-color:#FECACA;}
+.lp-score-none{background:#F3F4F6;color:#9CA3AF;border-color:#E5E7EB;}
+.lp-card-title{font-size:15px;font-weight:800;color:#111827;line-height:1.3;margin:0;}
+.lp-card-sub{font-size:12px;color:#64748B;margin-top:2px;}
+.lp-card-contact{font-size:12px;color:#475569;background:#F8FAFC;border-radius:8px;padding:8px 10px;line-height:1.5;}
+.lp-card-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.lp-card-loc{font-size:11px;color:#94A3B8;display:flex;align-items:center;gap:4px;}
+.lp-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px;border-top:1px solid #F1F5F9;}
+.lp-list-shell{background:#fff;border:1px solid #E8EDF5;border-radius:12px;overflow:hidden;}
+@media(max-width:900px){.lp-stats{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.lp-stats{grid-template-columns:1fr;}.lp-grid{grid-template-columns:1fr;}}
 .rating-star{font-size:24px;cursor:pointer;color:#D1D5DB;transition:color .1s;}
 .rating-star.filled{color:#FFCC00;}
 .login-card{width:380px;background:white;border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.12);}
@@ -251,7 +292,22 @@ main{background:transparent;}
     <button class="nav-item" data-sec="reports" onclick="navTo('reports')">📈 Reports</button>
     <button class="nav-item" data-sec="builder" onclick="navTo('builder')">📱 App Builder</button>
     <div class="nav-sep"><span class="nav-sep-lbl">Lead Operations</span></div>
-    <button class="nav-item" data-sec="leadpool" onclick="navTo('leadpool')">🗄 Lead Pool</button>
+    <div class="nav-group" id="navLeadGroup">
+      <button type="button" class="nav-item nav-parent" id="navLeadParent" onclick="lpToggleGroup()">
+        <span class="nav-parent-row">🗄 Lead Pool</span>
+        <span class="nav-chevron" id="navLeadChevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="nav-sublist" id="navLeadSubs">
+        <button type="button" class="nav-sub active" data-lp-tab="pool" onclick="lpSwitchTab('pool')">Master Pool</button>
+        <button type="button" class="nav-sub" data-lp-tab="seed" onclick="lpSwitchTab('seed')">Seed & Assign</button>
+        <button type="button" class="nav-sub" data-lp-tab="upload" onclick="lpSwitchTab('upload')">Upload</button>
+        <button type="button" class="nav-sub" data-lp-tab="push" onclick="lpSwitchTab('push')">Push to Clients</button>
+        <button type="button" class="nav-sub" data-lp-tab="offers" onclick="lpSwitchTab('offers')">Offers</button>
+        <button type="button" class="nav-sub" data-lp-tab="analytics" onclick="lpSwitchTab('analytics')">Analytics</button>
+        <button type="button" class="nav-sub" data-lp-tab="aiagent" onclick="lpSwitchTab('aiagent')">AI Agent</button>
+        <button type="button" class="nav-sub" data-lp-tab="export" onclick="lpSwitchTab('export')">Export</button>
+      </div>
+    </div>
   </div>
   <div style="padding:12px 16px;border-top:1px solid #1F2937;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span class="rt-dot"></span><span style="font-size:11px;color:#6B7280;">Live — real-time sync</span></div>
@@ -261,17 +317,6 @@ main{background:transparent;}
 </nav>
 <main style="flex:1;overflow-y:auto;padding:28px;">
   <div id="bizBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;"><span style="font-size:12px;font-weight:600;color:#9CA3AF;">Business:</span></div>
-
-  <div id="lpTabBar" class="lp-tab-bar" style="display:none;">
-    <button type="button" class="lp-tab lp-tab-active" data-lp-tab="pool" onclick="lpSwitchTab('pool')">🗄 Pool</button>
-    <button type="button" class="lp-tab" data-lp-tab="seed" onclick="lpSwitchTab('seed')">🌱 Seed & Assign</button>
-    <button type="button" class="lp-tab" data-lp-tab="upload" onclick="lpSwitchTab('upload')">⬆ Upload</button>
-    <button type="button" class="lp-tab" data-lp-tab="push" onclick="lpSwitchTab('push')">📤 Push</button>
-    <button type="button" class="lp-tab" data-lp-tab="offers" onclick="lpSwitchTab('offers')">🏷 Offers</button>
-    <button type="button" class="lp-tab" data-lp-tab="analytics" onclick="lpSwitchTab('analytics')">📊 Analytics</button>
-    <button type="button" class="lp-tab" data-lp-tab="aiagent" onclick="lpSwitchTab('aiagent')">🤖 AI Agent</button>
-    <button type="button" class="lp-tab" data-lp-tab="export" onclick="lpSwitchTab('export')">⬇ Export</button>
-  </div>
 
   <!-- DASHBOARD -->
   <div id="sec-dashboard" class="sec show">
@@ -300,13 +345,6 @@ main{background:transparent;}
     <div class="sec-hdr"><div><div class="sec-title">Agents & KPIs</div><div class="sec-sub">Manage agents, set targets, track performance</div></div>
     <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openActualModal()">📝 Record Actuals</button><button class="btn btn-primary" onclick="openAgentModal()">+ Add Agent</button></div></div>
     <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Agent</th><th>Region</th><th>Enrollments</th><th>Calls</th><th>Revenue</th><th>Active</th><th>Actions</th></tr></thead><tbody id="agentsTbody"></tbody></table></div>
-  </div>
-
-  <!-- LEADS (Seed & Assign — part of Lead Pool module) -->
-  <div id="sec-leads" class="sec lp-panel" data-lp-tab="seed">
-    <div class="sec-hdr"><div><div class="sec-title">Seed & Assign</div><div class="sec-sub">Add leads to the master pool, then assign to agents or push for credit purchase</div></div>
-    <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openModal('csvModal')">⬆ Import CSV</button><button class="btn btn-primary" onclick="openLeadModal()">+ Add Lead</button></div></div>
-    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Pool ID</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table></div>
   </div>
 
   <!-- REPORTS -->
@@ -359,10 +397,14 @@ main{background:transparent;}
     </div>
   </div>
 
+  <!-- LEAD OPERATIONS -->
+  <div id="sec-leadmodule" class="sec">
+
   <!-- LEAD POOL -->
-  <div id="sec-leadpool" class="sec lp-panel" data-lp-tab="pool">
+  <div id="sec-leadpool" class="lp-panel lp-module show" data-lp-tab="pool">
     <div class="sec-hdr"><div><div class="sec-title">Master Lead Pool</div><div class="sec-sub">Browse, seed, push to businesses for purchase, or unlock with credits for agents</div></div></div>
     <div id="lpFlash"></div>
+    <div class="lp-stats" id="lpStats"></div>
     <div class="sh-toolbar">
       <div class="sh-filters">
         <select class="sh-sel sh-biz-sel" id="lpBusiness" onchange="lpSetFilter()" title="Filter by business"></select>
@@ -381,6 +423,10 @@ main{background:transparent;}
           <option value="company_name">A → Z</option><option value="-company_name">Z → A</option>
         </select>
         <span class="sh-chip" id="lpCount">—</span>
+        <div class="lp-view-toggle" title="View mode">
+          <button type="button" class="lp-view-btn active" id="lpViewCards" onclick="lpSetView('cards')">▦ Cards</button>
+          <button type="button" class="lp-view-btn" id="lpViewList" onclick="lpSetView('list')">☰ List</button>
+        </div>
         <button class="btn btn-danger btn-sm" id="lpArchBtn" style="display:none;" onclick="lpArchiveSelected()">🗄 Archive selected</button>
         <button class="btn btn-ghost btn-sm" id="lpPushBtn" style="display:none;" onclick="lpPushSelected()">📤 Push for purchase</button>
         <button class="btn btn-ghost btn-sm" id="lpUnlockBtn" style="display:none;" onclick="lpUnlockSelected()">🔓 Unlock (credits)</button>
@@ -409,8 +455,15 @@ main{background:transparent;}
     <div class="sh-pgn" id="lpPgn"></div>
   </div>
 
+  <!-- SEED & ASSIGN -->
+  <div id="sec-leads" class="lp-panel lp-module" data-lp-tab="seed">
+    <div class="sec-hdr"><div><div class="sec-title">Seed & Assign</div><div class="sec-sub">Add leads to the master pool, then assign to agents or push for credit purchase</div></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openModal('csvModal')">⬆ Import CSV</button><button class="btn btn-primary" onclick="openLeadModal()">+ Add Lead</button></div></div>
+    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Pool ID</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table></div>
+  </div>
+
   <!-- UPLOAD -->
-  <div id="sec-upload" class="sec lp-panel" data-lp-tab="upload">
+  <div id="sec-upload" class="lp-panel lp-module" data-lp-tab="upload">
     <div class="sec-hdr"><div><div class="sec-title">Upload Leads</div><div class="sec-sub">CSV or bulk JSON into the master pool</div></div></div>
     <div id="upFlash"></div>
     <div class="sh-upload-grid">
@@ -451,7 +504,7 @@ main{background:transparent;}
   </div>
 
   <!-- PUSH TO CLIENTS -->
-  <div id="sec-push" class="sec lp-panel" data-lp-tab="push">
+  <div id="sec-push" class="lp-panel lp-module" data-lp-tab="push">
     <div class="sec-hdr"><div><div class="sec-title">Push to Clients</div><div class="sec-sub">Deliver curated leads to tenant clients</div></div>
       <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="pushBusiness" onchange="pushBizFilter()" title="Filter by business"></select></div>
     </div>
@@ -483,7 +536,7 @@ main{background:transparent;}
   </div>
 
   <!-- OFFERS -->
-  <div id="sec-offers" class="sec lp-panel" data-lp-tab="offers">
+  <div id="sec-offers" class="lp-panel lp-module" data-lp-tab="offers">
     <div class="sec-hdr"><div><div class="sec-title">Offers</div><div class="sec-sub">Track pushed leads and client unlocks</div></div>
       <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="offersBusiness" onchange="offersBizFilter()" title="Filter by business"></select></div>
     </div>
@@ -503,7 +556,7 @@ main{background:transparent;}
   </div>
 
   <!-- ANALYTICS -->
-  <div id="sec-analytics" class="sec lp-panel" data-lp-tab="analytics">
+  <div id="sec-analytics" class="lp-panel lp-module" data-lp-tab="analytics">
     <div class="sec-hdr"><div><div class="sec-title">Analytics</div><div class="sec-sub">Master pool stats, quality breakdown, industry and source distribution</div></div>
       <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="analyticsBusiness" onchange="analyticsBizFilter()" title="Filter by business"></select></div>
     </div>
@@ -511,7 +564,7 @@ main{background:transparent;}
   </div>
 
   <!-- AI AGENT -->
-  <div id="sec-aiagent" class="sec lp-panel" data-lp-tab="aiagent">
+  <div id="sec-aiagent" class="lp-panel lp-module" data-lp-tab="aiagent">
     <div class="sec-hdr"><div><div class="sec-title">AI Agent</div><div class="sec-sub">Product-scoped prospecting into the master lead pool</div></div></div>
     <div id="agentFlash"></div>
     <div class="sh-agent-layout">
@@ -590,9 +643,35 @@ main{background:transparent;}
   </div>
 
   <!-- EXPORT -->
-  
-    <!-- ═══ REGISTRATIONS SECTION ═══ -->
-    <div id="sec-registrations" class="sec">
+  <div id="sec-export" class="lp-panel lp-module" data-lp-tab="export">
+    <div class="sec-hdr"><div><div class="sec-title">Export</div><div class="sec-sub">CRM-ready CSV · max 5,000 rows per export</div></div></div>
+    <div id="exportFlash"></div>
+    <div class="card sh-export-card">
+      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(100,116,139,.1);color:#64748B;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⬇</div>
+        <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Export master leads</div>
+        <div style="font-size:12px;color:#64748B;">Includes score, contact fields, EAMS lead ID.</div></div>
+      </div>
+      <div class="sh-form-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));margin-bottom:14px;">
+        <div class="fg"><label class="fl">Industry</label><select id="expIndustry" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="fg"><label class="fl">Source</label><select id="expSource" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="fg"><label class="fl">Keyword</label><input id="expSearch" class="fi" placeholder="Company, location…" /></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+        <label class="sh-pill"><input type="checkbox" id="expEmail" /> ✉ Email only</label>
+        <label class="sh-pill"><input type="checkbox" id="expPhone" /> ☎ Phone only</label>
+        <button class="btn btn-ghost btn-sm" onclick="expPreview()" id="expPreviewBtn" style="margin-left:auto;">🔍 Preview count</button>
+        <span class="sh-chip" id="expPreviewResult" style="display:none;"></span>
+      </div>
+      <button class="btn btn-primary" onclick="exportCSV()" id="expBtn">⬇ Download CSV</button>
+      <div style="font-size:11px;color:#94A3B8;margin-top:10px;">Columns: Company, Contact, Email, Phone, LinkedIn, Website, Location, Country, Industry, Asset Interests, Source, Notes, Lead Score, EAMS Lead ID.</div>
+    </div>
+  </div>
+
+  </div><!-- sec-leadmodule -->
+
+  <!-- REGISTRATIONS -->
+  <div id="sec-registrations" class="sec">
       <div class="sec-hdr">
         <div>
           <div class="sec-title">Agent Registrations</div>
@@ -668,32 +747,7 @@ main{background:transparent;}
         </div>
       </div>
     </div>
-    <div id="sec-export" class="sec lp-panel" data-lp-tab="export">
-    <div class="sec-hdr"><div><div class="sec-title">Export</div><div class="sec-sub">CRM-ready CSV · max 5,000 rows per export</div></div></div>
-    <div id="exportFlash"></div>
-    <div class="card sh-export-card">
-      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(100,116,139,.1);color:#64748B;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⬇</div>
-        <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Export master leads</div>
-        <div style="font-size:12px;color:#64748B;">Includes score, contact fields, EAMS lead ID.</div></div>
-      </div>
-      <div class="sh-form-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));margin-bottom:14px;">
-        <div class="fg"><label class="fl">Industry</label><select id="expIndustry" class="fi" style="padding:10px 12px;"></select></div>
-        <div class="fg"><label class="fl">Source</label><select id="expSource" class="fi" style="padding:10px 12px;"></select></div>
-        <div class="fg"><label class="fl">Keyword</label><input id="expSearch" class="fi" placeholder="Company, location…" /></div>
-      </div>
-      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
-        <label class="sh-pill"><input type="checkbox" id="expEmail" /> ✉ Email only</label>
-        <label class="sh-pill"><input type="checkbox" id="expPhone" /> ☎ Phone only</label>
-        <button class="btn btn-ghost btn-sm" onclick="expPreview()" id="expPreviewBtn" style="margin-left:auto;">🔍 Preview count</button>
-        <span class="sh-chip" id="expPreviewResult" style="display:none;"></span>
-      </div>
-      <button class="btn btn-primary" onclick="exportCSV()" id="expBtn">⬇ Download CSV</button>
-      <div style="font-size:11px;color:#94A3B8;margin-top:10px;">Columns: Company, Contact, Email, Phone, LinkedIn, Website, Location, Country, Industry, Asset Interests, Source, Notes, Lead Score, EAMS Lead ID.</div>
-    </div>
-  </div>
 
-  </div>
 </main>
 </div>
 
@@ -891,7 +945,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const API='https://eams-t3js.onrender.com/api/v1'
 const LS_TOK='sh_portal_token',LS_USR='sh_portal_user',LS_DTOK='sh_django_tok'
 const sb=supabase.createClient(SB_URL,SB_KEY)
-const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',csvRows:[],charts:{}}
+const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',lpNavCollapsed:false,csvRows:[],charts:{}}
 
 const ugx=n=>'UGX '+Number(n||0).toLocaleString()
 const pc=(a,t)=>Math.min(100,t>0?Math.round(a/t*100):0)
@@ -978,16 +1032,29 @@ async function checkAuth(){
 }
 
 // NAV
+function lpInitNav(){
+  const g=document.getElementById('navLeadGroup')
+  if(localStorage.getItem('lpNavCollapsed')==='1') g?.classList.add('collapsed')
+  if(localStorage.getItem('lpView')==='list') LP.view='list'
+}
+function lpExpandGroup(open){
+  const g=document.getElementById('navLeadGroup')
+  if(!g)return
+  if(open){g.classList.remove('collapsed');localStorage.setItem('lpNavCollapsed','0')}
+}
+function lpToggleGroup(){
+  const g=document.getElementById('navLeadGroup')
+  if(!g)return
+  const collapsed=g.classList.toggle('collapsed')
+  localStorage.setItem('lpNavCollapsed',collapsed?'1':'0')
+  if(!collapsed&&S.section!=='leadpool')lpSwitchTab(S.lpTab||'pool')
+}
 function navTo(sec){
   S.section=sec
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.sec===sec))
-  const isLeadModule=sec==='leadpool'
-  document.getElementById('lpTabBar').style.display=isLeadModule?'flex':'none'
-  if(isLeadModule){
-    document.querySelectorAll('.sec:not(.lp-panel)').forEach(el=>el.classList.remove('show'))
-    lpSwitchTab(S.lpTab||'pool')
-    return
-  }
+  document.querySelectorAll('.nav-item[data-sec]').forEach(el=>el.classList.toggle('active',el.dataset.sec===sec))
+  document.getElementById('navLeadGroup')?.classList.remove('has-active')
+  document.querySelectorAll('.nav-sub').forEach(b=>b.classList.remove('active'))
+  document.getElementById('sec-leadmodule')?.classList.remove('show')
   document.querySelectorAll('.lp-panel').forEach(el=>el.classList.remove('show'))
   document.querySelectorAll('.sec').forEach(el=>el.classList.toggle('show',el.id===`sec-${sec}`))
   loadSection(sec)
@@ -995,8 +1062,12 @@ function navTo(sec){
 async function lpSwitchTab(tabId){
   S.lpTab=tabId
   S.section='leadpool'
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.sec==='leadpool'))
-  document.querySelectorAll('.lp-tab').forEach(b=>b.classList.toggle('lp-tab-active',b.dataset.lpTab===tabId))
+  lpExpandGroup(true)
+  document.querySelectorAll('.nav-item[data-sec]').forEach(el=>el.classList.remove('active'))
+  document.getElementById('navLeadGroup')?.classList.add('has-active')
+  document.querySelectorAll('.nav-sub').forEach(b=>b.classList.toggle('active',b.dataset.lpTab===tabId))
+  document.querySelectorAll('.sec').forEach(el=>el.classList.remove('show'))
+  document.getElementById('sec-leadmodule')?.classList.add('show')
   document.querySelectorAll('.lp-panel').forEach(p=>p.classList.toggle('show',p.dataset.lpTab===tabId))
   load(true)
   try{
@@ -1039,7 +1110,11 @@ function renderBizBar(){
     btn.onclick=()=>switchBiz(b.id);bar.appendChild(btn)
   })
 }
-async function switchBiz(id){S.bizId=id;renderBizBar();await loadSection(S.section)}
+async function switchBiz(id){
+  S.bizId=id;renderBizBar()
+  if(S.section==='leadpool')await lpSwitchTab(S.lpTab||'pool')
+  else await loadSection(S.section)
+}
 
 // DASHBOARD
 async function loadDashboard(){
@@ -1058,7 +1133,7 @@ async function loadDashboard(){
     <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">🛒 Products</div><div style="font-size:32px;font-weight:900;">${pr||0}</div></div>
     <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">🎯 New Leads</div><div style="font-size:32px;font-weight:900;">${nl||0}</div></div>
     <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">💰 Total Revenue</div><div style="font-size:18px;font-weight:900;">${ugx(totalRev)}</div></div>`
-  document.getElementById('dashLeads').innerHTML=!rl?.length?`<div class="empty">No leads yet. <a href="#" onclick="navTo('leadpool');lpSwitchTab('seed');return false;">Seed some →</a></div>`
+  document.getElementById('dashLeads').innerHTML=!rl?.length?`<div class="empty">No leads yet. <a href="#" onclick="lpSwitchTab('seed');return false;">Seed some →</a></div>`
     :`<table class="dt"><thead><tr><th>Name</th><th>Location</th><th>Status</th></tr></thead><tbody>${rl.map(l=>`<tr><td style="font-weight:600;">${l.name}</td><td style="color:#6B7280;">${l.location||'—'}</td><td>${sBadge(l.status)}</td></tr>`).join('')}</tbody></table>`
   const revMap={};(acts||[]).forEach(a=>{const n=a.sh_agents?.name||'?';revMap[n]=(revMap[n]||0)+Number(a.revenue||0)})
   const top=Object.entries(revMap).sort((a,b)=>b[1]-a[1]).slice(0,5),mx=top[0]?.[1]||1
@@ -1658,7 +1733,7 @@ async function submitRating() {
   loadRegistrations();
 }
 
-async function init(){setupRealtime();initDotBg();await loadSection('dashboard')}
+async function init(){lpInitNav();setupRealtime();initDotBg();await loadSection('dashboard')}
 
 // ── Subtle interactive dot pattern (mouse-reactive, crisp retina) ──
 let dotBgAnim=null
@@ -1787,7 +1862,7 @@ const IND_COLORS={construction:'#f97316',tourism:'#0891b2',mining:'#78716c',ngo:
 const MAX_CTX=12000
 
 // ── State ──
-const LP={leads:[],total:0,page:1,industry:'',source:'',search:'',hasEmail:false,hasPhone:false,sortBy:'-created_at',selected:[],lastResult:null,clientId:''}
+const LP={leads:[],total:0,page:1,industry:'',source:'',search:'',hasEmail:false,hasPhone:false,sortBy:'-created_at',selected:[],lastResult:null,clientId:'',view:'cards'}
 const PUSH={clients:[],leads:[],leadsTotal:0,leadsPage:1,filterInd:'',pushMode:'sector',selLeads:[],selClients:[],inited:false,clientId:''}
 const OFFERS={page:1,clientId:''}
 const AG={lastResult:null,productIds:new Set()}
@@ -1958,6 +2033,30 @@ const BIZ_LIST=[]
 const indLabel=v=>INDS.find(i=>i.v===v)?.l||v
 const srcLabel=v=>SRCS.find(s=>s.v===v)?.l||v
 const scoreBadge=s=>{if(s==null)return'<span class="sh-score sh-sa">—</span>';const t=s>=60?'sg':s>=35?'sa':'sr';return`<span class="sh-score sh-${t}">${s}</span>`}
+function lpScoreRing(s){
+  if(s==null||s==='')return'<div class="lp-score lp-score-none"><span>—</span></div>'
+  const t=s>=60?'hot':s>=35?'warm':'cold'
+  return`<div class="lp-score lp-score-${t}"><span>${s}</span></div>`
+}
+function lpSetView(mode){
+  LP.view=mode
+  localStorage.setItem('lpView',mode)
+  document.getElementById('lpViewCards')?.classList.toggle('active',mode==='cards')
+  document.getElementById('lpViewList')?.classList.toggle('active',mode==='list')
+  lpRenderTable()
+}
+function lpRenderStats(){
+  const el=document.getElementById('lpStats')
+  if(!el)return
+  const page=LP.leads.length
+  const withContact=LP.leads.filter(l=>l.email||l.phone||l.website||l.linkedin).length
+  const hot=LP.leads.filter(l=>(l.lead_score||0)>=60).length
+  el.innerHTML=`
+    <div class="lp-stat"><div class="lp-stat-val">${LP.total.toLocaleString()}</div><div class="lp-stat-lbl">Total in pool</div></div>
+    <div class="lp-stat"><div class="lp-stat-val">${withContact}</div><div class="lp-stat-lbl">Contact on page</div></div>
+    <div class="lp-stat"><div class="lp-stat-val">${hot}</div><div class="lp-stat-lbl">Hot on page</div></div>
+    <div class="lp-stat"><div class="lp-stat-val">${LP.selected.length}</div><div class="lp-stat-lbl">Selected</div></div>`
+}
 const sectorPill=ind=>{const c=IND_COLORS[ind]||'#6b7280';return`<span class="sh-spt" style="background:${c}22;color:${c}">${indLabel(ind)||ind}</span>`}
 const dots=(e,p,w)=>`<span class="sh-dots"><span class="sh-dot${e?' sh-dot-on':''}" title="${e||'No email'}">@</span><span class="sh-dot${p?' sh-dot-on':''}" title="${p||'No phone'}">☎</span><span class="sh-dot${w?' sh-dot-on':''}" title="${w||'No website'}">⬡</span></span>`
 const indOpts=(sel='',all=false)=>(all?INDS:INDS.slice(1)).map(i=>`<option value="${i.v}"${i.v===sel?' selected':''}>${i.l}</option>`).join('')
@@ -2027,6 +2126,9 @@ function demoGuard(){
 // ═══════════════════════════════════════════════
 async function lpLoad(){
   shFlashClear('lpFlash')
+  lpInitNav()
+  document.getElementById('lpViewCards')?.classList.toggle('active',LP.view!=='list')
+  document.getElementById('lpViewList')?.classList.toggle('active',LP.view==='list')
   // populate industry / source selects once
   const lpInd=document.getElementById('lpIndustry')
   if(!lpInd.options.length)lpInd.innerHTML=indOpts(LP.industry,true)
@@ -2089,31 +2191,61 @@ function lpRenderTable(){
   archBtn.style.display=LP.selected.length?'inline-flex':'none'
   document.getElementById('lpPushBtn').style.display=LP.selected.length?'inline-flex':'none'
   document.getElementById('lpUnlockBtn').style.display=LP.selected.length?'inline-flex':'none'
+  lpRenderStats()
   if(!LP.leads.length){tbl.innerHTML='<div class="empty">No leads match your filters.</div>';return}
-  const showBizCol=!LP.clientId  // show business column only when showing all businesses
-  tbl.innerHTML=`<div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
-    <thead><tr>
-      <th><input type="checkbox" onchange="lpToggleAll(this)" ${LP.selected.length===LP.leads.length&&LP.leads.length?'checked':''}></th>
-      <th>Score</th><th>Company</th><th>Contact</th><th>Industry</th><th>Source</th>${showBizCol?'<th>Business</th>':''}<th>Location</th><th>Asset Interests</th><th></th>
-    </tr></thead>
-    <tbody>${LP.leads.map(l=>{
-      const bizBadge=showBizCol&&l.client_name?`<span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#EEF2FF;color:#4F46E5;white-space:nowrap;">${l.client_name}</span>`:'—'
-      return`<tr class="${LP.selected.includes(l.id)?'sh-row-sel':''}">
-      <td><input type="checkbox" ${LP.selected.includes(l.id)?'checked':''} onchange="lpToggle('${l.id}')"></td>
-      <td>${scoreBadge(l.lead_score)}</td>
-      <td><div style="display:flex;align-items:center;gap:6px;"><strong>${l.company_name||'—'}</strong>${l.website?`<a href="${l.website}" target="_blank" style="color:#94A3B8;font-size:12px;">⬡</a>`:''}</div>${l.contact_person?`<div class="sh-sub">${l.contact_person}</div>`:''}</td>
-      <td>${dots(l.email,l.phone,l.website)}<div class="sh-sub">${l.email||l.phone||'—'}</div></td>
-      <td>${sectorPill(l.industry)}</td>
-      <td><span class="badge bgray" style="font-size:11px;">${srcLabel(l.source_type)}</span></td>
-      ${showBizCol?`<td>${bizBadge}</td>`:''}
-      <td class="sh-sub">${l.location||'—'}</td>
-      <td class="sh-sub" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.asset_interests||'—'}</td>
-      <td><div style="display:flex;gap:4px;">
-        <button class="sh-ibtn sh-ibtn-e" onclick='lpOpenDrawer(${JSON.stringify(l)})' title="Edit">✏</button>
-        <button class="sh-ibtn sh-ibtn-d" onclick="lpArchive('${l.id}')" title="Archive">🗄</button>
-      </div></td>
-    </tr>`}).join('')}</tbody>
-  </table></div></div>`
+  const showBizCol=!LP.clientId
+  if(LP.view==='list'){
+    tbl.innerHTML=`<div class="lp-list-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
+      <thead><tr>
+        <th><input type="checkbox" onchange="lpToggleAll(this)" ${LP.selected.length===LP.leads.length&&LP.leads.length?'checked':''}></th>
+        <th>Score</th><th>Company</th><th>Contact</th><th>Industry</th><th>Source</th>${showBizCol?'<th>Business</th>':''}<th>Location</th><th></th>
+      </tr></thead>
+      <tbody>${LP.leads.map(l=>{
+        const bizBadge=showBizCol&&l.client_name?`<span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#EEF2FF;color:#4F46E5;">${l.client_name}</span>`:'—'
+        return`<tr class="${LP.selected.includes(l.id)?'sh-row-sel':''}">
+        <td><input type="checkbox" class="lp-card-check" ${LP.selected.includes(l.id)?'checked':''} onchange="lpToggle('${l.id}')"></td>
+        <td>${scoreBadge(l.lead_score)}</td>
+        <td><strong>${l.company_name||'—'}</strong>${l.contact_person?`<div class="sh-sub">${l.contact_person}</div>`:''}</td>
+        <td>${dots(l.email,l.phone,l.website)}<div class="sh-sub">${l.email||l.phone||'—'}</div></td>
+        <td>${sectorPill(l.industry)}</td>
+        <td><span class="badge bgray" style="font-size:11px;">${srcLabel(l.source_type)}</span></td>
+        ${showBizCol?`<td>${bizBadge}</td>`:''}
+        <td class="sh-sub">${l.location||'—'}</td>
+        <td><div style="display:flex;gap:4px;">
+          <button class="sh-ibtn sh-ibtn-e" onclick='lpOpenDrawer(${JSON.stringify(l)})' title="Edit">✏</button>
+          <button class="sh-ibtn sh-ibtn-d" onclick="lpArchive('${l.id}')" title="Archive">🗄</button>
+        </div></td></tr>`}).join('')}</tbody>
+    </table></div></div>`
+    return
+  }
+  tbl.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+    <label class="sh-pill"><input type="checkbox" onchange="lpToggleAll(this)" ${LP.selected.length===LP.leads.length&&LP.leads.length?'checked':''} /> Select all on page</label>
+  </div>
+  <div class="lp-grid">${LP.leads.map(l=>{
+    const sel=LP.selected.includes(l.id)
+    const contact=l.email||l.phone||l.website||'No contact on file'
+    const bizTag=showBizCol&&l.client_name?`<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:#EEF2FF;color:#4F46E5;">${l.client_name}</span>`:''
+    return`<article class="lp-card${sel?' lp-card-sel':''}">
+      <div class="lp-card-head">
+        <input type="checkbox" class="lp-card-check" ${sel?'checked':''} onchange="lpToggle('${l.id}')" aria-label="Select ${esc(l.company_name||'lead')}" />
+        ${lpScoreRing(l.lead_score)}
+      </div>
+      <div>
+        <h3 class="lp-card-title">${l.company_name||'—'}</h3>
+        ${l.contact_person?`<div class="lp-card-sub">${l.contact_person}</div>`:''}
+      </div>
+      <div class="lp-card-contact">${dots(l.email,l.phone,l.website)}<div style="margin-top:6px;word-break:break-word;">${contact}</div></div>
+      <div class="lp-card-meta">${sectorPill(l.industry)}<span class="badge bgray" style="font-size:10px;">${srcLabel(l.source_type)}</span>${bizTag}</div>
+      ${l.asset_interests?`<div class="lp-card-loc">🎯 ${l.asset_interests}</div>`:''}
+      <div class="lp-card-loc">📍 ${l.location||'—'}${l.country?` · ${l.country}`:''}</div>
+      <div class="lp-card-foot">
+        ${l.website?`<a href="${l.website}" target="_blank" rel="noopener" class="sh-sub" style="color:#6366F1;">Website ↗</a>`:'<span></span>'}
+        <div style="display:flex;gap:4px;">
+          <button class="sh-ibtn sh-ibtn-e" onclick='lpOpenDrawer(${JSON.stringify(l)})' title="Edit">✏</button>
+          <button class="sh-ibtn sh-ibtn-d" onclick="lpArchive('${l.id}')" title="Archive">🗄</button>
+        </div>
+      </div>
+    </article>`}).join('')}</div>`
 }
 function lpRenderQbar(){
   const bar=document.getElementById('lpQbar')
