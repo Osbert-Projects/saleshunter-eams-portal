@@ -1674,26 +1674,18 @@ function initDotBg(){
   let W=0,H=0,dots=[]
   const mouse={x:-9999,y:-9999,on:false}
 
-  function drawCrystal(x,y,r,accent,boost){
-    const glow=accent?`rgba(255,204,0,${0.22+boost*.25})`:`rgba(147,197,253,${0.2+boost*.2})`
-    const body=accent?`rgba(255,214,90,${0.88+boost*.12})`:`rgba(241,245,249,${0.82+boost*.18})`
-    const rim=accent?`rgba(255,180,0,${0.5+boost})`:`rgba(148,163,184,${0.45+boost*.4})`
+  function drawDot(x,y,r,accent,boost){
     ctx.beginPath()
-    ctx.arc(x,y,r+1.4,0,Math.PI*2)
-    ctx.fillStyle=glow
+    ctx.arc(x,y,r+0.55,0,Math.PI*2)
+    ctx.fillStyle=accent?`rgba(255,204,0,${0.1+boost*.14})`:`rgba(147,197,253,${0.08+boost*.1})`
     ctx.fill()
     ctx.beginPath()
     ctx.arc(x,y,r,0,Math.PI*2)
-    ctx.fillStyle=body
+    ctx.fillStyle=accent?`rgba(255,204,0,${0.3+boost*.12})`:`rgba(186,196,210,${0.24+boost*.1})`
     ctx.fill()
     ctx.beginPath()
-    ctx.arc(x,y,r,0,Math.PI*2)
-    ctx.strokeStyle=rim
-    ctx.lineWidth=.6
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.arc(x-r*.28,y-r*.32,r*.38,0,Math.PI*2)
-    ctx.fillStyle=`rgba(255,255,255,${accent?0.65:0.85})`
+    ctx.arc(x-r*.22,y-r*.24,r*.2,0,Math.PI*2)
+    ctx.fillStyle=`rgba(255,255,255,${accent?0.2:0.28})`
     ctx.fill()
   }
 
@@ -1741,7 +1733,7 @@ function initDotBg(){
       d.y+=(d.by-d.y)*SPRING
       const drift=Math.hypot(d.x-d.bx,d.y-d.by)
       const boost=Math.min(drift/8,.5)
-      drawCrystal(d.x,d.y,d.accent?2.6:2,!!d.accent,boost)
+      drawDot(d.x,d.y,d.accent?1.25:0.9,!!d.accent,boost)
     }
 
     dotBgAnim=requestAnimationFrame(tick)
