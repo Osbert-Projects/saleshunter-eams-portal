@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -58,6 +58,130 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 .sec-title{font-size:20px;font-weight:800;color:#111827;}.sec-sub{font-size:13px;color:#6B7280;margin-top:2px;}
 .empty{text-align:center;padding:48px 20px;color:#9CA3AF;font-size:14px;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px;}
+
+/* ══ Lead Operations Module ══ */
+.nav-sep{margin:8px 10px 2px;border-top:1px solid #1F2937;padding-top:8px;}
+.nav-sep-lbl{font-size:10px;font-weight:700;color:#4B5563;padding:0 6px 4px;text-transform:uppercase;letter-spacing:.06em;display:block;}
+.sh-drawer-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(3px);z-index:300;display:flex;align-items:stretch;justify-content:flex-end;}
+.sh-drawer{width:440px;max-width:95vw;background:white;box-shadow:-4px 0 32px rgba(0,0,0,.18);display:flex;flex-direction:column;animation:shSlide .22s ease;overflow:hidden;}
+@keyframes shSlide{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
+.sh-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #E5E7EB;flex-shrink:0;}
+.sh-drawer-title{font-size:15px;font-weight:700;color:#1e293b;margin:0;}
+.sh-drawer-body{flex:1;overflow-y:auto;padding:20px;}
+.sh-drawer-foot{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 20px;border-top:1px solid #E5E7EB;flex-shrink:0;background:#FAFBFF;}
+.sh-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.sh-filters{display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex:1;min-width:0;}
+.sh-tright{display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+.sh-sel{padding:7px 28px 7px 10px;border:1.5px solid #E5E7EB;border-radius:8px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;color:#374151;font-size:12px;cursor:pointer;appearance:none;}
+.sh-sel:focus{outline:none;border-color:#6366F1;}
+.sh-sel-sm{padding:5px 24px 5px 8px;font-size:11px;border-radius:6px;}
+.sh-biz-sel{border-color:#6366F1;color:#4F46E5;font-weight:600;background-color:#EEF2FF;}
+.sh-biz-sel:focus{border-color:#4F46E5;}
+.sh-biz-sel option{color:#374151;font-weight:400;background:#fff;}
+.sh-srch{display:flex;align-items:center;}
+.sh-srch-in{padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px 0 0 8px;font-size:12px;color:#111827;outline:none;background:white;width:200px;}
+.sh-srch-in:focus{border-color:#6366F1;}
+.sh-srch-btn{padding:8px 12px;background:#F3F4F6;border:1.5px solid #E5E7EB;border-left:none;border-radius:0 8px 8px 0;cursor:pointer;font-size:13px;}
+.sh-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:100px;border:1.5px solid #E5E7EB;background:#fff;font-size:12px;font-weight:500;color:#475569;cursor:pointer;white-space:nowrap;user-select:none;}
+.sh-pill input{margin:0;cursor:pointer;accent-color:#6366F1;}
+.sh-pill:hover{border-color:#A5B4FC;background:#F5F3FF;color:#4F46E5;}
+.sh-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#F1F5F9;border-radius:100px;font-size:12px;font-weight:600;color:#475569;white-space:nowrap;}
+.sh-chip-warn{background:#FEF3C7;color:#92400E;}
+.sh-score{display:inline-flex;align-items:center;justify-content:center;min-width:32px;padding:3px 7px;border-radius:100px;font-size:11px;font-weight:700;}
+.sh-sg{background:#DCFCE7;color:#15803D;}.sh-sa{background:#FEF3C7;color:#B45309;}.sh-sr{background:#FEE2E2;color:#B91C1C;}
+.sh-dots{display:inline-flex;gap:3px;margin-bottom:2px;}
+.sh-dot{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;font-size:10px;background:#F1F5F9;color:#94A3B8;cursor:default;}
+.sh-dot-on{background:#DCFCE7;color:#15803D;}
+.sh-spt{display:inline-block;padding:3px 8px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap;}
+.sh-qbar{display:flex;align-items:center;gap:16px;padding:8px 14px;background:#F8FAFC;border:1px solid #E8EDF5;border-radius:8px;flex-wrap:wrap;margin-bottom:12px;}
+.sh-qs{display:flex;align-items:center;gap:5px;font-size:12px;color:#475569;}
+.sh-qs-warn{color:#B45309;}
+.sh-tbl-shell{background:white;border:1px solid #E8EDF5;border-radius:12px;overflow:hidden;}
+.sh-tbl-scroll{overflow-x:auto;}
+.sh-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.sh-tbl thead{background:#F8FAFC;border-bottom:1px solid #E8EDF5;}
+.sh-tbl th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;}
+.sh-tbl td{padding:11px 14px;border-bottom:1px solid #F1F5F9;vertical-align:top;color:#1e293b;}
+.sh-tbl tbody tr:last-child td{border-bottom:none;}
+.sh-tbl tbody tr:hover td{background:#FAFBFF;}
+.sh-row-sel td{background:rgba(99,102,241,.05)!important;}
+.sh-sub{font-size:12px;color:#64748B;line-height:1.4;}
+.sh-pgn{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 0 4px;flex-wrap:wrap;}
+.sh-pgi{font-size:12px;color:#64748B;padding:0 8px;}
+.sh-ibtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1.5px solid #E5E7EB;background:white;color:#64748B;cursor:pointer;font-size:13px;}
+.sh-ibtn:hover{background:#F1F5F9;}
+.sh-ibtn-e:hover{border-color:#6366F1;color:#6366F1;}
+.sh-ibtn-d:hover{border-color:#F87171;color:#DC2626;background:#FEF2F2;}
+.sh-flash{display:flex;align-items:flex-start;gap:8px;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;line-height:1.4;margin-bottom:12px;}
+.sh-fok{background:#DCFCE7;color:#15803D;border:1px solid #BBF7D0;}
+.sh-ferr{background:#FEE2E2;color:#B91C1C;border:1px solid #FECACA;}
+.sh-fwarn{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
+.sh-form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.sh-form-card{background:#FAFBFF;border:1.5px solid #E5E7EB;border-radius:12px;padding:20px;margin-bottom:16px;}
+.sh-upload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.sh-dz{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;border:2px dashed #C7D2FE;border-radius:10px;background:#F5F3FF;cursor:pointer;margin:12px 0;padding:20px;text-align:center;color:#475569;font-size:13px;}
+.sh-dz:hover{border-color:#818CF8;background:#EEF2FF;}
+.sh-dz-ico{width:48px;height:48px;border-radius:12px;background:rgba(99,102,241,.12);color:#6366F1;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:22px;}
+.sh-push-mode{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#F8FAFC;border:1px solid #E8EDF5;border-radius:10px;margin-bottom:16px;}
+.sh-mbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;border:1.5px solid #E5E7EB;background:white;color:#475569;font-size:13px;font-weight:500;cursor:pointer;}
+.sh-mbtn:hover{border-color:#A5B4FC;color:#4F46E5;}
+.sh-mbtn-a{background:#4F46E5;border-color:#4F46E5;color:white;}
+.sh-push-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px;}
+.sh-scroll-list{display:flex;flex-direction:column;gap:2px;max-height:360px;overflow-y:auto;border:1px solid #E8EDF5;border-radius:8px;padding:4px;margin-top:8px;}
+.sh-crow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;color:#374151;}
+.sh-crow:hover{background:#F5F3FF;}
+.sh-crow input{accent-color:#6366F1;}
+.sh-crow-feat{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.18);font-weight:600;color:#3730A3;}
+.sh-sector-sum{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.18);border-radius:8px;font-size:13px;color:#3730A3;margin-top:8px;}
+.sh-push-foot{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-top:8px;}
+.sh-btn-push{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border:none;color:white;padding:10px 24px;font-size:14px;font-weight:600;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(79,70,229,.35);}
+.sh-btn-push:hover:not(:disabled){background:linear-gradient(135deg,#4338CA,#6D28D9);}
+.sh-btn-push:disabled{opacity:.5;cursor:not-allowed;}
+.sh-okpis{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.sh-okpi{flex:1;min-width:120px;background:white;border:1px solid #E8EDF5;border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;color:#475569;}
+.sh-okpi-g{border-color:#BBF7D0;background:#F0FDF4;color:#15803D;}
+.sh-okpi-a{border-color:#FDE68A;background:#FFFBEB;color:#B45309;}
+.sh-okpi-val{font-size:26px;font-weight:800;line-height:1;color:inherit;}
+.sh-okpi-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.75;}
+.sh-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+.sh-kpi-card{background:white;border:1px solid #E8EDF5;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;}
+.sh-kico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.sh-kico-v{background:rgba(124,58,237,.1);color:#7C3AED;}.sh-kico-c{background:rgba(8,145,178,.1);color:#0891B2;}
+.sh-kico-b{background:rgba(29,78,216,.1);color:#1D4ED8;}.sh-kico-a{background:rgba(217,119,6,.1);color:#D97706;}
+.sh-kico-g{background:rgba(22,163,74,.1);color:#16A34A;}
+.sh-kval{font-size:22px;font-weight:800;color:#1e293b;letter-spacing:-.02em;}
+.sh-klbl{font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.04em;}
+.sh-qual-bkdn{display:flex;flex-direction:column;gap:10px;}
+.sh-qual-row{display:flex;align-items:center;gap:12px;}
+.sh-qual-lbl{width:140px;flex-shrink:0;font-size:12px;font-weight:500;color:#475569;}
+.sh-qual-val{width:90px;flex-shrink:0;font-size:12px;font-weight:600;color:#1e293b;text-align:right;}
+.sh-btrack{flex:1;height:8px;background:#F1F5F9;border-radius:100px;overflow:hidden;}
+.sh-bfill{height:100%;border-radius:100px;transition:width .4s ease;min-width:2px;}
+.sh-charts-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.sh-hbchart{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.sh-hbrow{display:flex;align-items:center;gap:10px;}
+.sh-hblbl{width:150px;flex-shrink:0;font-size:12px;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sh-hbcnt{width:36px;flex-shrink:0;font-size:12px;font-weight:600;color:#374151;text-align:right;}
+.sh-agent-layout{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:flex-start;}
+.sh-chk-group{display:flex;flex-direction:column;gap:6px;}
+.sh-chk-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #E8EDF5;border-radius:8px;background:#FAFBFF;cursor:pointer;font-size:13px;color:#374151;user-select:none;}
+.sh-chk-card:hover{border-color:#A5B4FC;background:#F5F3FF;}
+.sh-chk-card input{margin-top:1px;flex-shrink:0;accent-color:#6366F1;}
+.sh-agent-results{background:white;border:1px solid #E8EDF5;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.sh-agent-head{display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;}
+.sh-agent-qual{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.sh-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;}
+.sh-badge-gray{background:#F1F5F9;color:#475569;}.sh-badge-green{background:#DCFCE7;color:#15803D;}
+.sh-badge-blue{background:#DBEAFE;color:#1D4ED8;}.sh-badge-amber{background:#FEF3C7;color:#B45309;}
+.sh-ctx-len{font-size:11px;font-weight:600;color:#94A3B8;}
+.sh-ctx-warn{color:#DC2626;}
+.sh-export-card{max-width:680px;}
+@media(max-width:900px){.sh-agent-layout,.sh-push-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){.sh-upload-grid,.sh-charts-row{grid-template-columns:1fr;}.sh-kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.reg-tab{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:#6B7280;border-bottom:3px solid transparent;margin-bottom:-2px;}
+.reg-tab-active{color:#111827;border-bottom-color:#FFCC00;font-weight:700;}
+.rating-star{font-size:24px;cursor:pointer;color:#D1D5DB;transition:color .1s;}
+.rating-star.filled{color:#FFCC00;}
 </style>
 </head>
 <body>
@@ -96,9 +220,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
     <button class="nav-item" data-sec="businesses" onclick="navTo('businesses')">🏢 Businesses</button>
     <button class="nav-item" data-sec="products" onclick="navTo('products')">💰 Products & Pricing</button>
     <button class="nav-item" data-sec="agents" onclick="navTo('agents')">👥 Agents & KPIs</button>
+    <button class="nav-item" data-sec="registrations" onclick="navTo('registrations')">📋 Registrations</button>
     <button class="nav-item" data-sec="leads" onclick="navTo('leads')">🎯 Lead Seeding</button>
     <button class="nav-item" data-sec="reports" onclick="navTo('reports')">📈 Reports</button>
     <button class="nav-item" data-sec="builder" onclick="navTo('builder')">📱 App Builder</button>
+    <div class="nav-sep"><span class="nav-sep-lbl">Lead Operations</span></div>
+    <button class="nav-item" data-sec="leadpool" onclick="navTo('leadpool')">🗄 Lead Pool</button>
+    <button class="nav-item" data-sec="upload" onclick="navTo('upload')">⬆ Upload Leads</button>
+    <button class="nav-item" data-sec="push" onclick="navTo('push')">📤 Push to Clients</button>
+    <button class="nav-item" data-sec="offers" onclick="navTo('offers')">🏷 Offers</button>
+    <button class="nav-item" data-sec="analytics" onclick="navTo('analytics')">📊 Analytics</button>
+    <button class="nav-item" data-sec="aiagent" onclick="navTo('aiagent')">🤖 AI Agent</button>
+    <button class="nav-item" data-sec="export" onclick="navTo('export')">⬇ Export</button>
   </div>
   <div style="padding:12px 16px;border-top:1px solid #1F2937;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span class="rt-dot"></span><span style="font-size:11px;color:#6B7280;">Live — real-time sync</span></div>
@@ -193,6 +326,317 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
         <div style="text-align:center;margin-top:10px;"><div id="bAppLabel" style="font-size:12px;font-weight:700;color:#374151;"></div><div style="font-size:11px;color:#9CA3AF;">Login screen preview</div></div>
       </div>
     </div>
+  </div>
+
+  <!-- LEAD POOL -->
+  <div id="sec-leadpool" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Lead Pool</div><div class="sec-sub">Master lead database — browse, add, edit and archive</div></div></div>
+    <div id="lpFlash"></div>
+    <div class="sh-toolbar">
+      <div class="sh-filters">
+        <select class="sh-sel sh-biz-sel" id="lpBusiness" onchange="lpSetFilter()" title="Filter by business"></select>
+        <select class="sh-sel" id="lpIndustry" onchange="lpSetFilter()"></select>
+        <select class="sh-sel" id="lpSource" onchange="lpSetFilter()"></select>
+        <div class="sh-srch">
+          <input class="sh-srch-in" id="lpSearch" placeholder="Company, email, phone…" onkeydown="if(event.key==='Enter')lpSetFilter()" />
+          <button class="sh-srch-btn" onclick="lpSetFilter()">🔍</button>
+        </div>
+      </div>
+      <div class="sh-tright">
+        <label class="sh-pill"><input type="checkbox" id="lpEmail" onchange="lpSetFilter()" /> ✉ Email</label>
+        <label class="sh-pill"><input type="checkbox" id="lpPhone" onchange="lpSetFilter()" /> ☎ Phone</label>
+        <select class="sh-sel sh-sel-sm" id="lpSort" onchange="lpSetFilter()">
+          <option value="-created_at">Newest first</option><option value="created_at">Oldest first</option>
+          <option value="company_name">A → Z</option><option value="-company_name">Z → A</option>
+        </select>
+        <span class="sh-chip" id="lpCount">—</span>
+        <button class="btn btn-danger btn-sm" id="lpArchBtn" style="display:none;" onclick="lpArchiveSelected()">🗄 Archive selected</button>
+        <button class="btn btn-primary btn-sm" onclick="lpToggleAdd()">+ Add Lead</button>
+      </div>
+    </div>
+    <div class="sh-qbar" id="lpQbar" style="display:none;"></div>
+    <div class="sh-form-card" id="lpAddForm" style="display:none;">
+      <div class="sh-form-grid" style="margin-bottom:12px;">
+        <div class="fg"><label class="fl">Company Name *</label><input id="lpfCompany" class="fi" placeholder="Acme Ltd" /></div>
+        <div class="fg"><label class="fl">Contact Person</label><input id="lpfContact" class="fi" /></div>
+        <div class="fg"><label class="fl">Phone</label><input id="lpfPhone" class="fi" /></div>
+        <div class="fg"><label class="fl">Email</label><input id="lpfEmail" class="fi" type="email" /></div>
+        <div class="fg"><label class="fl">Location</label><input id="lpfLocation" class="fi" placeholder="Kampala" /></div>
+        <div class="fg"><label class="fl">Country</label><input id="lpfCountry" class="fi" value="Uganda" /></div>
+        <div class="fg"><label class="fl">Website</label><input id="lpfWebsite" class="fi" /></div>
+        <div class="fg"><label class="fl">LinkedIn</label><input id="lpfLinkedin" class="fi" /></div>
+        <div class="fg"><label class="fl">Asset Interests</label><input id="lpfAssets" class="fi" /></div>
+        <div class="fg"><label class="fl">Industry</label><select id="lpfIndustry" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="fg" style="grid-column:1/-1;"><label class="fl">Notes</label><textarea id="lpfNotes" class="fi" rows="2"></textarea></div>
+      </div>
+      <div style="font-size:12px;color:#64748B;margin-bottom:10px;">ℹ Requires at least one contact field.</div>
+      <button class="btn btn-primary btn-sm" onclick="lpAddLead()" id="lpSaveBtn">💾 Save Lead</button>
+    </div>
+    <div id="lpTable"></div>
+    <div class="sh-pgn" id="lpPgn"></div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="sec-upload" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Upload Leads</div><div class="sec-sub">CSV or bulk JSON into the master pool</div></div></div>
+    <div id="upFlash"></div>
+    <div class="sh-upload-grid">
+      <div class="card">
+        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(79,70,229,.1);color:#4F46E5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📊</div>
+          <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">CSV Upload</div>
+          <div style="font-size:12px;color:#64748B;">Columns: <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">company_name</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">contact_person</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">phone</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">email</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">location</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">website</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">asset_interests</code></div></div>
+        </div>
+        <div class="fg" style="margin-bottom:12px;"><label class="fl">Industry / sector</label><select id="upIndustry" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="sh-dz" id="upDropzone" onclick="document.getElementById('upFile').click()">
+          <div class="sh-dz-ico">⬆</div>
+          <div style="font-weight:600;">Drop CSV or click to browse</div>
+          <div style="font-size:12px;margin-top:6px;opacity:.6;" id="upFileName">.csv only</div>
+          <input id="upFile" type="file" accept=".csv" style="display:none;" onchange="upFileSelected()" />
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="uploadCSV()" id="upCSVBtn">⬆ Upload CSV</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(8,145,178,.1);color:#0891B2;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">{ }</div>
+          <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Bulk JSON</div>
+          <div style="font-size:12px;color:#64748B;">Paste an array of objects. Each needs at least <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">company_name</code> + one contact field.</div></div>
+        </div>
+        <div class="fg" style="margin-bottom:12px;"><label class="fl">Industry / sector</label><select id="upIndustryJSON" class="fi" style="padding:10px 12px;"></select></div>
+        <textarea id="upJSON" class="fi" rows="8" placeholder='[&#10;  {"company_name": "Acme Ltd", "email": "info@acme.co", "phone": "+256 700 000000"}&#10;]'></textarea>
+        <button class="btn btn-primary btn-sm" onclick="uploadJSON()" id="upJSONBtn" style="margin-top:10px;">✔ Save Leads</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;max-width:540px;">
+      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(100,116,139,.1);color:#64748B;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⬇</div>
+        <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">CSV Template</div>
+        <div style="font-size:12px;color:#64748B;">Download a blank header row. Fill offline, then upload above.</div></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="downloadCSVTemplate()">⬇ Download template</button>
+    </div>
+  </div>
+
+  <!-- PUSH TO CLIENTS -->
+  <div id="sec-push" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Push to Clients</div><div class="sec-sub">Deliver curated leads to tenant clients</div></div>
+      <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="pushBusiness" onchange="pushBizFilter()" title="Filter by business"></select></div>
+    </div>
+    <div id="pushFlash"></div>
+    <div class="sh-push-mode">
+      <button class="sh-mbtn sh-mbtn-a" id="pushModeS" onclick="setPushMode('sector')">⚡ Sector push</button>
+      <button class="sh-mbtn" id="pushModeH" onclick="setPushMode('selected')">🎯 Handpicked leads</button>
+      <label class="sh-pill" style="margin-left:auto;"><input type="checkbox" id="pushQuality" checked onchange="pushRender()" /> 🛡 Quality only (has contact info)</label>
+    </div>
+    <div class="sh-push-grid">
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Step 1 — Leads</div>
+        <div class="fg"><label class="fl">Sector filter</label><select id="pushInd" class="sh-sel" style="width:100%;" onchange="pushLoadLeads()"></select></div>
+        <div id="pushLeadsPanel"></div>
+        <div class="sh-pgn" id="pushLeadsPgn"></div>
+      </div>
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Step 2 — Clients</div>
+        <label class="sh-crow sh-crow-feat" style="margin-bottom:8px;">
+          <input type="checkbox" id="pushAllClients" onchange="pushRender()" /> 👥 Push to all tenants
+        </label>
+        <div class="sh-scroll-list" id="pushClientsList"></div>
+      </div>
+    </div>
+    <div class="sh-push-foot">
+      <div class="fg" style="flex:1;"><label class="fl">Note to clients (optional)</label><input id="pushNote" class="fi" placeholder="e.g. Recommended based on your fleet type…" /></div>
+      <button class="sh-btn-push" id="pushBtn" onclick="doPush()">📤 Push leads</button>
+    </div>
+  </div>
+
+  <!-- OFFERS -->
+  <div id="sec-offers" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Offers</div><div class="sec-sub">Track pushed leads and client unlocks</div></div>
+      <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="offersBusiness" onchange="offersBizFilter()" title="Filter by business"></select></div>
+    </div>
+    <div id="offersFlash"></div>
+    <div class="sh-okpis" id="offersKPIs"></div>
+    <div class="sh-toolbar" style="margin-top:4px;">
+      <div class="sh-filters">
+        <input class="sh-srch-in" id="offersClient" placeholder="Filter by client ID…" style="border-radius:8px;" onchange="offersLoad()" />
+        <select class="sh-sel" id="offersStatus" onchange="offersLoad()">
+          <option value="">All statuses</option><option value="1">Purchased</option><option value="0">Pending</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="offersLoad()">↺ Refresh</button>
+    </div>
+    <div id="offersTable"></div>
+    <div class="sh-pgn" id="offersPgn"></div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div id="sec-analytics" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Analytics</div><div class="sec-sub">Master pool stats, quality breakdown, industry and source distribution</div></div>
+      <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="analyticsBusiness" onchange="analyticsBizFilter()" title="Filter by business"></select></div>
+    </div>
+    <div id="analyticsBody"><div class="empty">Loading…</div></div>
+  </div>
+
+  <!-- AI AGENT -->
+  <div id="sec-aiagent" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">AI Agent</div><div class="sec-sub">GPT-backed multi-engine prospecting into the master pool</div></div></div>
+    <div id="agentFlash"></div>
+    <div class="sh-agent-layout">
+      <div class="card">
+        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(79,70,229,.1);color:#4F46E5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
+          <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Sales Hunter — AI discovery</div>
+          <div style="font-size:12px;color:#64748B;">Only leads with at least one contact signal are saved.</div></div>
+        </div>
+        <div class="sh-form-grid" style="margin-bottom:14px;">
+          <div class="fg" style="grid-column:1/-1;"><label class="fl">Focus query *</label><input id="agQuery" class="fi" placeholder="e.g. heavy equipment rental, boutique hotels, mining contractors…" /></div>
+          <div class="fg"><label class="fl">Country</label><input id="agCountry" class="fi" value="Uganda" /></div>
+          <div class="fg"><label class="fl">City / region</label><input id="agLocation" class="fi" placeholder="Kampala, East Africa…" /></div>
+          <div class="fg"><label class="fl">Industry</label><select id="agIndustry" class="fi" style="padding:10px 12px;"></select></div>
+          <div class="fg"><label class="fl">Search style</label>
+            <select id="agMode" class="fi" style="padding:10px 12px;">
+              <option value="auto">Auto</option><option value="tourism">Tourism</option>
+              <option value="contracts">Contracts / tenders</option><option value="tender_precision">Tender / award precision</option>
+              <option value="media">Media / press</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Max leads</label>
+            <select id="agMax" class="fi" style="padding:10px 12px;">
+              <option>10</option><option>15</option><option>20</option><option selected>30</option><option>40</option><option>50</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:14px;">
+          <label class="fl" style="display:flex;justify-content:space-between;">
+            <span>Session context</span><span class="sh-ctx-len" id="agCtxLen">0 / 12000</span>
+          </label>
+          <textarea id="agCtx" class="fi" rows="3" placeholder="Prior notes, exclusion lists, or target accounts for continuity…" oninput="agUpdateCtxLen()"></textarea>
+          <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="agAppendCtx()" id="agAppendBtn" disabled>Append last run companies to context</button>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;">Discovery engines</div>
+        <div class="sh-chk-group" style="margin-bottom:14px;">
+          <label class="sh-chk-card"><input type="checkbox" id="agCloud" checked /> <div><strong>Cloud</strong> <span style="font-size:12px;color:#64748B;">— Broad web, sector pages, news</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agSeek" checked /> <div><strong>Seek</strong> <span style="font-size:12px;color:#64748B;">— Directories, contacts, social hints</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agStriker" checked /> <div><strong>Striker</strong> <span style="font-size:12px;color:#64748B;">— Tenders, RFP, procurement signals</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agHunter" /> <div><strong>Hunter</strong> <span style="font-size:12px;color:#64748B;">— Hunter.io Discover (needs HUNTER_IO_API_KEY)</span></div></label>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;">Enrichment</div>
+        <div class="sh-chk-group" style="margin-bottom:20px;">
+          <label class="sh-chk-card"><input type="checkbox" id="agMaps" checked /> <div><strong>Maps businesses</strong> <select id="agMapsCap" class="fi" style="display:inline-block;width:auto;padding:3px 8px;font-size:12px;margin-left:8px;"><option>10</option><option>20</option><option>30</option><option>40</option><option selected>50</option></select> listings max</div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agScrape" /> <div><strong>Website scrape</strong> <span style="font-size:12px;color:#64748B;">— fetch linked pages for emails</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agSocial" /> <div><strong>Social listings</strong> <span style="font-size:12px;color:#64748B;">— LinkedIn, X, Facebook, IG queries</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agTender" /> <div><strong>Tender precision layer</strong> <span style="font-size:12px;color:#64748B;">— awarded supplier queries (needs Striker)</span></div></label>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="runAgent()" id="agRunBtn">✨ Run into master pool</button>
+      </div>
+      <div id="agResults" style="display:none;" class="sh-agent-results"></div>
+    </div>
+  </div>
+
+  <!-- EXPORT -->
+  
+    <!-- ═══ REGISTRATIONS SECTION ═══ -->
+    <div id="sec-registrations" class="sec">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Agent Registrations</div>
+          <div class="sec-sub">Review profiles, manage applications, assign agents to companies</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="regBizFilter" class="sh-sel sh-biz-sel" onchange="loadRegistrations()" style="min-width:160px;">
+            <option value="">All Companies</option>
+          </select>
+          <select id="regStatusFilter" class="sh-sel" onchange="loadRegistrations()" style="min-width:130px;">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Sub tabs -->
+      <div style="display:flex;gap:0;border-bottom:2px solid #F3F4F6;margin-bottom:20px;">
+        <button id="regTabProfiles" class="reg-tab reg-tab-active" onclick="regSwitchTab('profiles')">👤 Agent Profiles</button>
+        <button id="regTabApplications" class="reg-tab" onclick="regSwitchTab('applications')">📩 Applications</button>
+      </div>
+
+      <!-- Profiles panel -->
+      <div id="regPanelProfiles">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <table class="tbl">
+            <thead><tr>
+              <th>Agent</th><th>Location</th><th>Experience</th><th>Education</th>
+              <th>Skills</th><th>Rating</th><th>Completion</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="regProfilesTbody"><tr><td colspan="9"><div class="empty">Loading...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Applications panel -->
+      <div id="regPanelApplications" style="display:none;">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <table class="tbl">
+            <thead><tr>
+              <th>Agent</th><th>Company</th><th>Cover Note</th><th>Applied</th>
+              <th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="regApplicationsTbody"><tr><td colspan="6"><div class="empty">Loading...</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Agent Profile Detail Modal -->
+      <div id="agentProfileModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('agentProfileModal')">
+        <div class="modal" style="max-width:620px;max-height:90vh;overflow-y:auto;">
+          <div class="modal-hdr"><span id="apmTitle">Agent Profile</span><button onclick="closeModal('agentProfileModal')" class="btn btn-ghost btn-xs">✕</button></div>
+          <div id="apmBody" style="padding:20px;"></div>
+        </div>
+      </div>
+
+      <!-- Rate Agent Modal -->
+      <div id="rateModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('rateModal')">
+        <div class="modal" style="max-width:380px;">
+          <div class="modal-hdr"><span>Rate Agent</span><button onclick="closeModal('rateModal')" class="btn btn-ghost btn-xs">✕</button></div>
+          <div style="padding:20px;">
+            <p style="color:#6B7280;font-size:13px;margin-bottom:16px;">Set a rating for this agent (1–5 stars). This is visible to companies.</p>
+            <input type="hidden" id="rateProfileId"/>
+            <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;" id="starRow"></div>
+            <textarea id="rateNote" rows="3" style="width:100%;border:1.5px solid #E5E7EB;border-radius:10px;padding:10px;font-size:13px;resize:none;" placeholder="Optional note for this rating..."></textarea>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button class="btn btn-secondary" style="flex:1;" onclick="closeModal('rateModal')">Cancel</button>
+              <button class="btn btn-primary" style="flex:1;" onclick="submitRating()">Submit Rating</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="sec-export" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Export</div><div class="sec-sub">CRM-ready CSV · max 5,000 rows per export</div></div></div>
+    <div id="exportFlash"></div>
+    <div class="card sh-export-card">
+      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(100,116,139,.1);color:#64748B;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⬇</div>
+        <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Export master leads</div>
+        <div style="font-size:12px;color:#64748B;">Includes score, contact fields, EAMS lead ID.</div></div>
+      </div>
+      <div class="sh-form-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));margin-bottom:14px;">
+        <div class="fg"><label class="fl">Industry</label><select id="expIndustry" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="fg"><label class="fl">Source</label><select id="expSource" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="fg"><label class="fl">Keyword</label><input id="expSearch" class="fi" placeholder="Company, location…" /></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+        <label class="sh-pill"><input type="checkbox" id="expEmail" /> ✉ Email only</label>
+        <label class="sh-pill"><input type="checkbox" id="expPhone" /> ☎ Phone only</label>
+        <button class="btn btn-ghost btn-sm" onclick="expPreview()" id="expPreviewBtn" style="margin-left:auto;">🔍 Preview count</button>
+        <span class="sh-chip" id="expPreviewResult" style="display:none;"></span>
+      </div>
+      <button class="btn btn-primary" onclick="exportCSV()" id="expBtn">⬇ Download CSV</button>
+      <div style="font-size:11px;color:#94A3B8;margin-top:10px;">Columns: Company, Contact, Email, Phone, LinkedIn, Website, Location, Country, Industry, Asset Interests, Source, Notes, Lead Score, EAMS Lead ID.</div>
+    </div>
+  </div>
+
   </div>
 </main>
 </div>
@@ -346,11 +790,42 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
   </div>
 </div></div>
 
+<!-- EDIT DRAWER -->
+<div class="sh-drawer-overlay" id="lpDrawer" style="display:none;" onclick="if(event.target===this)lpCloseDrawer()">
+  <div class="sh-drawer">
+    <div class="sh-drawer-head">
+      <h2 class="sh-drawer-title">✏ Edit lead</h2>
+      <button class="sh-ibtn sh-ibtn-d" onclick="lpCloseDrawer()" style="font-size:16px;">✕</button>
+    </div>
+    <div class="sh-drawer-body">
+      <div id="lpDrawerErr" style="display:none;" class="sh-flash sh-ferr" style="margin-bottom:12px;"></div>
+      <input type="hidden" id="lpDrawerId" />
+      <div class="sh-form-grid">
+        <div class="fg"><label class="fl">Company Name</label><input id="lpdeCompany" class="fi" /></div>
+        <div class="fg"><label class="fl">Contact Person</label><input id="lpdeContact" class="fi" /></div>
+        <div class="fg"><label class="fl">Phone</label><input id="lpdePhone" class="fi" /></div>
+        <div class="fg"><label class="fl">Email</label><input id="lpdeEmail" class="fi" /></div>
+        <div class="fg"><label class="fl">Location</label><input id="lpdeLocation" class="fi" /></div>
+        <div class="fg"><label class="fl">Country</label><input id="lpdeCountry" class="fi" /></div>
+        <div class="fg"><label class="fl">Website</label><input id="lpdeWebsite" class="fi" /></div>
+        <div class="fg"><label class="fl">LinkedIn</label><input id="lpdeLinkedin" class="fi" /></div>
+        <div class="fg"><label class="fl">Asset Interests</label><input id="lpdeAssets" class="fi" /></div>
+        <div class="fg"><label class="fl">Industry</label><select id="lpdeIndustry" class="fi" style="padding:10px 12px;"></select></div>
+        <div class="fg" style="grid-column:1/-1;"><label class="fl">Notes</label><textarea id="lpdeNotes" class="fi" rows="3"></textarea></div>
+      </div>
+    </div>
+    <div class="sh-drawer-foot">
+      <button class="btn btn-secondary" onclick="lpCloseDrawer()">Cancel</button>
+      <button class="btn btn-primary" onclick="lpSaveDrawer()" id="lpDrawerSaveBtn">✔ Save changes</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SB_URL='https://htygdhjhrjimrrttaqxd.supabase.co'
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0eWdkaGpocmppbXJydHRhcXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MTcwNzcsImV4cCI6MjA5MzI5MzA3N30.RscD_9R2S0YJee3uVQPaPZdJ06wAP78Xt4LMpi86h5o'
 const API='https://eams-t3js.onrender.com/api/v1'
-const LS_TOK='sh_portal_token',LS_USR='sh_portal_user'
+const LS_TOK='sh_portal_token',LS_USR='sh_portal_user',LS_DTOK='sh_django_tok'
 const sb=supabase.createClient(SB_URL,SB_KEY)
 const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',csvRows:[],charts:{}}
 
@@ -366,20 +841,48 @@ const activeBiz=()=>S.biz.find(b=>b.id===S.bizId)
 document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}))
 
 // AUTH
+function prewarmServer(){
+  // Silently wake the Render backend — fires on page load so it's warm by login time
+  fetch(`${API}/health/`,{method:'GET'}).catch(()=>{})
+}
+
 async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value
+  const email=document.getElementById('loginEmail').value.trim()
+  const pass=document.getElementById('loginPassword').value
   const er=document.getElementById('loginErr'),btn=document.getElementById('loginBtn')
   er.style.display='none';btn.textContent='Signing in…';btn.disabled=true
+  let warmTimer
   try{
+    // ── Fast path: Supabase auth (always-on, no cold start) ──
+    const{data:sbData,error:sbErr}=await sb.auth.signInWithPassword({email,password:pass})
+    if(!sbErr&&sbData?.session){
+      const tok=sbData.session.access_token
+      localStorage.setItem(LS_TOK,tok)
+      localStorage.setItem(LS_USR,JSON.stringify({email,name:sbData.user?.user_metadata?.full_name||sbData.user?.email||email}))
+      // Fetch Django token in background for Lead Operations (non-blocking)
+      fetchDjangoToken(email,pass)
+      showPortal();return
+    }
+    // ── Fallback: Django auth (may be slow on cold start) ──
+    warmTimer=setTimeout(()=>{btn.textContent='Waking up server… please wait'},3500)
     const res=await fetch(`${API}/user-management/login/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})})
-    const data=await res.json()
-    if(!res.ok)throw new Error(data.detail||data.message||'Invalid credentials')
-    const tok=data.token||data.access||data.key;if(!tok)throw new Error('No token received')
-    localStorage.setItem(LS_TOK,tok);localStorage.setItem(LS_USR,JSON.stringify({email,name:data.first_name||email}))
+    const d=await res.json()
+    if(!res.ok)throw new Error(d.detail||d.message||'Invalid credentials')
+    const tok=d.token||d.access||d.key;if(!tok)throw new Error('No token received')
+    localStorage.setItem(LS_TOK,tok);localStorage.setItem(LS_DTOK,tok)
+    localStorage.setItem(LS_USR,JSON.stringify({email,name:d.first_name||email}))
     showPortal()
   }catch(e){er.textContent=e.message;er.style.display='block';btn.textContent='Sign In →';btn.disabled=false}
+  finally{clearTimeout(warmTimer)}
 }
+
+function fetchDjangoToken(email,pass){
+  fetch(`${API}/user-management/login/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})})
+    .then(r=>r.json()).then(d=>{const t=d.token||d.access||d.key;if(t)localStorage.setItem(LS_DTOK,t)}).catch(()=>{})
+}
+
 function enterDemo(){localStorage.setItem(LS_TOK,'demo');localStorage.setItem(LS_USR,JSON.stringify({email:'demo@saleshunter.app',name:'Demo User'}));showPortal()}
+
 function showPortal(){
   document.getElementById('loginScreen').style.display='none'
   const p=document.getElementById('portal');p.style.display='flex'
@@ -387,8 +890,27 @@ function showPortal(){
   document.getElementById('sidebarUser').textContent=u.name||u.email||'User'
   init()
 }
-function logout(){localStorage.removeItem(LS_TOK);localStorage.removeItem(LS_USR);location.reload()}
-function checkAuth(){if(localStorage.getItem(LS_TOK))showPortal()}
+
+function logout(){
+  sb.auth.signOut().catch(()=>{})
+  localStorage.removeItem(LS_TOK);localStorage.removeItem(LS_DTOK);localStorage.removeItem(LS_USR)
+  location.reload()
+}
+
+async function checkAuth(){
+  // Restore from stored token (instant)
+  if(localStorage.getItem(LS_TOK)){showPortal();return}
+  // Restore from live Supabase session (no re-login needed after tab close)
+  const{data}=await sb.auth.getSession()
+  if(data?.session){
+    localStorage.setItem(LS_TOK,data.session.access_token)
+    const u=data.session.user
+    localStorage.setItem(LS_USR,JSON.stringify({email:u.email,name:u.user_metadata?.full_name||u.email}))
+    showPortal();return
+  }
+  // Not logged in — pre-warm the Render server in the background
+  prewarmServer()
+}
 
 // NAV
 function navTo(sec){
@@ -404,9 +926,17 @@ async function loadSection(sec){
     else if(sec==='businesses')await loadBusinesses()
     else if(sec==='products')await loadProducts()
     else if(sec==='agents')await loadAgents()
+    else if(sec==='registrations')await loadRegistrations()
     else if(sec==='leads')await loadLeads()
     else if(sec==='reports')await loadReports()
     else if(sec==='builder')await loadBuilder()
+    else if(sec==='leadpool')await lpLoad()
+    else if(sec==='upload')lpuInit()
+    else if(sec==='push')await pushInit()
+    else if(sec==='offers')await offersLoad()
+    else if(sec==='analytics')await analyticsLoad()
+    else if(sec==='aiagent')agInit()
+    else if(sec==='export')expInit()
   }catch(e){console.error(e);toast(e.message,'err')}finally{load(false)}
 }
 
@@ -713,8 +1243,969 @@ function setupRealtime(){
     .subscribe(status=>{if(dot)dot.style.background=status==='SUBSCRIBED'?'#22C55E':'#F59E0B'})
 }
 
+
+// ══════════════════════════════════════════════════════
+// REGISTRATIONS — Agent profiles + applications
+// ══════════════════════════════════════════════════════
+
+let REG_TAB = 'profiles';
+let REG_PROFILES = [];
+let REG_APPLICATIONS = [];
+let REG_SELECTED_STARS = 0;
+
+function regSwitchTab(tab) {
+  REG_TAB = tab;
+  document.getElementById('regPanelProfiles').style.display = tab === 'profiles' ? '' : 'none';
+  document.getElementById('regPanelApplications').style.display = tab === 'applications' ? '' : 'none';
+  document.getElementById('regTabProfiles').className = 'reg-tab' + (tab === 'profiles' ? ' reg-tab-active' : '');
+  document.getElementById('regTabApplications').className = 'reg-tab' + (tab === 'applications' ? ' reg-tab-active' : '');
+}
+
+async function loadRegistrations() {
+  // Load business filter dropdown
+  await lpLoadBizFilter('regBizFilter', document.getElementById('regBizFilter')?.value || '');
+
+  const statusFilter = document.getElementById('regStatusFilter')?.value || '';
+  const bizFilter = document.getElementById('regBizFilter')?.value || '';
+
+  // Load profiles
+  let profileQuery = sb.from('sh_agent_profiles')
+    .select('*,sh_agent_experience(*),sh_agent_education(*),sh_agent_applications(*,sh_businesses(id,name,color))')
+    .order('created_at', { ascending: false });
+  if (statusFilter) profileQuery = profileQuery.eq('profile_status', statusFilter);
+  if (bizFilter) profileQuery = profileQuery.eq('assigned_business_id', bizFilter);
+
+  const { data: profiles } = await profileQuery;
+  REG_PROFILES = profiles || [];
+
+  // Load applications
+  let appQuery = sb.from('sh_agent_applications')
+    .select('*,sh_agent_profiles(id,full_name,user_email,photo_url,rating),sh_businesses(id,name,color)')
+    .order('applied_at', { ascending: false });
+  if (bizFilter) appQuery = appQuery.eq('business_id', bizFilter);
+  if (statusFilter && statusFilter !== 'active') appQuery = appQuery.eq('status', statusFilter);
+
+  const { data: applications } = await appQuery;
+  REG_APPLICATIONS = applications || [];
+
+  renderRegProfiles();
+  renderRegApplications();
+}
+
+function renderRegProfiles() {
+  const tb = document.getElementById('regProfilesTbody');
+  if (!REG_PROFILES.length) {
+    tb.innerHTML = '<tr><td colspan="9"><div class="empty">No agent profiles found.</div></td></tr>';
+    return;
+  }
+  tb.innerHTML = REG_PROFILES.map(p => {
+    const exp = (p.sh_agent_experience || []).length;
+    const edu = (p.sh_agent_education || []).length;
+    const skills = (p.skills || []).slice(0, 3).join(', ') || '—';
+    const rating = Number(p.rating || 0).toFixed(1);
+    const stars = '★'.repeat(Math.round(p.rating || 0)) + '☆'.repeat(5 - Math.round(p.rating || 0));
+    const completion = p.profile_completion || 0;
+    const statusColor = p.profile_status === 'active' ? '#10B981' : p.profile_status === 'suspended' ? '#EF4444' : '#F59E0B';
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#FFCC00;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">
+            ${(p.full_name||'?').split(' ').map(w=>w[0]||'').slice(0,2).join('')}
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:13px;">${p.full_name||'—'}</div>
+            <div style="font-size:11px;color:#6B7280;">${p.user_email||''}</div>
+          </div>
+        </div>
+      </td>
+      <td style="font-size:12px;color:#374151;">${p.location||'—'}<br><span style="color:#9CA3AF;">${p.district||''}</span></td>
+      <td style="font-size:12px;text-align:center;">${exp ? `<span style="background:#EEF2FF;color:#4F46E5;padding:2px 8px;border-radius:6px;font-weight:600;">${exp} job${exp>1?'s':''}</span>` : '<span style="color:#9CA3AF;">None</span>'}</td>
+      <td style="font-size:12px;text-align:center;">${edu ? `<span style="background:#F0FDF4;color:#16A34A;padding:2px 8px;border-radius:6px;font-weight:600;">${edu} qual${edu>1?'s':''}</span>` : '<span style="color:#9CA3AF;">None</span>'}</td>
+      <td style="font-size:11px;color:#374151;max-width:120px;">${skills}</td>
+      <td style="text-align:center;">
+        <div style="color:#FFCC00;font-size:14px;">${stars}</div>
+        <div style="font-size:11px;color:#6B7280;">${rating} (${p.rating_count||0})</div>
+      </td>
+      <td style="text-align:center;">
+        <div style="background:#F3F4F6;border-radius:20px;height:6px;width:80px;overflow:hidden;margin:0 auto;">
+          <div style="background:${completion>=75?'#10B981':completion>=40?'#F59E0B':'#EF4444'};height:100%;width:${completion}%;border-radius:20px;"></div>
+        </div>
+        <div style="font-size:11px;color:#6B7280;margin-top:2px;">${completion}%</div>
+      </td>
+      <td><span style="background:${statusColor}22;color:${statusColor};padding:3px 10px;border-radius:8px;font-size:11px;font-weight:700;">${p.profile_status||'pending'}</span></td>
+      <td>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-xs" onclick="viewAgentProfile('${p.id}')">👁 View</button>
+          <button class="btn btn-ghost btn-xs" onclick="openRateModal('${p.id}','${(p.full_name||'').replace(/'/g,'')}')">⭐ Rate</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderRegApplications() {
+  const tb = document.getElementById('regApplicationsTbody');
+  if (!REG_APPLICATIONS.length) {
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty">No applications found.</div></td></tr>';
+    return;
+  }
+  tb.innerHTML = REG_APPLICATIONS.map(app => {
+    const profile = app.sh_agent_profiles || {};
+    const biz = app.sh_businesses || {};
+    const bizColor = biz.color || '#FFCC00';
+    const appliedDate = app.applied_at ? new Date(app.applied_at).toLocaleDateString() : '—';
+    const statusColors = { pending:'#F59E0B', approved:'#10B981', rejected:'#EF4444', withdrawn:'#9CA3AF' };
+    const sc = statusColors[app.status] || '#9CA3AF';
+    const actionBtns = app.status === 'pending' ? `
+      <button class="btn btn-xs" style="background:#D1FAE5;color:#065F46;" onclick="approveApplication('${app.id}','${profile.id}','${biz.id}','${(biz.name||'').replace(/'/g,'')}')">✓ Approve</button>
+      <button class="btn btn-xs" style="background:#FEE2E2;color:#991B1B;" onclick="rejectApplication('${app.id}')">✗ Reject</button>
+    ` : `<span style="color:#9CA3AF;font-size:12px;">Reviewed</span>`;
+    return `<tr>
+      <td>
+        <div style="font-weight:700;font-size:13px;">${profile.full_name||'—'}</div>
+        <div style="font-size:11px;color:#6B7280;">${profile.user_email||''}</div>
+      </td>
+      <td>
+        <span style="background:${bizColor}22;color:#374151;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid ${bizColor}44;">${biz.name||'—'}</span>
+      </td>
+      <td style="font-size:12px;color:#6B7280;max-width:200px;">${(app.cover_note||'No cover note').substring(0,100)}${(app.cover_note||'').length>100?'...':''}</td>
+      <td style="font-size:12px;color:#374151;">${appliedDate}</td>
+      <td><span style="background:${sc}22;color:${sc};padding:3px 10px;border-radius:8px;font-size:11px;font-weight:700;">${app.status}</span></td>
+      <td><div style="display:flex;gap:4px;">${actionBtns}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+async function approveApplication(appId, profileId, bizId, bizName) {
+  if (!confirm(`Approve this agent and assign them to ${bizName}?`)) return;
+  const now = new Date().toISOString();
+  await sb.from('sh_agent_applications').update({
+    status: 'approved', reviewed_at: now, reviewed_by: S.user?.email || 'Admin'
+  }).eq('id', appId);
+  await sb.from('sh_agent_profiles').update({
+    assigned_business_id: bizId, assigned_at: now,
+    assigned_by: S.user?.email || 'Admin', profile_status: 'active'
+  }).eq('id', profileId);
+  toast(`Agent approved & assigned to ${bizName}`, 'success');
+  loadRegistrations();
+}
+
+async function rejectApplication(appId) {
+  const notes = prompt('Reason for rejection (optional):') || '';
+  await sb.from('sh_agent_applications').update({
+    status: 'rejected', reviewed_at: new Date().toISOString(),
+    reviewed_by: S.user?.email || 'Admin', review_notes: notes
+  }).eq('id', appId);
+  toast('Application rejected', 'warn');
+  loadRegistrations();
+}
+
+async function viewAgentProfile(profileId) {
+  const profile = REG_PROFILES.find(p => p.id === profileId);
+  if (!profile) return;
+  const exp = profile.sh_agent_experience || [];
+  const edu = profile.sh_agent_education || [];
+  const apps = profile.sh_agent_applications || [];
+  const rating = Number(profile.rating || 0).toFixed(1);
+  const stars = '★'.repeat(Math.round(profile.rating || 0)) + '☆'.repeat(5 - Math.round(profile.rating || 0));
+
+  document.getElementById('apmTitle').textContent = profile.full_name || 'Agent Profile';
+  document.getElementById('apmBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <div style="width:64px;height:64px;border-radius:50%;background:#FFCC00;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;flex-shrink:0;">
+        ${(profile.full_name||'?').split(' ').map(w=>w[0]||'').slice(0,2).join('')}
+      </div>
+      <div>
+        <div style="font-size:18px;font-weight:800;">${profile.full_name||'—'}</div>
+        <div style="color:#6B7280;font-size:13px;">${profile.user_email||''} · ${profile.phone||''}</div>
+        <div style="color:#6B7280;font-size:12px;">📍 ${profile.location||'—'}, ${profile.district||''}</div>
+        <div style="color:#FFCC00;font-size:16px;margin-top:4px;">${stars} <span style="color:#374151;font-size:13px;">${rating} (${profile.rating_count||0} ratings)</span></div>
+      </div>
+    </div>
+    ${profile.bio ? `<div style="background:#F9FAFB;border-radius:10px;padding:14px;font-size:13px;color:#374151;margin-bottom:16px;">${profile.bio}</div>` : ''}
+    ${(profile.skills||[]).length ? `
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:700;font-size:12px;color:#9CA3AF;margin-bottom:8px;">SKILLS</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">${(profile.skills||[]).map(s=>`<span style="background:#EEF2FF;color:#4F46E5;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">${s}</span>`).join('')}</div>
+      </div>` : ''}
+    ${exp.length ? `
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:700;font-size:12px;color:#9CA3AF;margin-bottom:8px;">WORK EXPERIENCE</div>
+        ${exp.map(e=>`<div style="border-left:3px solid #FFCC00;padding:8px 12px;margin-bottom:8px;background:#FFFBEB;border-radius:0 8px 8px 0;">
+          <div style="font-weight:700;font-size:13px;">${e.role} @ ${e.company}</div>
+          <div style="font-size:12px;color:#6B7280;">${e.from_date||''} → ${e.is_current?'Present':e.to_date||''}</div>
+          ${e.description?`<div style="font-size:12px;color:#374151;margin-top:4px;">${e.description}</div>`:''}
+        </div>`).join('')}
+      </div>` : ''}
+    ${edu.length ? `
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:700;font-size:12px;color:#9CA3AF;margin-bottom:8px;">EDUCATION</div>
+        ${edu.map(e=>`<div style="border-left:3px solid #6366F1;padding:8px 12px;margin-bottom:8px;background:#EEF2FF;border-radius:0 8px 8px 0;">
+          <div style="font-weight:700;font-size:13px;">${e.qualification} — ${e.institution}</div>
+          <div style="font-size:12px;color:#6B7280;">${e.field_of_study||''} · ${e.year_completed||''} · ${e.grade||''}</div>
+        </div>`).join('')}
+      </div>` : ''}
+    ${profile.cv_url ? `<a href="${profile.cv_url}" target="_blank" class="btn btn-secondary" style="text-decoration:none;">📄 Download CV</a>` : ''}
+    <div style="margin-top:20px;display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="openRateModal('${profile.id}','${(profile.full_name||'').replace(/'/g,'')}');closeModal('agentProfileModal')">⭐ Rate This Agent</button>
+    </div>
+  `;
+  openModal('agentProfileModal');
+}
+
+function openRateModal(profileId, name) {
+  document.getElementById('rateProfileId').value = profileId;
+  REG_SELECTED_STARS = 0;
+  const row = document.getElementById('starRow');
+  row.innerHTML = [1,2,3,4,5].map(n => `<span class="rating-star" data-n="${n}" onclick="selectStar(${n})">★</span>`).join('');
+  document.getElementById('rateNote').value = '';
+  openModal('rateModal');
+}
+
+function selectStar(n) {
+  REG_SELECTED_STARS = n;
+  document.querySelectorAll('.rating-star').forEach(s => {
+    s.classList.toggle('filled', Number(s.dataset.n) <= n);
+  });
+}
+
+async function submitRating() {
+  if (!REG_SELECTED_STARS) { toast('Pick at least 1 star', 'warn'); return; }
+  const profileId = document.getElementById('rateProfileId').value;
+  const profile = REG_PROFILES.find(p => p.id === profileId);
+  if (!profile) return;
+  const count = (profile.rating_count || 0) + 1;
+  const newRating = (((profile.rating || 0) * (profile.rating_count || 0)) + REG_SELECTED_STARS) / count;
+  await sb.from('sh_agent_profiles').update({
+    rating: parseFloat(newRating.toFixed(1)), rating_count: count
+  }).eq('id', profileId);
+  closeModal('rateModal');
+  toast('Rating saved ⭐', 'success');
+  loadRegistrations();
+}
+
 async function init(){setupRealtime();await loadSection('dashboard')}
 checkAuth()
+
+/* ═══════════════════════════════════════════════
+   LEAD OPERATIONS MODULE
+═══════════════════════════════════════════════ */
+
+// ── Constants ──
+const INDS=[
+  {v:'',l:'All Industries'},{v:'construction',l:'Construction & Infrastructure'},
+  {v:'tourism',l:'Tourism & Hospitality'},{v:'mining',l:'Mining & Extractives'},
+  {v:'ngo',l:'NGO / Aid & Development'},{v:'government',l:'Government & Public Sector'},
+  {v:'education',l:'Education'},{v:'healthcare',l:'Healthcare & Medical'},
+  {v:'agriculture',l:'Agriculture & Agri-business'},{v:'events',l:'Events & Entertainment'},
+  {v:'technology',l:'Technology & ICT'},{v:'finance',l:'Finance & Banking'},
+  {v:'transport',l:'Transport & Logistics'},{v:'real_estate',l:'Real Estate & Property'},
+  {v:'energy',l:'Energy & Utilities'},{v:'retail',l:'Retail & Trade'},
+  {v:'manufacturing',l:'Manufacturing & Industry'},{v:'other',l:'Other'}
+]
+const SRCS=[
+  {v:'',l:'All sources'},{v:'tv_media',l:'TV / Broadcast Media'},
+  {v:'online_news',l:'Online News / Press'},{v:'social_media',l:'Social Media'},
+  {v:'government',l:'Government Tender'},{v:'tourism',l:'Tourism / Hospitality'},
+  {v:'agent_search',l:'AI Agent Search'},{v:'manual',l:'Manual Entry'},
+  {v:'csv_upload',l:'CSV / Bulk Upload'}
+]
+const IND_COLORS={construction:'#f97316',tourism:'#0891b2',mining:'#78716c',ngo:'#16a34a',
+  government:'#1d4ed8',education:'#7c3aed',healthcare:'#dc2626',agriculture:'#65a30d',
+  events:'#ec4899',technology:'#0ea5e9',finance:'#d97706',transport:'#6366f1',
+  real_estate:'#14b8a6',energy:'#eab308',retail:'#f43f5e',manufacturing:'#8b5cf6',other:'#6b7280'}
+const MAX_CTX=12000
+
+// ── State ──
+const LP={leads:[],total:0,page:1,industry:'',source:'',search:'',hasEmail:false,hasPhone:false,sortBy:'-created_at',selected:[],lastResult:null,clientId:''}
+const PUSH={clients:[],leads:[],leadsTotal:0,leadsPage:1,filterInd:'',pushMode:'sector',selLeads:[],selClients:[],inited:false,clientId:''}
+const OFFERS={page:1,clientId:''}
+const AG={lastResult:null}
+// Business list for filter dropdowns — loaded once from Supabase
+const BIZ_LIST=[]
+
+// ── Helpers ──
+const indLabel=v=>INDS.find(i=>i.v===v)?.l||v
+const srcLabel=v=>SRCS.find(s=>s.v===v)?.l||v
+const scoreBadge=s=>{if(s==null)return'<span class="sh-score sh-sa">—</span>';const t=s>=60?'sg':s>=35?'sa':'sr';return`<span class="sh-score sh-${t}">${s}</span>`}
+const sectorPill=ind=>{const c=IND_COLORS[ind]||'#6b7280';return`<span class="sh-spt" style="background:${c}22;color:${c}">${indLabel(ind)||ind}</span>`}
+const dots=(e,p,w)=>`<span class="sh-dots"><span class="sh-dot${e?' sh-dot-on':''}" title="${e||'No email'}">@</span><span class="sh-dot${p?' sh-dot-on':''}" title="${p||'No phone'}">☎</span><span class="sh-dot${w?' sh-dot-on':''}" title="${w||'No website'}">⬡</span></span>`
+const indOpts=(sel='',all=false)=>(all?INDS:INDS.slice(1)).map(i=>`<option value="${i.v}"${i.v===sel?' selected':''}>${i.l}</option>`).join('')
+const srcOpts=(sel='')=>SRCS.map(s=>`<option value="${s.v}"${s.v===sel?' selected':''}>${s.l}</option>`).join('')
+
+function shFlash(elId,msg,type='ok'){
+  const el=document.getElementById(elId);if(!el)return
+  el.className=`sh-flash sh-f${type}`
+  el.innerHTML=msg;el.style.display='flex'
+  if(type==='ok')setTimeout(()=>{el.style.display='none'},4000)
+}
+function shFlashClear(elId){const el=document.getElementById(elId);if(el)el.style.display='none'}
+
+// ── API helpers ──
+function apiHeaders(json=true){
+  // Prefer Django token for Lead Ops API; fall back to portal token
+  const tok=localStorage.getItem(LS_DTOK)||localStorage.getItem(LS_TOK)
+  const h={}
+  if(tok&&tok!=='demo')h['Authorization']=`Token ${tok}`
+  if(json)h['Content-Type']='application/json'
+  return h
+}
+async function apiGet(path,params={}){
+  const u=new URL(API+path)
+  Object.entries(params).forEach(([k,v])=>{if(v!==''&&v!=null)u.searchParams.set(k,String(v))})
+  const r=await fetch(u.toString(),{headers:apiHeaders()})
+  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+  return r.json()
+}
+async function apiPost(path,body,timeoutMs=30000){
+  const isFD=body instanceof FormData
+  const ctrl=new AbortController()
+  const tid=setTimeout(()=>ctrl.abort(),timeoutMs)
+  try{
+    const r=await fetch(API+path,{method:'POST',headers:apiHeaders(!isFD),body:isFD?body:JSON.stringify(body),signal:ctrl.signal})
+    if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+    return r.json()
+  }finally{clearTimeout(tid)}
+}
+async function apiPatch(path,body){
+  const r=await fetch(API+path,{method:'PATCH',headers:apiHeaders(),body:JSON.stringify(body)})
+  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+  return r.json()
+}
+async function apiDel(path,body){
+  const r=await fetch(API+path,{method:'DELETE',headers:apiHeaders(),body:JSON.stringify(body)})
+  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+  return r.json().catch(()=>({}))
+}
+async function apiGetBlob(path,params={}){
+  const u=new URL(API+path)
+  Object.entries(params).forEach(([k,v])=>{if(v!==''&&v!=null)u.searchParams.set(k,String(v))})
+  const r=await fetch(u.toString(),{headers:apiHeaders(false)})
+  if(!r.ok)throw new Error(r.statusText)
+  const truncated=r.headers.get('x-truncated')==='true'
+  const total=r.headers.get('x-total-count')
+  const blob=await r.blob()
+  return{blob,truncated,total}
+}
+function demoGuard(){
+  if(localStorage.getItem(LS_TOK)==='demo'){toast('Demo mode — connect a real account to use Lead Operations','err');return true}
+  return false
+}
+
+// ═══════════════════════════════════════════════
+// LEAD POOL
+// ═══════════════════════════════════════════════
+async function lpLoad(){
+  shFlashClear('lpFlash')
+  // populate industry / source selects once
+  const lpInd=document.getElementById('lpIndustry')
+  if(!lpInd.options.length)lpInd.innerHTML=indOpts(LP.industry,true)
+  const lpSrc=document.getElementById('lpSource')
+  if(!lpSrc.options.length)lpSrc.innerHTML=srcOpts(LP.source)
+  const lpfInd=document.getElementById('lpfIndustry')
+  if(!lpfInd.options.length)lpfInd.innerHTML=indOpts('other')
+  const lpdeInd=document.getElementById('lpdeIndustry')
+  if(!lpdeInd.options.length)lpdeInd.innerHTML=indOpts('other')
+  // populate business filter from already-loaded S.biz (or Supabase)
+  await lpLoadBizFilter('lpBusiness', LP.clientId)
+  await lpFetch()
+}
+
+// Fetches businesses into a dropdown; caches in BIZ_LIST for reuse
+async function lpLoadBizFilter(selId, currentVal=''){
+  const sel=document.getElementById(selId);if(!sel)return
+  if(sel.options.length>1)return  // already populated
+  // Use businesses already loaded by the main portal init
+  let biz=S.biz||[]
+  if(!biz.length&&!BIZ_LIST.length){
+    try{
+      const{data}=await sb.from('sh_businesses').select('id,name,client_id').order('name')
+      if(data)biz=data
+    }catch(_){}
+  }
+  if(BIZ_LIST.length===0&&biz.length)BIZ_LIST.push(...biz)
+  sel.innerHTML=`<option value="">🏢 All Businesses</option>`+
+    (BIZ_LIST.length?BIZ_LIST:biz).map(b=>`<option value="${b.client_id||b.id}"${(b.client_id||b.id)===currentVal?' selected':''}>${b.name}</option>`).join('')
+}
+async function lpFetch(){
+  if(demoGuard())return
+  const tbl=document.getElementById('lpTable')
+  tbl.innerHTML='<div class="empty">Loading…</div>'
+  try{
+    const d=await apiGet('/sales-hunter/admin/master-leads/',{
+      industry:LP.industry,source_type:LP.source,search:LP.search,page:LP.page,
+      has_email:LP.hasEmail?'1':'',has_phone:LP.hasPhone?'1':'',sort_by:LP.sortBy,
+      client_id:LP.clientId
+    })
+    LP.leads=d.leads||[];LP.total=d.total||0
+    lpRenderTable();lpRenderPgn();lpRenderQbar()
+  }catch(e){shFlash('lpFlash',e.message,'err')}
+}
+function lpSetFilter(){
+  LP.clientId=document.getElementById('lpBusiness').value
+  LP.industry=document.getElementById('lpIndustry').value
+  LP.source=document.getElementById('lpSource').value
+  LP.search=document.getElementById('lpSearch').value
+  LP.hasEmail=document.getElementById('lpEmail').checked
+  LP.hasPhone=document.getElementById('lpPhone').checked
+  LP.sortBy=document.getElementById('lpSort').value
+  LP.page=1;LP.selected=[]
+  lpFetch()
+}
+function lpRenderTable(){
+  const tbl=document.getElementById('lpTable')
+  document.getElementById('lpCount').textContent=`${LP.total.toLocaleString()} leads`
+  const archBtn=document.getElementById('lpArchBtn')
+  archBtn.style.display=LP.selected.length?'inline-flex':'none'
+  if(!LP.leads.length){tbl.innerHTML='<div class="empty">No leads match your filters.</div>';return}
+  const showBizCol=!LP.clientId  // show business column only when showing all businesses
+  tbl.innerHTML=`<div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
+    <thead><tr>
+      <th><input type="checkbox" onchange="lpToggleAll(this)" ${LP.selected.length===LP.leads.length&&LP.leads.length?'checked':''}></th>
+      <th>Score</th><th>Company</th><th>Contact</th><th>Industry</th><th>Source</th>${showBizCol?'<th>Business</th>':''}<th>Location</th><th>Asset Interests</th><th></th>
+    </tr></thead>
+    <tbody>${LP.leads.map(l=>{
+      const bizBadge=showBizCol&&l.client_name?`<span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#EEF2FF;color:#4F46E5;white-space:nowrap;">${l.client_name}</span>`:'—'
+      return`<tr class="${LP.selected.includes(l.id)?'sh-row-sel':''}">
+      <td><input type="checkbox" ${LP.selected.includes(l.id)?'checked':''} onchange="lpToggle('${l.id}')"></td>
+      <td>${scoreBadge(l.lead_score)}</td>
+      <td><div style="display:flex;align-items:center;gap:6px;"><strong>${l.company_name||'—'}</strong>${l.website?`<a href="${l.website}" target="_blank" style="color:#94A3B8;font-size:12px;">⬡</a>`:''}</div>${l.contact_person?`<div class="sh-sub">${l.contact_person}</div>`:''}</td>
+      <td>${dots(l.email,l.phone,l.website)}<div class="sh-sub">${l.email||l.phone||'—'}</div></td>
+      <td>${sectorPill(l.industry)}</td>
+      <td><span class="badge bgray" style="font-size:11px;">${srcLabel(l.source_type)}</span></td>
+      ${showBizCol?`<td>${bizBadge}</td>`:''}
+      <td class="sh-sub">${l.location||'—'}</td>
+      <td class="sh-sub" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.asset_interests||'—'}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="sh-ibtn sh-ibtn-e" onclick='lpOpenDrawer(${JSON.stringify(l)})' title="Edit">✏</button>
+        <button class="sh-ibtn sh-ibtn-d" onclick="lpArchive('${l.id}')" title="Archive">🗄</button>
+      </div></td>
+    </tr>`}).join('')}</tbody>
+  </table></div></div>`
+}
+function lpRenderQbar(){
+  const bar=document.getElementById('lpQbar')
+  const withContact=LP.leads.filter(l=>l.email||l.phone||l.website)
+  const noContact=LP.leads.filter(l=>!l.email&&!l.phone&&!l.website)
+  if(!LP.leads.length){bar.style.display='none';return}
+  bar.style.display='flex'
+  bar.innerHTML=`<span class="sh-qs">✉ ${withContact.length} of ${LP.leads.length} on this page have contact</span>${noContact.length?`<span class="sh-qs sh-qs-warn">⚠ ${noContact.length} missing all contact info</span>`:''}`
+}
+function lpRenderPgn(){
+  const pgn=document.getElementById('lpPgn')
+  const last=Math.ceil(LP.total/100)||1
+  if(last<=1){pgn.innerHTML='';return}
+  pgn.innerHTML=`<button class="btn btn-ghost btn-sm" ${LP.page===1?'disabled':''} onclick="lpPage(1)">«</button>
+    <button class="btn btn-ghost btn-sm" ${LP.page===1?'disabled':''} onclick="lpPage(${LP.page-1})">‹ Prev</button>
+    <span class="sh-pgi">Page ${LP.page} of ${last} · ${LP.total.toLocaleString()} total</span>
+    <button class="btn btn-ghost btn-sm" ${LP.page>=last?'disabled':''} onclick="lpPage(${LP.page+1})">Next ›</button>
+    <button class="btn btn-ghost btn-sm" ${LP.page>=last?'disabled':''} onclick="lpPage(${last})">»</button>`
+}
+function lpPage(p){LP.page=p;lpFetch()}
+function lpToggle(id){const i=LP.selected.indexOf(id);if(i>=0)LP.selected.splice(i,1);else LP.selected.push(id);lpRenderTable()}
+function lpToggleAll(cb){LP.selected=cb.checked?LP.leads.map(l=>l.id):[];lpRenderTable()}
+function lpToggleAdd(){
+  const f=document.getElementById('lpAddForm');f.style.display=f.style.display==='none'?'block':'none'
+}
+async function lpAddLead(){
+  if(demoGuard())return
+  const btn=document.getElementById('lpSaveBtn');btn.textContent='Saving…';btn.disabled=true
+  try{
+    await apiPost('/sales-hunter/admin/master-leads/',{
+      company_name:document.getElementById('lpfCompany').value.trim(),
+      contact_person:document.getElementById('lpfContact').value.trim()||null,
+      phone:document.getElementById('lpfPhone').value.trim()||null,
+      email:document.getElementById('lpfEmail').value.trim()||null,
+      location:document.getElementById('lpfLocation').value.trim()||null,
+      country:document.getElementById('lpfCountry').value.trim()||'Uganda',
+      website:document.getElementById('lpfWebsite').value.trim()||null,
+      linkedin:document.getElementById('lpfLinkedin').value.trim()||null,
+      asset_interests:document.getElementById('lpfAssets').value.trim()||null,
+      industry:document.getElementById('lpfIndustry').value,
+      notes:document.getElementById('lpfNotes').value.trim()||null,
+      source_type:'manual'
+    })
+    shFlash('lpFlash','Lead added successfully.','ok')
+    document.getElementById('lpAddForm').style.display='none'
+    LP.page=1;await lpFetch()
+  }catch(e){shFlash('lpFlash',e.message,'err')}
+  finally{btn.textContent='💾 Save Lead';btn.disabled=false}
+}
+async function lpArchive(id){
+  if(!confirm('Archive this lead? It will be removed from the pool.'))return
+  if(demoGuard())return
+  try{await apiDel('/sales-hunter/admin/master-leads/',{id});await lpFetch()}
+  catch(e){shFlash('lpFlash',e.message,'err')}
+}
+async function lpArchiveSelected(){
+  if(!LP.selected.length||!confirm(`Archive ${LP.selected.length} lead(s)?`))return
+  if(demoGuard())return
+  load(true)
+  try{await Promise.all(LP.selected.map(id=>apiDel('/sales-hunter/admin/master-leads/',{id}).catch(()=>{})));LP.selected=[];await lpFetch()}
+  catch(e){shFlash('lpFlash',e.message,'err')}
+  finally{load(false)}
+}
+// Drawer
+function lpOpenDrawer(l){
+  document.getElementById('lpDrawer').style.display='flex'
+  document.getElementById('lpDrawerErr').style.display='none'
+  document.getElementById('lpDrawerId').value=l.id
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''}
+  set('lpdeCompany',l.company_name);set('lpdeContact',l.contact_person)
+  set('lpdePhone',l.phone);set('lpdeEmail',l.email)
+  set('lpdeLocation',l.location);set('lpdeCountry',l.country||'Uganda')
+  set('lpdeWebsite',l.website);set('lpdeLinkedin',l.linkedin)
+  set('lpdeAssets',l.asset_interests);set('lpdeNotes',l.notes)
+  const ind=document.getElementById('lpdeIndustry')
+  if(!ind.options.length)ind.innerHTML=indOpts('other')
+  ind.value=l.industry||'other'
+}
+function lpCloseDrawer(){document.getElementById('lpDrawer').style.display='none'}
+async function lpSaveDrawer(){
+  if(demoGuard())return
+  const btn=document.getElementById('lpDrawerSaveBtn');btn.textContent='Saving…';btn.disabled=true
+  const errEl=document.getElementById('lpDrawerErr')
+  try{
+    const id=document.getElementById('lpDrawerId').value
+    const d=await apiPatch('/sales-hunter/admin/master-leads/',{
+      id,
+      company_name:document.getElementById('lpdeCompany').value.trim(),
+      contact_person:document.getElementById('lpdeContact').value.trim()||null,
+      phone:document.getElementById('lpdePhone').value.trim()||null,
+      email:document.getElementById('lpdeEmail').value.trim()||null,
+      location:document.getElementById('lpdeLocation').value.trim()||null,
+      country:document.getElementById('lpdeCountry').value.trim()||'Uganda',
+      website:document.getElementById('lpdeWebsite').value.trim()||null,
+      linkedin:document.getElementById('lpdeLinkedin').value.trim()||null,
+      asset_interests:document.getElementById('lpdeAssets').value.trim()||null,
+      industry:document.getElementById('lpdeIndustry').value,
+      notes:document.getElementById('lpdeNotes').value.trim()||null
+    })
+    const updated=d.lead||d
+    LP.leads=LP.leads.map(l=>l.id===updated.id?updated:l)
+    lpCloseDrawer();lpRenderTable()
+  }catch(e){
+    errEl.textContent=e.message;errEl.style.display='flex'
+  }finally{btn.textContent='✔ Save changes';btn.disabled=false}
+}
+
+// ═══════════════════════════════════════════════
+// UPLOAD
+// ═══════════════════════════════════════════════
+function lpuInit(){
+  const upInd=document.getElementById('upIndustry')
+  if(!upInd.options.length)upInd.innerHTML=indOpts('construction')
+  const upIndJ=document.getElementById('upIndustryJSON')
+  if(!upIndJ.options.length)upIndJ.innerHTML=indOpts('construction')
+}
+function upFileSelected(){
+  const f=document.getElementById('upFile').files[0]
+  document.getElementById('upFileName').textContent=f?f.name:'.csv only'
+}
+async function uploadCSV(){
+  if(demoGuard())return
+  const file=document.getElementById('upFile').files[0]
+  if(!file){toast('Select a CSV file first','err');return}
+  const btn=document.getElementById('upCSVBtn');btn.textContent='Uploading…';btn.disabled=true
+  shFlashClear('upFlash')
+  try{
+    const fd=new FormData()
+    fd.append('file',file)
+    fd.append('industry',document.getElementById('upIndustry').value)
+    fd.append('source_type','csv_upload')
+    const d=await apiPost('/sales-hunter/admin/upload-leads/',fd,60000)
+    shFlash('upFlash',`✅ ${d.created} created · ℹ ${d.skipped_dupe} duplicates skipped · ⚠ ${d.skipped_incomplete} incomplete rows skipped`,'ok')
+    document.getElementById('upFile').value=''
+    document.getElementById('upFileName').textContent='.csv only'
+  }catch(e){shFlash('upFlash',e.message,'err')}
+  finally{btn.textContent='⬆ Upload CSV';btn.disabled=false}
+}
+async function uploadJSON(){
+  if(demoGuard())return
+  const raw=document.getElementById('upJSON').value.trim()
+  let parsed;try{parsed=JSON.parse(raw)}catch{toast('Invalid JSON','err');return}
+  const btn=document.getElementById('upJSONBtn');btn.textContent='Saving…';btn.disabled=true
+  shFlashClear('upFlash')
+  try{
+    const d=await apiPost('/sales-hunter/admin/upload-leads/',{
+      industry:document.getElementById('upIndustryJSON').value,
+      leads:parsed,source_type:'csv_upload'
+    },60000)
+    shFlash('upFlash',`✅ ${d.created} created · ℹ ${d.skipped_dupe} duplicates · ⚠ ${d.skipped_incomplete} incomplete`,'ok')
+    document.getElementById('upJSON').value=''
+  }catch(e){shFlash('upFlash',e.message,'err')}
+  finally{btn.textContent='✔ Save Leads';btn.disabled=false}
+}
+function downloadCSVTemplate(){
+  const cols='company_name,contact_person,phone,email,location,country,website,linkedin,asset_interests,notes\n'
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([cols],{type:'text/csv'}))
+  a.download='eams_leads_template.csv';a.click()
+}
+
+// ═══════════════════════════════════════════════
+// PUSH TO CLIENTS
+// ═══════════════════════════════════════════════
+async function pushInit(){
+  if(demoGuard())return
+  const pInd=document.getElementById('pushInd')
+  if(!pInd.options.length)pInd.innerHTML=indOpts('',true)
+  await lpLoadBizFilter('pushBusiness', PUSH.clientId)
+  if(!PUSH.inited){
+    try{const d=await apiGet('/sales-hunter/admin/clients/');PUSH.clients=d.clients||[]}
+    catch(e){shFlash('pushFlash',e.message,'err')}
+    PUSH.inited=true
+  }
+  pushRenderClients();await pushLoadLeads()
+}
+function pushBizFilter(){
+  PUSH.clientId=document.getElementById('pushBusiness').value
+  PUSH.inited=false
+  pushInit()
+}
+async function pushLoadLeads(){
+  if(demoGuard())return
+  PUSH.filterInd=document.getElementById('pushInd').value
+  PUSH.leadsPage=1;PUSH.selLeads=[]
+  const panel=document.getElementById('pushLeadsPanel')
+  panel.innerHTML='<div class="empty">Loading…</div>'
+  try{
+    const d=await apiGet('/sales-hunter/admin/master-leads/',{industry:PUSH.filterInd,page:PUSH.leadsPage,sort_by:'-created_at',client_id:PUSH.clientId})
+    PUSH.leads=d.leads||[];PUSH.leadsTotal=d.total||0
+  }catch(e){panel.innerHTML=`<div class="empty">${e.message}</div>`;return}
+  pushRender()
+}
+function setPushMode(m){
+  PUSH.pushMode=m
+  document.getElementById('pushModeS').className='sh-mbtn'+(m==='sector'?' sh-mbtn-a':'')
+  document.getElementById('pushModeH').className='sh-mbtn'+(m==='selected'?' sh-mbtn-a':'')
+  pushRender()
+}
+function pushRender(){
+  const panel=document.getElementById('pushLeadsPanel')
+  const qualOnly=document.getElementById('pushQuality').checked
+  const ind=document.getElementById('pushInd')?.options[document.getElementById('pushInd').selectedIndex]?.text||'all industries'
+  if(PUSH.pushMode==='sector'){
+    panel.innerHTML=`<div class="sh-sector-sum">⚡ Will push <strong>all${qualOnly?' contactable':''}</strong> leads in <strong>${ind}</strong>. <span class="sh-sub">(${PUSH.leadsTotal.toLocaleString()} in pool)</span></div>`
+  }else{
+    panel.innerHTML=`<div style="font-size:12px;color:#64748B;margin-bottom:6px;">${PUSH.selLeads.length?`${PUSH.selLeads.length} lead(s) selected.`:'Tick leads to handpick, or switch to Sector push.'}</div>
+    <div class="sh-scroll-list">${PUSH.leads.map(l=>`
+      <label class="sh-crow">
+        <input type="checkbox" ${PUSH.selLeads.includes(l.id)?'checked':''} onchange="pushToggleLead('${l.id}')">
+        <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:13px;">${l.company_name}</div>
+        <div class="sh-sub">${l.email||l.phone||'No contact'}</div></div>
+        ${scoreBadge(l.lead_score)} ${sectorPill(l.industry)}
+      </label>`).join('')}</div>`
+  }
+  // push button label
+  const allC=document.getElementById('pushAllClients')?.checked
+  const btn=document.getElementById('pushBtn')
+  const leadsLabel=PUSH.pushMode==='selected'?`${PUSH.selLeads.length} lead(s)`:'sector'
+  const clientLabel=allC?'all tenants':`${PUSH.selClients.length} client(s)`
+  btn.textContent=`📤 Push ${leadsLabel} to ${clientLabel}`
+}
+function pushToggleLead(id){const i=PUSH.selLeads.indexOf(id);if(i>=0)PUSH.selLeads.splice(i,1);else PUSH.selLeads.push(id);pushRender()}
+function pushRenderClients(){
+  const list=document.getElementById('pushClientsList')
+  list.innerHTML=PUSH.clients.map(c=>`
+    <label class="sh-crow">
+      <input type="checkbox" ${PUSH.selClients.includes(String(c.id))?'checked':''} onchange="pushToggleClient('${c.id}')">
+      <span style="flex:1;font-weight:600;">${c.name}</span>
+      <span class="sh-sub">${c.industry||c.country||''}</span>
+    </label>`).join('')||'<div class="empty" style="padding:16px;">No clients found.</div>'
+}
+function pushToggleClient(id){
+  const i=PUSH.selClients.indexOf(String(id));if(i>=0)PUSH.selClients.splice(i,1);else PUSH.selClients.push(String(id))
+  pushRender()
+}
+async function doPush(){
+  if(demoGuard())return
+  const allClients=document.getElementById('pushAllClients').checked
+  const qualOnly=document.getElementById('pushQuality').checked
+  if(PUSH.pushMode==='selected'&&!PUSH.selLeads.length){shFlash('pushFlash','Select at least one lead.','err');return}
+  if(!PUSH.selClients.length&&!allClients){shFlash('pushFlash','Select at least one client or enable "Push to all tenants".','err');return}
+  const btn=document.getElementById('pushBtn');btn.disabled=true;btn.textContent='Pushing…'
+  shFlashClear('pushFlash')
+  try{
+    const body={
+      lead_ids:PUSH.pushMode==='selected'?PUSH.selLeads:undefined,
+      industry:PUSH.pushMode==='sector'?PUSH.filterInd||undefined:undefined,
+      client_ids:allClients?[]:PUSH.selClients,
+      all_clients:allClients,
+      push_note:document.getElementById('pushNote').value.trim()||undefined,
+      quality_only:qualOnly
+    }
+    const d=await apiPost('/sales-hunter/admin/push-leads/',body,60000)
+    shFlash('pushFlash',d.message||'Leads pushed successfully.','ok')
+    PUSH.selLeads=[];PUSH.selClients=[];pushRender()
+  }catch(e){shFlash('pushFlash',e.message,'err')}
+  finally{btn.disabled=false;pushRender()}
+}
+
+// ═══════════════════════════════════════════════
+// OFFERS
+// ═══════════════════════════════════════════════
+function offersBizFilter(){
+  OFFERS.clientId=document.getElementById('offersBusiness').value
+  OFFERS.page=1;offersLoad()
+}
+async function offersLoad(){
+  if(demoGuard())return
+  shFlashClear('offersFlash')
+  await lpLoadBizFilter('offersBusiness', OFFERS.clientId)
+  const clientF=OFFERS.clientId||document.getElementById('offersClient')?.value||''
+  const statusF=document.getElementById('offersStatus')?.value||''
+  const tbl=document.getElementById('offersTable')
+  tbl.innerHTML='<div class="empty">Loading…</div>'
+  try{
+    const[d,st]=await Promise.all([
+      apiGet('/sales-hunter/admin/offers/',{client_id:clientF,is_purchased:statusF,page:OFFERS.page}),
+      apiGet('/sales-hunter/admin/stats/',{client_id:clientF})
+    ])
+    const offers=d.offers||[],total=d.total||0,stats=st.stats||{}
+    // KPIs
+    const pushed=stats.total_offers_pushed||0,bought=stats.total_offers_purchased||0
+    const conv=pushed?Math.round(bought/pushed*100):0
+    document.getElementById('offersKPIs').innerHTML=`
+      <div class="sh-okpi">📤<div class="sh-okpi-val">${pushed.toLocaleString()}</div><div class="sh-okpi-lbl">Pushed</div></div>
+      <div class="sh-okpi sh-okpi-g">✅<div class="sh-okpi-val">${bought.toLocaleString()}</div><div class="sh-okpi-lbl">Purchased</div></div>
+      <div class="sh-okpi sh-okpi-a">📈<div class="sh-okpi-val">${conv}%</div><div class="sh-okpi-lbl">Conversion</div></div>
+      <div class="sh-okpi">🔓<div class="sh-okpi-val">${(pushed-bought).toLocaleString()}</div><div class="sh-okpi-lbl">Pending</div></div>`
+    if(!offers.length){tbl.innerHTML='<div class="empty">No offers match this filter.</div>';return}
+    tbl.innerHTML=`<div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
+      <thead><tr><th>Lead</th><th>Client ID</th><th>Industry</th><th>Note</th><th>Pushed</th><th>Status</th><th></th></tr></thead>
+      <tbody>${offers.map(o=>`<tr>
+        <td><strong>${o.lead_company||'—'}</strong><div class="sh-sub">${o.lead_location||''}</div></td>
+        <td><code style="font-family:monospace;font-size:12px;">${o.client_id}</code></td>
+        <td>${sectorPill(o.lead_industry)}</td>
+        <td class="sh-sub" style="max-width:160px;">${o.push_note||'—'}</td>
+        <td class="sh-sub">${new Date(o.pushed_at).toLocaleDateString()}</td>
+        <td><span class="badge ${o.is_purchased?'bg':'bgray'}" style="font-size:11px;">${o.is_purchased?'✅ Purchased':'Pending'}</span></td>
+        <td><button class="sh-ibtn sh-ibtn-d" onclick="offersRemove('${o.id}')" title="Remove">🗑</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div></div>`
+    // pagination
+    const pgn=document.getElementById('offersPgn'),last=Math.ceil(total/50)||1
+    pgn.innerHTML=last<=1?'':
+      `<button class="btn btn-ghost btn-sm" ${OFFERS.page===1?'disabled':''} onclick="offersPage(${OFFERS.page-1})">‹ Prev</button>
+       <span class="sh-pgi">Page ${OFFERS.page} of ${last}</span>
+       <button class="btn btn-ghost btn-sm" ${OFFERS.page>=last?'disabled':''} onclick="offersPage(${OFFERS.page+1})">Next ›</button>`
+  }catch(e){shFlash('offersFlash',e.message,'err')}
+}
+function offersPage(p){OFFERS.page=p;offersLoad()}
+async function offersRemove(id){
+  if(!confirm('Remove this offer?'))return
+  if(demoGuard())return
+  try{await apiDel('/sales-hunter/admin/offers/',{id});offersLoad()}
+  catch(e){shFlash('offersFlash',e.message,'err')}
+}
+
+// ═══════════════════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════════════════
+function analyticsBizFilter(){
+  const val=document.getElementById('analyticsBusiness').value
+  analyticsLoad(val)
+}
+async function analyticsLoad(clientIdOverride){
+  if(demoGuard())return
+  const clientId=clientIdOverride!==undefined?clientIdOverride:(document.getElementById('analyticsBusiness')?.value||'')
+  await lpLoadBizFilter('analyticsBusiness', clientId)
+  const body=document.getElementById('analyticsBody')
+  body.innerHTML='<div class="empty">Loading…</div>'
+  try{
+    const{stats}=await apiGet('/sales-hunter/admin/stats/',{client_id:clientId})
+    const total=stats.total_master_leads||1
+    const qPct=n=>Math.round((n/total)*100)
+    const kpis=[
+      {ico:'🗄',a:'v',label:'Master leads',val:stats.total_master_leads},
+      {ico:'🔓',a:'c',label:'Leads sold',val:stats.total_purchased_leads},
+      {ico:'👥',a:'b',label:'Clients using',val:stats.total_clients_using},
+      {ico:'💳',a:'a',label:'Credits sold',val:stats.total_credits_sold},
+      {ico:'💵',a:'g',label:'Revenue (USD)',val:`$${Number(stats.total_revenue_usd||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`},
+      {ico:'📤',a:'v',label:'Offers pushed',val:stats.total_offers_pushed},
+      {ico:'✅',a:'g',label:'Offers converted',val:stats.total_offers_purchased},
+      {ico:'📈',a:'a',label:'Conversion rate',val:`${stats.offer_conversion_rate??0}%`}
+    ]
+    const qualRows=[
+      {label:'Have email',n:stats.leads_with_email,color:'#0891b2'},
+      {label:'Have phone',n:stats.leads_with_phone,color:'#7c3aed'},
+      {label:'Have both',n:stats.leads_with_both,color:'#16a34a'},
+      {label:'No contact',n:stats.leads_with_no_contact,color:'#dc2626'},
+    ]
+    const indRows=(stats.leads_by_industry||[]).slice(0,12)
+    const srcRows=stats.leads_by_source||[]
+    const indMax=Math.max(...indRows.map(r=>r.count),1)
+    const srcMax=Math.max(...srcRows.map(r=>r.count),1)
+    body.innerHTML=`
+      <div class="sh-kpi-grid">${kpis.map(k=>`
+        <div class="sh-kpi-card">
+          <div class="sh-kico sh-kico-${k.a}">${k.ico}</div>
+          <div class="sh-kval">${k.val??'—'}</div>
+          <div class="sh-klbl">${k.label}</div>
+        </div>`).join('')}</div>
+      <div class="card" style="margin-bottom:20px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:14px;">Lead pool quality</div>
+        <div class="sh-qual-bkdn">${qualRows.map(r=>`
+          <div class="sh-qual-row">
+            <span class="sh-qual-lbl">${r.label}</span>
+            <div class="sh-btrack"><div class="sh-bfill" style="width:${qPct(r.n)}%;background:${r.color};"></div></div>
+            <span class="sh-qual-val">${(r.n||0).toLocaleString()} <span style="opacity:.5;font-size:11px;">(${qPct(r.n)}%)</span></span>
+          </div>`).join('')}</div>
+      </div>
+      <div class="sh-charts-row">
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">Leads by industry</div>
+          <div class="sh-hbchart">${indRows.map(r=>`
+            <div class="sh-hbrow">
+              <span class="sh-hblbl">${indLabel(r.industry)}</span>
+              <div class="sh-btrack"><div class="sh-bfill" style="width:${Math.round(r.count/indMax*100)}%;background:${IND_COLORS[r.industry]||'#6b7280'};"></div></div>
+              <span class="sh-hbcnt">${r.count}</span>
+            </div>`).join('')||'<div class="empty" style="padding:16px;">No data.</div>'}</div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">Leads by source</div>
+          <div class="sh-hbchart">${srcRows.map(r=>`
+            <div class="sh-hbrow">
+              <span class="sh-hblbl">${srcLabel(r.source_type)}</span>
+              <div class="sh-btrack"><div class="sh-bfill" style="width:${Math.round(r.count/srcMax*100)}%;background:#7c3aed;"></div></div>
+              <span class="sh-hbcnt">${r.count}</span>
+            </div>`).join('')||'<div class="empty" style="padding:16px;">No data.</div>'}</div>
+        </div>
+      </div>`
+  }catch(e){body.innerHTML=`<div class="empty">${e.message}</div>`}
+}
+
+// ═══════════════════════════════════════════════
+// AI AGENT
+// ═══════════════════════════════════════════════
+function agInit(){
+  const agInd=document.getElementById('agIndustry')
+  if(!agInd.options.length)agInd.innerHTML=`<option value="">Search all (any sector)</option>`+INDS.slice(1).map(i=>`<option value="${i.v}">${i.l}</option>`).join('')
+  agUpdateCtxLen()
+}
+function agUpdateCtxLen(){
+  const len=document.getElementById('agCtx').value.length
+  const el=document.getElementById('agCtxLen')
+  el.className='sh-ctx-len'+(len>=MAX_CTX*.9?' sh-ctx-warn':'')
+  el.textContent=`${len.toLocaleString()} / ${MAX_CTX.toLocaleString()}`
+}
+function agAppendCtx(){
+  if(!AG.lastResult?.leads?.length)return
+  const lines=AG.lastResult.leads.map(l=>`- ${l.company_name}${l.country?` (${l.country})`:''}`)
+  const block=`\n--- run ${new Date().toISOString().slice(0,16)} ---\n${lines.join('\n')}\n`
+  const ta=document.getElementById('agCtx')
+  ta.value=(ta.value+block).slice(-MAX_CTX);agUpdateCtxLen()
+}
+async function runAgent(){
+  if(demoGuard())return
+  const query=document.getElementById('agQuery').value.trim()
+  if(!query){shFlash('agentFlash','Enter a focus query.','err');return}
+  const modes=['agCloud','agSeek','agStriker','agHunter'].filter(id=>document.getElementById(id).checked).map(id=>id.replace('ag','').toLowerCase())
+  if(!modes.length){shFlash('agentFlash','Enable at least one discovery engine.','err');return}
+  const btn=document.getElementById('agRunBtn');btn.disabled=true;btn.textContent='Running agent… (may take up to 2 min)'
+  shFlashClear('agentFlash')
+  document.getElementById('agResults').style.display='none'
+  try{
+    const d=await apiPost('/sales-hunter/admin/run-agent/',{
+      query,
+      country:document.getElementById('agCountry').value.trim()||'Uganda',
+      location:document.getElementById('agLocation').value.trim(),
+      industry:document.getElementById('agIndustry').value,
+      search_mode:document.getElementById('agMode').value,
+      max_leads:Number(document.getElementById('agMax').value)||30,
+      discovery_modes:modes,
+      enable_maps_business:document.getElementById('agMaps').checked,
+      maps_business_cap:Math.min(50,Math.max(1,Number(document.getElementById('agMapsCap').value)||50)),
+      enable_website_scrape:document.getElementById('agScrape').checked,
+      enable_social_listings:document.getElementById('agSocial').checked,
+      tender_precision:document.getElementById('agTender').checked,
+      session_context:document.getElementById('agCtx').value.trim()
+    },160000)
+    if(d.status===200||d.leads){
+      AG.lastResult=d
+      document.getElementById('agAppendBtn').disabled=false
+      const leads=d.leads||[]
+      const withEmail=leads.filter(l=>l.email),withContact=leads.filter(l=>l.email||l.phone||l.website||l.linkedin)
+      const res=document.getElementById('agResults')
+      res.style.display='flex'
+      res.innerHTML=`
+        <div class="sh-agent-head">
+          <div style="font-size:20px;">✅</div>
+          <div><strong>${d.message||`${leads.length} leads discovered`}</strong>
+          <div class="sh-sub">Source: ${d.source||'AI Agent'}</div></div>
+        </div>
+        <div class="sh-agent-qual">
+          <span class="sh-badge sh-badge-green">✉ ${withEmail.length} have email</span>
+          <span class="sh-badge sh-badge-blue">☎ ${withContact.length} have contact</span>
+          ${leads.length-withContact.length>0?`<span class="sh-badge sh-badge-amber">⚠ ${leads.length-withContact.length} contactless (still saved)</span>`:''}
+          ${d.workflow?`<span class="sh-badge sh-badge-gray">🗺 ${d.workflow.maps_listings??0} maps · 🌐 ${d.workflow.ddg_snippets??0} web snippets</span>`:''}
+        </div>
+        <div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
+          <thead><tr><th>Score</th><th>Company</th><th>Contact</th><th>Location</th><th>Industry</th><th>Evidence</th></tr></thead>
+          <tbody>${leads.map(l=>`<tr>
+            <td>${scoreBadge(l.lead_score)}</td>
+            <td><strong>${l.company_name}</strong>${l.website?`<div class="sh-sub">${l.website}</div>`:''}</td>
+            <td>${dots(l.email,l.phone,l.website)}<div class="sh-sub">${l.contact_person||'—'}</div><div class="sh-sub">${l.email||l.phone||'—'}</div></td>
+            <td class="sh-sub">${l.location||'—'}${l.country?` · ${l.country}`:''}</td>
+            <td>${sectorPill(l.industry)}</td>
+            <td class="sh-sub" style="max-width:200px;">${l.source_snippet||l.notes||'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div></div>`
+    }else{shFlash('agentFlash',d.message||'Agent run failed.','err')}
+  }catch(e){shFlash('agentFlash',e.message,'err')}
+  finally{btn.disabled=false;btn.textContent='✨ Run into master pool'}
+}
+
+// ═══════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════
+function expInit(){
+  const expInd=document.getElementById('expIndustry')
+  if(!expInd.options.length)expInd.innerHTML=indOpts('',true)
+  const expSrc=document.getElementById('expSource')
+  if(!expSrc.options.length)expSrc.innerHTML=srcOpts('')
+}
+async function expPreview(){
+  if(demoGuard())return
+  const btn=document.getElementById('expPreviewBtn');btn.textContent='Counting…';btn.disabled=true
+  const res=document.getElementById('expPreviewResult');res.style.display='none'
+  try{
+    const d=await apiGet('/sales-hunter/admin/master-leads/',{
+      industry:document.getElementById('expIndustry').value,
+      source_type:document.getElementById('expSource').value,
+      search:document.getElementById('expSearch').value.trim(),
+      has_email:document.getElementById('expEmail').checked?'1':'',
+      has_phone:document.getElementById('expPhone').checked?'1':'',
+      page:1
+    })
+    const t=d.total||0
+    res.className='sh-chip'+(t>5000?' sh-chip-warn':'')
+    res.textContent=t>5000?`⚠ ${t.toLocaleString()} matches — export capped at 5,000`:`${t.toLocaleString()} leads will be exported`
+    res.style.display='inline-flex'
+  }catch(e){shFlash('exportFlash',e.message,'err')}
+  finally{btn.textContent='🔍 Preview count';btn.disabled=false}
+}
+async function exportCSV(){
+  if(demoGuard())return
+  const btn=document.getElementById('expBtn');btn.textContent='Preparing…';btn.disabled=true
+  shFlashClear('exportFlash')
+  try{
+    const params={
+      industry:document.getElementById('expIndustry').value,
+      source_type:document.getElementById('expSource').value,
+      search:document.getElementById('expSearch').value.trim(),
+      has_email:document.getElementById('expEmail').checked?'1':'',
+      has_phone:document.getElementById('expPhone').checked?'1':''
+    }
+    const{blob,truncated,total}=await apiGetBlob('/sales-hunter/admin/export-leads/',params)
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eams_leads_export.csv';a.click()
+    URL.revokeObjectURL(a.href)
+    shFlash('exportFlash',truncated
+      ?`⚠ File contains 5,000 rows (pool has ${Number(total).toLocaleString()} — refine filters to export a subset). Download started.`
+      :'✅ Download started.','ok')
+  }catch(e){shFlash('exportFlash',e.message,'err')}
+  finally{btn.textContent='⬇ Download CSV';btn.disabled=false}
+}
 </script>
 </body>
 </html>
