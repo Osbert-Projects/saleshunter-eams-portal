@@ -7,22 +7,30 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
+:root{
+  --bg:#0B0F19;--bg-elevated:#111827;--surface:rgba(17,24,39,.88);--surface-solid:#1F2937;
+  --border:rgba(99,102,241,.18);--border-subtle:rgba(148,163,184,.12);
+  --text:#E5E7EB;--text-muted:#94A3B8;--text-dim:#64748B;
+  --accent:#6366F1;--accent-glow:rgba(99,102,241,.35);--gold:#FFCC00;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+#networkBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;}
+#portal,#loginScreen{position:relative;z-index:1;}
 .sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
-.nav-item:hover{background:#1F2937;color:#F9FAFB;}.nav-item.active{background:#FFCC00;color:#111827;font-weight:700;}
-.card{background:white;border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.nav-item:hover{background:#1F2937;color:#F9FAFB;}.nav-item.active{background:var(--accent);color:#fff;font-weight:700;box-shadow:0 0 20px var(--accent-glow);}
+.card{background:var(--surface);backdrop-filter:blur(12px);border:1px solid var(--border-subtle);border-radius:16px;padding:20px;box-shadow:0 4px 24px rgba(0,0,0,.25);}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
-.btn-primary{background:#FFCC00;color:#111827;}.btn-primary:hover{background:#F5C400;}
-.btn-secondary{background:#F3F4F6;color:#374151;}.btn-secondary:hover{background:#E5E7EB;}
-.btn-danger{background:#FEE2E2;color:#DC2626;}.btn-danger:hover{background:#FECACA;}
-.btn-ghost{background:transparent;color:#6B7280;border:1.5px solid #E5E7EB;}.btn-ghost:hover{background:#F9FAFB;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7C3AED);color:#fff;box-shadow:0 2px 12px var(--accent-glow);}.btn-primary:hover{filter:brightness(1.08);}
+.btn-secondary{background:var(--surface-solid);color:var(--text);border:1px solid var(--border-subtle);}.btn-secondary:hover{background:#374151;}
+.btn-danger{background:rgba(220,38,38,.15);color:#FCA5A5;border:1px solid rgba(220,38,38,.3);}.btn-danger:hover{background:rgba(220,38,38,.25);}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1.5px solid var(--border-subtle);}.btn-ghost:hover{background:rgba(99,102,241,.08);color:var(--text);}
 .btn-sm{padding:6px 12px;font-size:12px;border-radius:8px;}.btn-xs{padding:4px 8px;font-size:11px;border-radius:6px;}
 .dt{width:100%;border-collapse:collapse;}
-.dt th{text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;padding:10px 14px;border-bottom:1.5px solid #F3F4F6;background:#F9FAFB;}
-.dt td{padding:12px 14px;font-size:13px;color:#374151;border-bottom:1px solid #F9FAFB;vertical-align:middle;}
-.dt tr:last-child td{border-bottom:none;}.dt tr:hover td{background:#FFFEF5;}
+.dt th{text-align:left;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;padding:10px 14px;border-bottom:1.5px solid var(--border-subtle);background:rgba(15,23,42,.6);}
+.dt td{padding:12px 14px;font-size:13px;color:var(--text);border-bottom:1px solid var(--border-subtle);vertical-align:middle;}
+.dt tr:last-child td{border-bottom:none;}.dt tr:hover td{background:rgba(99,102,241,.06);}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;}
 .bg{background:#DCFCE7;color:#15803D;}.br{background:#FEE2E2;color:#B91C1C;}
 .by{background:#FEF9C3;color:#92400E;}.bb{background:#DBEAFE;color:#1D4ED8;}
@@ -31,20 +39,20 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 .pb{height:100%;border-radius:99px;transition:width .5s;}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-bg.open{display:flex;}
-.modal-box{background:white;border-radius:20px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.3);}
+.modal-box{background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.5);}
 .modal-box.wide{max-width:640px;}
-.mtitle{font-size:18px;font-weight:800;color:#111827;margin-bottom:20px;}
-.fg{margin-bottom:14px;}.fl{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;}
-.fi{width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;color:#111827;outline:none;transition:border-color .15s;background:white;}
-.fi:focus{border-color:#FFCC00;}.fi-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.mtitle{font-size:18px;font-weight:800;color:var(--text);margin-bottom:20px;}
+.fg{margin-bottom:14px;}.fl{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:5px;}
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--border-subtle);border-radius:10px;font-size:13px;color:var(--text);outline:none;transition:border-color .15s;background:rgba(15,23,42,.5);}
+.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15);}.fi-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 #toast{position:fixed;bottom:24px;right:24px;z-index:1000;padding:13px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s;box-shadow:0 8px 25px rgba(0,0,0,.15);min-width:200px;}
 #toast.show{opacity:1;}
 #loadBar{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FFCC00,#FF8F00,#FFCC00);background-size:200% 100%;animation:shim 1.5s infinite;z-index:500;display:none;}
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.biz-tab{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;background:#F3F4F6;color:#6B7280;}
-.biz-tab:hover{background:#E5E7EB;}
+.biz-tab{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border-subtle);cursor:pointer;transition:all .15s;background:rgba(15,23,42,.5);color:var(--text-muted);}
+.biz-tab:hover{background:rgba(99,102,241,.12);color:var(--text);}
 .sec{display:none;}.sec.show{display:block;}
-#loginScreen{position:fixed;inset:0;z-index:900;background:#F3F4F6;display:flex;align-items:center;justify-content:center;}
+#loginScreen{position:fixed;inset:0;z-index:900;background:var(--bg);display:flex;align-items:center;justify-content:center;}
 @keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.7);opacity:.6}}
 .rt-dot{width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block;animation:pdot 2s infinite;}
 .phone{width:160px;height:310px;background:#000;border-radius:30px;border:4px solid #374151;overflow:hidden;margin:0 auto;box-shadow:0 20px 40px rgba(0,0,0,.25);}
@@ -55,9 +63,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 .toggle-wrap input:checked+.toggle-track{background:#FFCC00;}
 .toggle-wrap input:checked+.toggle-track:before{transform:translateX(16px);}
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.sec-title{font-size:20px;font-weight:800;color:#111827;}.sec-sub{font-size:13px;color:#6B7280;margin-top:2px;}
-.empty{text-align:center;padding:48px 20px;color:#9CA3AF;font-size:14px;}
-::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px;}
+.sec-title{font-size:20px;font-weight:800;color:var(--text);}.sec-sub{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.empty{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:14px;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:#374151;border-radius:3px;}
+main{background:transparent;}
 
 /* ══ Lead Operations Module ══ */
 .nav-sep{margin:8px 10px 2px;border-top:1px solid #1F2937;padding-top:8px;}
@@ -162,12 +171,22 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 .sh-hbrow{display:flex;align-items:center;gap:10px;}
 .sh-hblbl{width:150px;flex-shrink:0;font-size:12px;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sh-hbcnt{width:36px;flex-shrink:0;font-size:12px;font-weight:600;color:#374151;text-align:right;}
-.sh-agent-layout{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:flex-start;}
+.sh-agent-layout{display:grid;grid-template-columns:minmax(440px,520px) 1fr;gap:24px;align-items:start;}
+.sh-agent-results-wrap{display:flex;flex-direction:column;min-height:240px;}
+.sh-agent-form-card{align-self:start;}
+.sh-agent-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sh-agent-form-grid .fg-full{grid-column:1/-1;}
 .sh-chk-group{display:flex;flex-direction:column;gap:6px;}
-.sh-chk-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #E8EDF5;border-radius:8px;background:#FAFBFF;cursor:pointer;font-size:13px;color:#374151;user-select:none;}
-.sh-chk-card:hover{border-color:#A5B4FC;background:#F5F3FF;}
-.sh-chk-card input{margin-top:1px;flex-shrink:0;accent-color:#6366F1;}
-.sh-agent-results{background:white;border:1px solid #E8EDF5;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.sh-chk-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:8px;background:rgba(15,23,42,.4);cursor:pointer;font-size:13px;color:var(--text);user-select:none;}
+.sh-chk-card:hover{border-color:var(--accent);background:rgba(99,102,241,.08);}
+.sh-chk-card input{margin-top:1px;flex-shrink:0;accent-color:var(--accent);}
+.sh-prod-grid{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;padding:4px 2px;}
+.sh-prod-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border-subtle);border-radius:8px;background:rgba(15,23,42,.35);cursor:pointer;font-size:13px;color:var(--text);}
+.sh-prod-item:hover{border-color:var(--accent);background:rgba(99,102,241,.06);}
+.sh-prod-item input{accent-color:var(--accent);flex-shrink:0;}
+.sh-prod-item strong{font-weight:600;}
+.sh-prod-cat{font-size:11px;color:var(--text-dim);margin-left:auto;}
+.sh-agent-results{background:var(--surface);backdrop-filter:blur(12px);border:1px solid var(--border-subtle);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;flex:1;}
 .sh-agent-head{display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;}
 .sh-agent-qual{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .sh-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;}
@@ -178,23 +197,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 .sh-export-card{max-width:680px;}
 @media(max-width:900px){.sh-agent-layout,.sh-push-grid{grid-template-columns:1fr;}}
 @media(max-width:640px){.sh-upload-grid,.sh-charts-row{grid-template-columns:1fr;}.sh-kpi-grid{grid-template-columns:repeat(2,1fr);}}
-.reg-tab{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:#6B7280;border-bottom:3px solid transparent;margin-bottom:-2px;}
-.reg-tab-active{color:#111827;border-bottom-color:#FFCC00;font-weight:700;}
-.rating-star{font-size:24px;cursor:pointer;color:#D1D5DB;transition:color .1s;}
-.rating-star.filled{color:#FFCC00;}
+.reg-tab{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-muted);border-bottom:3px solid transparent;margin-bottom:-2px;}
+.reg-tab-active{color:var(--text);border-bottom-color:var(--accent);font-weight:700;}
+.rating-star{font-size:24px;cursor:pointer;color:#374151;transition:color .1s;}
+.rating-star.filled{color:var(--gold);}
+.login-card{width:380px;background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.4);}
+.login-hero{background:linear-gradient(135deg,var(--accent),#7C3AED);padding:36px 28px 28px;}
 </style>
 </head>
 <body>
+<canvas id="networkBg" aria-hidden="true"></canvas>
 <div id="loadBar"></div>
 <div id="toast"></div>
 
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div style="width:380px;background:white;border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.15);">
-    <div style="background:linear-gradient(135deg,#FFCC00,#FF8F00);padding:36px 28px 28px;">
-      <div style="width:44px;height:44px;background:#111;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><span style="color:#FFCC00;font-weight:900;font-size:12px;">SH</span></div>
-      <h1 style="font-size:22px;font-weight:900;color:#111;margin:0 0 4px;">Sales Hunter Portal</h1>
-      <p style="font-size:13px;color:#5C4500;">Multi-tenant sales management platform</p>
+  <div class="login-card">
+    <div class="login-hero">
+      <div style="width:44px;height:44px;background:rgba(0,0,0,.35);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><span style="color:#fff;font-weight:900;font-size:12px;">SH</span></div>
+      <h1 style="font-size:22px;font-weight:900;color:#fff;margin:0 0 4px;">Sales Hunter Portal</h1>
+      <p style="font-size:13px;color:rgba(255,255,255,.75);">Multi-tenant sales management platform</p>
     </div>
     <div style="padding:28px;">
       <div id="loginErr" style="display:none;background:#FEE2E2;color:#B91C1C;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px;"></div>
@@ -211,7 +233,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 <nav class="sidebar">
   <div style="padding:20px 16px 12px;border-bottom:1px solid #1F2937;">
     <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:36px;height:36px;background:#FFCC00;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#111;">SH</div>
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;">SH</div>
       <div><div style="color:#F9FAFB;font-size:13px;font-weight:700;">Sales Hunter</div><div style="color:#6B7280;font-size:11px;">Admin Portal</div></div>
     </div>
   </div>
@@ -240,7 +262,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
   </div>
 </nav>
 <main style="flex:1;overflow-y:auto;padding:28px;">
-  <div id="bizBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;"><span style="font-size:12px;font-weight:600;color:#6B7280;">Business:</span></div>
+  <div id="bizBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;"><span style="font-size:12px;font-weight:600;color:var(--text-muted);">Business:</span></div>
 
   <!-- DASHBOARD -->
   <div id="sec-dashboard" class="sec show">
@@ -479,57 +501,80 @@ body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
 
   <!-- AI AGENT -->
   <div id="sec-aiagent" class="sec">
-    <div class="sec-hdr"><div><div class="sec-title">AI Agent</div><div class="sec-sub">GPT-backed multi-engine prospecting into the master pool</div></div></div>
+    <div class="sec-hdr"><div><div class="sec-title">AI Agent</div><div class="sec-sub">Product-scoped prospecting into the master lead pool</div></div></div>
     <div id="agentFlash"></div>
     <div class="sh-agent-layout">
-      <div class="card">
-        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
-          <div style="width:44px;height:44px;border-radius:10px;background:rgba(79,70,229,.1);color:#4F46E5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
-          <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Sales Hunter — AI discovery</div>
-          <div style="font-size:12px;color:#64748B;">Only leads with at least one contact signal are saved.</div></div>
+      <div class="card sh-agent-form-card">
+        <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(99,102,241,.15);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 4px;">Sales Hunter — AI discovery</div>
+            <div style="font-size:12px;color:var(--text-muted);">Calibrated to the active business and its product catalogue. Only leads with contact signals are saved.</div>
+            <div id="agBizBadge" style="margin-top:8px;font-size:11px;font-weight:600;color:var(--accent);"></div>
+          </div>
         </div>
-        <div class="sh-form-grid" style="margin-bottom:14px;">
-          <div class="fg" style="grid-column:1/-1;"><label class="fl">Focus query *</label><input id="agQuery" class="fi" placeholder="e.g. heavy equipment rental, boutique hotels, mining contractors…" /></div>
+
+        <div class="fg fg-full" style="margin-bottom:16px;">
+          <label class="fl" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Products to target *</span>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="agToggleAllProducts()" id="agProdToggleBtn">Select all</button>
+          </label>
+          <div id="agProducts" class="sh-prod-grid"><div class="empty" style="padding:16px;">Loading products…</div></div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:6px;">Select one or more products — the agent uses these instead of equipment/asset context.</div>
+        </div>
+
+        <div class="sh-agent-form-grid" style="margin-bottom:14px;">
+          <div class="fg fg-full"><label class="fl">Focus query *</label><input id="agQuery" class="fi" placeholder="e.g. mobile money agents, SME retailers, rural savings groups…" /></div>
           <div class="fg"><label class="fl">Country</label><input id="agCountry" class="fi" value="Uganda" /></div>
           <div class="fg"><label class="fl">City / region</label><input id="agLocation" class="fi" placeholder="Kampala, East Africa…" /></div>
-          <div class="fg"><label class="fl">Industry</label><select id="agIndustry" class="fi" style="padding:10px 12px;"></select></div>
+          <div class="fg"><label class="fl">Industry</label><select id="agIndustry" class="fi"></select></div>
           <div class="fg"><label class="fl">Search style</label>
-            <select id="agMode" class="fi" style="padding:10px 12px;">
+            <select id="agMode" class="fi">
               <option value="auto">Auto</option><option value="tourism">Tourism</option>
               <option value="contracts">Contracts / tenders</option><option value="tender_precision">Tender / award precision</option>
               <option value="media">Media / press</option>
             </select>
           </div>
           <div class="fg"><label class="fl">Max leads</label>
-            <select id="agMax" class="fi" style="padding:10px 12px;">
+            <select id="agMax" class="fi">
               <option>10</option><option>15</option><option>20</option><option selected>30</option><option>40</option><option>50</option>
             </select>
           </div>
         </div>
-        <div class="fg" style="margin-bottom:14px;">
+
+        <div class="fg fg-full" style="margin-bottom:14px;">
           <label class="fl" style="display:flex;justify-content:space-between;">
             <span>Session context</span><span class="sh-ctx-len" id="agCtxLen">0 / 12000</span>
           </label>
           <textarea id="agCtx" class="fi" rows="3" placeholder="Prior notes, exclusion lists, or target accounts for continuity…" oninput="agUpdateCtxLen()"></textarea>
           <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="agAppendCtx()" id="agAppendBtn" disabled>Append last run companies to context</button>
         </div>
-        <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;">Discovery engines</div>
+
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;">Discovery engines</div>
         <div class="sh-chk-group" style="margin-bottom:14px;">
-          <label class="sh-chk-card"><input type="checkbox" id="agCloud" checked /> <div><strong>Cloud</strong> <span style="font-size:12px;color:#64748B;">— Broad web, sector pages, news</span></div></label>
-          <label class="sh-chk-card"><input type="checkbox" id="agSeek" checked /> <div><strong>Seek</strong> <span style="font-size:12px;color:#64748B;">— Directories, contacts, social hints</span></div></label>
-          <label class="sh-chk-card"><input type="checkbox" id="agStriker" checked /> <div><strong>Striker</strong> <span style="font-size:12px;color:#64748B;">— Tenders, RFP, procurement signals</span></div></label>
-          <label class="sh-chk-card"><input type="checkbox" id="agHunter" /> <div><strong>Hunter</strong> <span style="font-size:12px;color:#64748B;">— Hunter.io Discover (needs HUNTER_IO_API_KEY)</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agCloud" checked /> <div><strong>Cloud</strong> <span style="font-size:12px;color:var(--text-dim);">— Broad web, sector pages, news</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agSeek" checked /> <div><strong>Seek</strong> <span style="font-size:12px;color:var(--text-dim);">— Directories, contacts, social hints</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agStriker" checked /> <div><strong>Striker</strong> <span style="font-size:12px;color:var(--text-dim);">— Tenders, RFP, procurement signals</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agHunter" /> <div><strong>Hunter</strong> <span style="font-size:12px;color:var(--text-dim);">— Hunter.io Discover (needs HUNTER_IO_API_KEY)</span></div></label>
         </div>
-        <div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;">Enrichment</div>
+
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;">Enrichment</div>
         <div class="sh-chk-group" style="margin-bottom:20px;">
-          <label class="sh-chk-card"><input type="checkbox" id="agMaps" checked /> <div><strong>Maps businesses</strong> <select id="agMapsCap" class="fi" style="display:inline-block;width:auto;padding:3px 8px;font-size:12px;margin-left:8px;"><option>10</option><option>20</option><option>30</option><option>40</option><option selected>50</option></select> listings max</div></label>
-          <label class="sh-chk-card"><input type="checkbox" id="agScrape" /> <div><strong>Website scrape</strong> <span style="font-size:12px;color:#64748B;">— fetch linked pages for emails</span></div></label>
-          <label class="sh-chk-card"><input type="checkbox" id="agSocial" /> <div><strong>Social listings</strong> <span style="font-size:12px;color:#64748B;">— LinkedIn, X, Facebook, IG queries</span></div></label>
-          <label class="sh-chk-card"><input type="checkbox" id="agTender" /> <div><strong>Tender precision layer</strong> <span style="font-size:12px;color:#64748B;">— awarded supplier queries (needs Striker)</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agMaps" checked /> <div style="flex:1;"><strong>Maps businesses</strong> <select id="agMapsCap" class="fi" style="display:block;width:100%;max-width:120px;padding:6px 10px;font-size:12px;margin-top:6px;"><option>10</option><option>20</option><option>30</option><option>40</option><option selected>50</option></select></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agScrape" /> <div><strong>Website scrape</strong> <span style="font-size:12px;color:var(--text-dim);">— fetch linked pages for emails</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agSocial" /> <div><strong>Social listings</strong> <span style="font-size:12px;color:var(--text-dim);">— LinkedIn, X, Facebook, IG queries</span></div></label>
+          <label class="sh-chk-card"><input type="checkbox" id="agTender" /> <div><strong>Tender precision layer</strong> <span style="font-size:12px;color:var(--text-dim);">— awarded supplier queries (needs Striker)</span></div></label>
         </div>
+
         <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="runAgent()" id="agRunBtn">✨ Run into master pool</button>
       </div>
-      <div id="agResults" style="display:none;" class="sh-agent-results"></div>
+      <div class="sh-agent-results-wrap">
+        <div id="agResults" style="display:none;" class="sh-agent-results"></div>
+        <div id="agResultsPlaceholder" class="sh-agent-results" style="align-items:center;justify-content:center;color:var(--text-dim);font-size:14px;text-align:center;padding:48px 24px;">
+          <div style="font-size:36px;margin-bottom:12px;opacity:.5;">🎯</div>
+          <div>Configure products and run the agent — results appear here.</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -888,6 +933,7 @@ function showPortal(){
   const p=document.getElementById('portal');p.style.display='flex'
   const u=JSON.parse(localStorage.getItem(LS_USR)||'{}')
   document.getElementById('sidebarUser').textContent=u.name||u.email||'User'
+  initNetworkBg()
   init()
 }
 
@@ -935,7 +981,7 @@ async function loadSection(sec){
     else if(sec==='push')await pushInit()
     else if(sec==='offers')await offersLoad()
     else if(sec==='analytics')await analyticsLoad()
-    else if(sec==='aiagent')agInit()
+    else if(sec==='aiagent')await agInit()
     else if(sec==='export')expInit()
   }catch(e){console.error(e);toast(e.message,'err')}finally{load(false)}
 }
@@ -948,7 +994,7 @@ async function fetchBiz(){
 }
 function renderBizBar(){
   const bar=document.getElementById('bizBar')
-  bar.innerHTML='<span style="font-size:12px;font-weight:600;color:#6B7280;">Business:</span>'
+  bar.innerHTML='<span style="font-size:12px;font-weight:600;color:var(--text-muted);">Business:</span>'
   S.biz.forEach(b=>{
     const btn=document.createElement('button');btn.className='biz-tab'+(b.id===S.bizId?' active':'')
     btn.textContent=b.code+' — '+b.name
@@ -1484,7 +1530,35 @@ async function submitRating() {
   loadRegistrations();
 }
 
-async function init(){setupRealtime();await loadSection('dashboard')}
+async function init(){setupRealtime();initNetworkBg();await loadSection('dashboard')}
+
+// ── Network canvas background ──
+let netAnim=null
+function initNetworkBg(){
+  const canvas=document.getElementById('networkBg')
+  if(!canvas||netAnim)return
+  const ctx=canvas.getContext('2d')
+  let nodes=[],W=0,H=0
+  const resize=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize)
+  const N=48
+  for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:1.2+Math.random()*1.8})
+  const draw=()=>{
+    ctx.clearRect(0,0,W,H)
+    for(const n of nodes){
+      n.x+=n.vx;n.y+=n.vy
+      if(n.x<0||n.x>W)n.vx*=-1
+      if(n.y<0||n.y>H)n.vy*=-1
+    }
+    for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
+      const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.hypot(dx,dy)
+      if(d<140){ctx.strokeStyle=`rgba(99,102,241,${(1-d/140)*.22})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke()}
+    }
+    for(const n of nodes){ctx.fillStyle='rgba(129,140,248,.55)';ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill()}
+    netAnim=requestAnimationFrame(draw)
+  }
+  draw()
+}
 checkAuth()
 
 /* ═══════════════════════════════════════════════
@@ -1520,7 +1594,167 @@ const MAX_CTX=12000
 const LP={leads:[],total:0,page:1,industry:'',source:'',search:'',hasEmail:false,hasPhone:false,sortBy:'-created_at',selected:[],lastResult:null,clientId:''}
 const PUSH={clients:[],leads:[],leadsTotal:0,leadsPage:1,filterInd:'',pushMode:'sector',selLeads:[],selClients:[],inited:false,clientId:''}
 const OFFERS={page:1,clientId:''}
-const AG={lastResult:null}
+const AG={lastResult:null,productIds:new Set()}
+
+function agGetSelectedProducts(){
+  return (S.products||[]).filter(p=>AG.productIds.has(p.id)&&p.is_active!==false)
+}
+function agRenderProducts(){
+  const el=document.getElementById('agProducts')
+  const active=(S.products||[]).filter(p=>p.is_active!==false)
+  if(!active.length){
+    el.innerHTML=`<div class="empty" style="padding:16px;">No active products for this business. <a href="#" onclick="navTo('products');return false;" style="color:var(--accent);">Add products →</a></div>`
+    return
+  }
+  el.innerHTML=active.map(p=>`<label class="sh-prod-item">
+    <input type="checkbox" data-pid="${p.id}" ${AG.productIds.has(p.id)?'checked':''} onchange="agOnProductToggle('${p.id}',this.checked)" />
+    <strong>${p.name}</strong><span class="sh-prod-cat">${p.category||'Product'}</span>
+  </label>`).join('')
+  agSyncQueryFromProducts()
+}
+function agOnProductToggle(id,on){
+  if(on)AG.productIds.add(id);else AG.productIds.delete(id)
+  agSyncQueryFromProducts()
+}
+function agToggleAllProducts(){
+  const active=(S.products||[]).filter(p=>p.is_active!==false)
+  const allOn=active.length&&active.every(p=>AG.productIds.has(p.id))
+  if(allOn)AG.productIds.clear()
+  else active.forEach(p=>AG.productIds.add(p.id))
+  document.getElementById('agProdToggleBtn').textContent=allOn?'Select all':'Deselect all'
+  document.querySelectorAll('#agProducts input[data-pid]').forEach(cb=>{cb.checked=AG.productIds.has(cb.dataset.pid)})
+  agSyncQueryFromProducts()
+}
+function agSyncQueryFromProducts(){
+  const sel=agGetSelectedProducts()
+  const qEl=document.getElementById('agQuery')
+  if(!sel.length||qEl.dataset.userEdited==='1')return
+  const loc=document.getElementById('agLocation').value.trim()
+  const geo=loc||document.getElementById('agCountry').value.trim()||'Uganda'
+  qEl.value=`${sel.map(p=>p.name).join(', ')} prospects and agents in ${geo}`
+}
+async function agInit(){
+  await fetchBiz()
+  if(!S.products.length||S.products[0]?.business_id!==S.bizId){
+    const{data}=await sb.from('sh_products').select('*').eq('business_id',S.bizId).eq('is_active',true).order('name')
+    S.products=data||[]
+  }
+  const biz=activeBiz()
+  const badge=document.getElementById('agBizBadge')
+  if(badge)badge.textContent=biz?`🏢 ${biz.name} (${biz.code})`:'No business selected'
+  AG.productIds=new Set((S.products||[]).filter(p=>p.is_active!==false).map(p=>p.id))
+  agRenderProducts()
+  const agInd=document.getElementById('agIndustry')
+  if(agInd&&!agInd.options.length)agInd.innerHTML=`<option value="">Search all (any sector)</option>`+INDS.slice(1).map(i=>`<option value="${i.v}">${i.l}</option>`).join('')
+  const qEl=document.getElementById('agQuery')
+  if(qEl&&!qEl.dataset.bound){
+    qEl.dataset.bound='1'
+    qEl.addEventListener('input',()=>{qEl.dataset.userEdited=qEl.value.trim()?'1':''})
+  }
+  agUpdateCtxLen()
+  document.getElementById('agResults').style.display='none'
+  const ph=document.getElementById('agResultsPlaceholder')
+  if(ph)ph.style.display='flex'
+}
+function agUpdateCtxLen(){
+  const len=document.getElementById('agCtx').value.length
+  const el=document.getElementById('agCtxLen')
+  el.className='sh-ctx-len'+(len>=MAX_CTX*.9?' sh-ctx-warn':'')
+  el.textContent=`${len.toLocaleString()} / ${MAX_CTX.toLocaleString()}`
+}
+function agAppendCtx(){
+  if(!AG.lastResult?.leads?.length)return
+  const lines=AG.lastResult.leads.map(l=>`- ${l.company_name}${l.country?` (${l.country})`:''}`)
+  const block=`\n--- run ${new Date().toISOString().slice(0,16)} ---\n${lines.join('\n')}\n`
+  const ta=document.getElementById('agCtx')
+  ta.value=(ta.value+block).slice(-MAX_CTX);agUpdateCtxLen()
+}
+function agBuildSessionContext(selectedProducts,baseCtx){
+  const biz=activeBiz()
+  const lines=[]
+  if(biz)lines.push(`Business: ${biz.name} (${biz.code})`)
+  if(selectedProducts.length){
+    lines.push('Target products:')
+    selectedProducts.forEach(p=>lines.push(`- ${p.name} (${p.category||'Product'}) — UGX ${Number(p.price||0).toLocaleString()}, ${p.commission_pct||0}% commission`))
+  }
+  if(baseCtx)lines.push('',baseCtx)
+  return lines.join('\n').slice(-MAX_CTX)
+}
+async function runAgent(){
+  if(demoGuard())return
+  const selected=agGetSelectedProducts()
+  if(!selected.length){shFlash('agentFlash','Select at least one product to target.','err');return}
+  let query=document.getElementById('agQuery').value.trim()
+  if(!query){
+    const geo=document.getElementById('agLocation').value.trim()||document.getElementById('agCountry').value.trim()||'Uganda'
+    query=`${selected.map(p=>p.name).join(', ')} prospects in ${geo}`
+    document.getElementById('agQuery').value=query
+  }
+  const modes=['agCloud','agSeek','agStriker','agHunter'].filter(id=>document.getElementById(id).checked).map(id=>id.replace('ag','').toLowerCase())
+  if(!modes.length){shFlash('agentFlash','Enable at least one discovery engine.','err');return}
+  const assetTypes=selected.map(p=>`${p.name} — ${p.category||'Product'}`)
+  const sessionCtx=agBuildSessionContext(selected,document.getElementById('agCtx').value.trim())
+  const btn=document.getElementById('agRunBtn');btn.disabled=true;btn.textContent='Running agent… (may take up to 2 min)'
+  shFlashClear('agentFlash')
+  document.getElementById('agResults').style.display='none'
+  const ph=document.getElementById('agResultsPlaceholder');if(ph)ph.style.display='none'
+  try{
+    const d=await apiPost('/sales-hunter/admin/run-agent/',{
+      query,
+      asset_types:assetTypes,
+      country:document.getElementById('agCountry').value.trim()||'Uganda',
+      location:document.getElementById('agLocation').value.trim(),
+      industry:document.getElementById('agIndustry').value,
+      search_mode:document.getElementById('agMode').value,
+      max_leads:Number(document.getElementById('agMax').value)||30,
+      discovery_modes:modes,
+      enable_maps_business:document.getElementById('agMaps').checked,
+      maps_business_cap:Math.min(50,Math.max(1,Number(document.getElementById('agMapsCap').value)||50)),
+      enable_website_scrape:document.getElementById('agScrape').checked,
+      enable_social_listings:document.getElementById('agSocial').checked,
+      tender_precision:document.getElementById('agTender').checked,
+      session_context:sessionCtx
+    },160000)
+    if(d.status===200||d.leads){
+      AG.lastResult=d
+      document.getElementById('agAppendBtn').disabled=false
+      const leads=d.leads||[]
+      const withEmail=leads.filter(l=>l.email),withContact=leads.filter(l=>l.email||l.phone||l.website||l.linkedin)
+      const res=document.getElementById('agResults')
+      res.style.display='flex'
+      res.innerHTML=`
+        <div class="sh-agent-head">
+          <div style="font-size:20px;">✅</div>
+          <div><strong>${d.message||`${leads.length} leads discovered`}</strong>
+          <div class="sh-sub">Products: ${selected.map(p=>p.name).join(', ')} · Source: ${d.source||'AI Agent'}</div></div>
+        </div>
+        <div class="sh-agent-qual">
+          <span class="sh-badge sh-badge-green">✉ ${withEmail.length} have email</span>
+          <span class="sh-badge sh-badge-blue">☎ ${withContact.length} have contact</span>
+          ${leads.length-withContact.length>0?`<span class="sh-badge sh-badge-amber">⚠ ${leads.length-withContact.length} contactless (still saved)</span>`:''}
+          ${d.workflow?`<span class="sh-badge sh-badge-gray">🗺 ${d.workflow.maps_listings??0} maps · 🌐 ${d.workflow.ddg_snippets??0} web snippets</span>`:''}
+        </div>
+        <div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
+          <thead><tr><th>Score</th><th>Company</th><th>Contact</th><th>Location</th><th>Industry</th><th>Evidence</th></tr></thead>
+          <tbody>${leads.map(l=>`<tr>
+            <td>${scoreBadge(l.lead_score)}</td>
+            <td><strong>${l.company_name}</strong>${l.website?`<div class="sh-sub">${l.website}</div>`:''}</td>
+            <td>${dots(l.email,l.phone,l.website)}<div class="sh-sub">${l.contact_person||'—'}</div><div class="sh-sub">${l.email||l.phone||'—'}</div></td>
+            <td class="sh-sub">${l.location||'—'}${l.country?` · ${l.country}`:''}</td>
+            <td>${sectorPill(l.industry)}</td>
+            <td class="sh-sub" style="max-width:200px;">${l.source_snippet||l.notes||'—'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div></div>`
+    }else{
+      shFlash('agentFlash',d.message||'Agent run failed.','err')
+      if(ph)ph.style.display='flex'
+    }
+  }catch(e){
+    shFlash('agentFlash',e.message,'err')
+    if(ph)ph.style.display='flex'
+  }
+  finally{btn.disabled=false;btn.textContent='✨ Run into master pool'}
+}
 // Business list for filter dropdowns — loaded once from Supabase
 const BIZ_LIST=[]
 
@@ -2073,87 +2307,6 @@ async function analyticsLoad(clientIdOverride){
         </div>
       </div>`
   }catch(e){body.innerHTML=`<div class="empty">${e.message}</div>`}
-}
-
-// ═══════════════════════════════════════════════
-// AI AGENT
-// ═══════════════════════════════════════════════
-function agInit(){
-  const agInd=document.getElementById('agIndustry')
-  if(!agInd.options.length)agInd.innerHTML=`<option value="">Search all (any sector)</option>`+INDS.slice(1).map(i=>`<option value="${i.v}">${i.l}</option>`).join('')
-  agUpdateCtxLen()
-}
-function agUpdateCtxLen(){
-  const len=document.getElementById('agCtx').value.length
-  const el=document.getElementById('agCtxLen')
-  el.className='sh-ctx-len'+(len>=MAX_CTX*.9?' sh-ctx-warn':'')
-  el.textContent=`${len.toLocaleString()} / ${MAX_CTX.toLocaleString()}`
-}
-function agAppendCtx(){
-  if(!AG.lastResult?.leads?.length)return
-  const lines=AG.lastResult.leads.map(l=>`- ${l.company_name}${l.country?` (${l.country})`:''}`)
-  const block=`\n--- run ${new Date().toISOString().slice(0,16)} ---\n${lines.join('\n')}\n`
-  const ta=document.getElementById('agCtx')
-  ta.value=(ta.value+block).slice(-MAX_CTX);agUpdateCtxLen()
-}
-async function runAgent(){
-  if(demoGuard())return
-  const query=document.getElementById('agQuery').value.trim()
-  if(!query){shFlash('agentFlash','Enter a focus query.','err');return}
-  const modes=['agCloud','agSeek','agStriker','agHunter'].filter(id=>document.getElementById(id).checked).map(id=>id.replace('ag','').toLowerCase())
-  if(!modes.length){shFlash('agentFlash','Enable at least one discovery engine.','err');return}
-  const btn=document.getElementById('agRunBtn');btn.disabled=true;btn.textContent='Running agent… (may take up to 2 min)'
-  shFlashClear('agentFlash')
-  document.getElementById('agResults').style.display='none'
-  try{
-    const d=await apiPost('/sales-hunter/admin/run-agent/',{
-      query,
-      country:document.getElementById('agCountry').value.trim()||'Uganda',
-      location:document.getElementById('agLocation').value.trim(),
-      industry:document.getElementById('agIndustry').value,
-      search_mode:document.getElementById('agMode').value,
-      max_leads:Number(document.getElementById('agMax').value)||30,
-      discovery_modes:modes,
-      enable_maps_business:document.getElementById('agMaps').checked,
-      maps_business_cap:Math.min(50,Math.max(1,Number(document.getElementById('agMapsCap').value)||50)),
-      enable_website_scrape:document.getElementById('agScrape').checked,
-      enable_social_listings:document.getElementById('agSocial').checked,
-      tender_precision:document.getElementById('agTender').checked,
-      session_context:document.getElementById('agCtx').value.trim()
-    },160000)
-    if(d.status===200||d.leads){
-      AG.lastResult=d
-      document.getElementById('agAppendBtn').disabled=false
-      const leads=d.leads||[]
-      const withEmail=leads.filter(l=>l.email),withContact=leads.filter(l=>l.email||l.phone||l.website||l.linkedin)
-      const res=document.getElementById('agResults')
-      res.style.display='flex'
-      res.innerHTML=`
-        <div class="sh-agent-head">
-          <div style="font-size:20px;">✅</div>
-          <div><strong>${d.message||`${leads.length} leads discovered`}</strong>
-          <div class="sh-sub">Source: ${d.source||'AI Agent'}</div></div>
-        </div>
-        <div class="sh-agent-qual">
-          <span class="sh-badge sh-badge-green">✉ ${withEmail.length} have email</span>
-          <span class="sh-badge sh-badge-blue">☎ ${withContact.length} have contact</span>
-          ${leads.length-withContact.length>0?`<span class="sh-badge sh-badge-amber">⚠ ${leads.length-withContact.length} contactless (still saved)</span>`:''}
-          ${d.workflow?`<span class="sh-badge sh-badge-gray">🗺 ${d.workflow.maps_listings??0} maps · 🌐 ${d.workflow.ddg_snippets??0} web snippets</span>`:''}
-        </div>
-        <div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
-          <thead><tr><th>Score</th><th>Company</th><th>Contact</th><th>Location</th><th>Industry</th><th>Evidence</th></tr></thead>
-          <tbody>${leads.map(l=>`<tr>
-            <td>${scoreBadge(l.lead_score)}</td>
-            <td><strong>${l.company_name}</strong>${l.website?`<div class="sh-sub">${l.website}</div>`:''}</td>
-            <td>${dots(l.email,l.phone,l.website)}<div class="sh-sub">${l.contact_person||'—'}</div><div class="sh-sub">${l.email||l.phone||'—'}</div></td>
-            <td class="sh-sub">${l.location||'—'}${l.country?` · ${l.country}`:''}</td>
-            <td>${sectorPill(l.industry)}</td>
-            <td class="sh-sub" style="max-width:200px;">${l.source_snippet||l.notes||'—'}</td>
-          </tr>`).join('')}</tbody>
-        </table></div></div>`
-    }else{shFlash('agentFlash',d.message||'Agent run failed.','err')}
-  }catch(e){shFlash('agentFlash',e.message,'err')}
-  finally{btn.disabled=false;btn.textContent='✨ Run into master pool'}
 }
 
 // ═══════════════════════════════════════════════
