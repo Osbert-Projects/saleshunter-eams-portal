@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-#meshBg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#FFFFFF;}
+#dotsBg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#FFFFFF;}
 #portal,#loginScreen{position:relative;z-index:1;}
 .sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
@@ -211,7 +211,7 @@ main{background:transparent;}
 </style>
 </head>
 <body>
-<canvas id="meshBg" aria-hidden="true"></canvas>
+<canvas id="dotsBg" aria-hidden="true"></canvas>
 <div id="loadBar"></div>
 <div id="toast"></div>
 
@@ -952,7 +952,7 @@ function showPortal(){
   const p=document.getElementById('portal');p.style.display='flex'
   const u=JSON.parse(localStorage.getItem(LS_USR)||'{}')
   document.getElementById('sidebarUser').textContent=u.name||u.email||'User'
-  initMeshBg()
+  initDotBg()
   init()
 }
 
@@ -1658,83 +1658,90 @@ async function submitRating() {
   loadRegistrations();
 }
 
-async function init(){setupRealtime();initMeshBg();await loadSection('dashboard')}
+async function init(){setupRealtime();initDotBg();await loadSection('dashboard')}
 
-// ── Corporate wire mesh background (static isometric grid) ──
-function initMeshBg(){
-  const canvas=document.getElementById('meshBg')
-  if(!canvas)return
+// ── Subtle interactive dot pattern (mouse-reactive) ──
+let dotBgAnim=null
+function initDotBg(){
+  const canvas=document.getElementById('dotsBg')
+  if(!canvas||dotBgAnim)return
   const ctx=canvas.getContext('2d')
-  const STEP=44
-  const SQ3=Math.sqrt(3)
-  let W=0,H=0
+  const STEP=38
+  const MOUSE_R=130
+  const PUSH=2.8
+  const SPRING=.075
+  let W=0,H=0,dots=[]
+  const mouse={x:-9999,y:-9999,on:false}
 
-  function paint(){
+  function buildGrid(){
+    dots=[]
+    const cols=Math.ceil(W/STEP)+1
+    const rows=Math.ceil(H/STEP)+1
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        const bx=c*STEP+STEP/2
+        const by=r*STEP+STEP/2
+        dots.push({bx,by,x:bx,y:by,accent:(c+r)%9===0})
+      }
+    }
+  }
+
+  function resize(){
     W=canvas.width=window.innerWidth
     H=canvas.height=window.innerHeight
+    buildGrid()
+  }
+
+  function tick(){
     ctx.fillStyle='#FFFFFF'
     ctx.fillRect(0,0,W,H)
 
-    const pad=STEP*4
-    ctx.lineCap='square'
-    ctx.lineJoin='miter'
-
-    // Horizontal wires
-    ctx.strokeStyle='rgba(203,213,225,0.55)'
-    ctx.lineWidth=1
-    for(let y=0;y<=H+STEP;y+=STEP){
-      ctx.beginPath()
-      ctx.moveTo(0,y)
-      ctx.lineTo(W,y)
-      ctx.stroke()
-    }
-
-    // Diagonal wires ↘ (60°)
-    ctx.strokeStyle='rgba(148,163,184,0.32)'
-    const span=H/SQ3
-    for(let i=-pad;i<W+H;i+=STEP){
-      ctx.beginPath()
-      ctx.moveTo(i,0)
-      ctx.lineTo(i+span,H)
-      ctx.stroke()
-    }
-
-    // Diagonal wires ↙ (-60°)
-    ctx.strokeStyle='rgba(191,219,254,0.45)'
-    for(let i=-span-pad;i<W+H;i+=STEP){
-      ctx.beginPath()
-      ctx.moveTo(i,0)
-      ctx.lineTo(i-span,H)
-      ctx.stroke()
-    }
-
-    // Intersection nodes on primary grid
-    for(let y=0;y<=H+STEP;y+=STEP){
-      for(let x=0;x<=W+STEP;x+=STEP){
-        const accent=(Math.round(x/STEP)+Math.round(y/STEP))%7===0
-        ctx.beginPath()
-        ctx.arc(x,y,1.5,0,Math.PI*2)
-        ctx.fillStyle=accent?'rgba(30,64,175,0.32)':'rgba(100,116,139,0.16)'
-        ctx.fill()
+    for(const d of dots){
+      if(mouse.on){
+        const dx=d.x-mouse.x
+        const dy=d.y-mouse.y
+        const dist=Math.hypot(dx,dy)||1
+        if(dist<MOUSE_R){
+          const t=1-dist/MOUSE_R
+          const f=PUSH*t*t
+          d.x+=(dx/dist)*f
+          d.y+=(dy/dist)*f
+        }
       }
+      d.x+=(d.bx-d.x)*SPRING
+      d.y+=(d.by-d.y)*SPRING
+
+      const drift=Math.hypot(d.x-d.bx,d.y-d.by)
+      const boost=Math.min(drift/12,.35)
+      ctx.beginPath()
+      ctx.arc(d.x,d.y,d.accent?2.1:1.35,0,Math.PI*2)
+      if(d.accent){
+        ctx.fillStyle=`rgba(30,64,175,${0.22+boost})`
+      }else{
+        ctx.fillStyle=`rgba(100,116,139,${0.14+boost*.5})`
+      }
+      ctx.fill()
     }
 
-    // Soft vignette — keeps mesh subtle at edges
-    const vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.2,W/2,H/2,Math.max(W,H)*.75)
-    vg.addColorStop(0,'rgba(255,255,255,0)')
-    vg.addColorStop(1,'rgba(255,255,255,0.55)')
-    ctx.fillStyle=vg
-    ctx.fillRect(0,0,W,H)
+    dotBgAnim=requestAnimationFrame(tick)
   }
 
-  paint()
+  window.addEventListener('mousemove',e=>{
+    mouse.x=e.clientX
+    mouse.y=e.clientY
+    mouse.on=true
+  })
+  window.addEventListener('mouseout',()=>{mouse.on=false})
+
+  resize()
   let tid
   window.addEventListener('resize',()=>{
     clearTimeout(tid)
-    tid=setTimeout(paint,120)
+    tid=setTimeout(resize,120)
   })
+  tick()
 }
-initMeshBg()
+initDotBg()
 checkAuth()
 
 /* ═══════════════════════════════════════════════
