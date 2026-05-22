@@ -1544,7 +1544,7 @@ function initNetworkBg(){
   const N=48
   const dotBlue='rgba(37,99,235,'
   const dotBlack='rgba(17,24,39,'
-  const lineBlue='rgba(29,78,216,'
+  const lineBlue='rgba(30,64,175,'
   for(let i=0;i<N;i++)nodes.push({
     x:Math.random()*W,y:Math.random()*H,
     vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
@@ -1560,10 +1560,10 @@ function initNetworkBg(){
     }
     for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
       const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.hypot(dx,dy)
-      if(d<140){
-        const a=(1-d/140)*.18
-        ctx.strokeStyle=`${lineBlue}${a})`
-        ctx.lineWidth=.75
+      if(d<175){
+        const a=(1-d/175)*.55
+        ctx.strokeStyle=`${lineBlue}${Math.max(a,.12)})`
+        ctx.lineWidth=1.25
         ctx.beginPath()
         ctx.moveTo(nodes[i].x,nodes[i].y)
         ctx.lineTo(nodes[j].x,nodes[j].y)
