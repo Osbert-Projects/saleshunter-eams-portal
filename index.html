@@ -1,1363 +1,720 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sales Hunter Portal — EAMS</title>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Sales Hunter Portal — Admin</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-  * { font-family: 'Inter', sans-serif; }
-  body { background: #F4F6F8; }
-  .sidebar { transition: width 0.3s ease; }
-  .nav-item { transition: all 0.15s; }
-  .nav-item.active { background: #FFCC00; color: #000; }
-  .nav-item:not(.active):hover { background: rgba(255,204,0,0.12); }
-  .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .badge-green  { background:#E8F5E9; color:#2E7D32; }
-  .badge-yellow { background:#FFF8E1; color:#F57F17; }
-  .badge-blue   { background:#E3F2FD; color:#1565C0; }
-  .badge-red    { background:#FFEBEE; color:#C62828; }
-  .badge-gray   { background:#F5F5F5; color:#616161; }
-  .tag { display:inline-flex;align-items:center;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700; }
-  input[type=range] { accent-color: #FFCC00; }
-  .tab-btn { transition: all 0.15s; }
-  .tab-btn.active { background:#FFCC00;color:#000;font-weight:700; }
-  .modal-overlay { background:rgba(0,0,0,0.45);backdrop-filter:blur(2px); }
-  ::-webkit-scrollbar { width:5px; height:5px; }
-  ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:#ddd;border-radius:8px; }
-  .progress-bar { height:8px;border-radius:6px;background:#F0F2F5;overflow:hidden; }
-  .progress-fill { height:100%;border-radius:6px;transition:width 0.6s ease; }
-  .business-chip { cursor:pointer;transition:all 0.15s; }
-  .business-chip.selected { border-color:#FFCC00;background:#FFFDE7; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-  .fade-in { animation:fadeIn 0.3s ease forwards; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F3F4F6;}
+.sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
+.nav-item:hover{background:#1F2937;color:#F9FAFB;}.nav-item.active{background:#FFCC00;color:#111827;font-weight:700;}
+.card{background:white;border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:#FFCC00;color:#111827;}.btn-primary:hover{background:#F5C400;}
+.btn-secondary{background:#F3F4F6;color:#374151;}.btn-secondary:hover{background:#E5E7EB;}
+.btn-danger{background:#FEE2E2;color:#DC2626;}.btn-danger:hover{background:#FECACA;}
+.btn-ghost{background:transparent;color:#6B7280;border:1.5px solid #E5E7EB;}.btn-ghost:hover{background:#F9FAFB;}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px;}.btn-xs{padding:4px 8px;font-size:11px;border-radius:6px;}
+.dt{width:100%;border-collapse:collapse;}
+.dt th{text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;padding:10px 14px;border-bottom:1.5px solid #F3F4F6;background:#F9FAFB;}
+.dt td{padding:12px 14px;font-size:13px;color:#374151;border-bottom:1px solid #F9FAFB;vertical-align:middle;}
+.dt tr:last-child td{border-bottom:none;}.dt tr:hover td{background:#FFFEF5;}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;}
+.bg{background:#DCFCE7;color:#15803D;}.br{background:#FEE2E2;color:#B91C1C;}
+.by{background:#FEF9C3;color:#92400E;}.bb{background:#DBEAFE;color:#1D4ED8;}
+.bgray{background:#F3F4F6;color:#4B5563;}.borg{background:#FFEDD5;color:#C2410C;}
+.pw{background:#F3F4F6;border-radius:99px;height:7px;width:100%;overflow:hidden;}
+.pb{height:100%;border-radius:99px;transition:width .5s;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal-box{background:white;border-radius:20px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.3);}
+.modal-box.wide{max-width:640px;}
+.mtitle{font-size:18px;font-weight:800;color:#111827;margin-bottom:20px;}
+.fg{margin-bottom:14px;}.fl{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;}
+.fi{width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:13px;color:#111827;outline:none;transition:border-color .15s;background:white;}
+.fi:focus{border-color:#FFCC00;}.fi-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+#toast{position:fixed;bottom:24px;right:24px;z-index:1000;padding:13px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s;box-shadow:0 8px 25px rgba(0,0,0,.15);min-width:200px;}
+#toast.show{opacity:1;}
+#loadBar{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FFCC00,#FF8F00,#FFCC00);background-size:200% 100%;animation:shim 1.5s infinite;z-index:500;display:none;}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.biz-tab{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;background:#F3F4F6;color:#6B7280;}
+.biz-tab:hover{background:#E5E7EB;}
+.sec{display:none;}.sec.show{display:block;}
+#loginScreen{position:fixed;inset:0;z-index:900;background:#F3F4F6;display:flex;align-items:center;justify-content:center;}
+@keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.7);opacity:.6}}
+.rt-dot{width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block;animation:pdot 2s infinite;}
+.phone{width:160px;height:310px;background:#000;border-radius:30px;border:4px solid #374151;overflow:hidden;margin:0 auto;box-shadow:0 20px 40px rgba(0,0,0,.25);}
+.toggle-wrap{position:relative;display:inline-block;width:38px;height:22px;}
+.toggle-wrap input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;background:#D1D5DB;border-radius:22px;cursor:pointer;transition:background .2s;}
+.toggle-track:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .2s;}
+.toggle-wrap input:checked+.toggle-track{background:#FFCC00;}
+.toggle-wrap input:checked+.toggle-track:before{transform:translateX(16px);}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.sec-title{font-size:20px;font-weight:800;color:#111827;}.sec-sub{font-size:13px;color:#6B7280;margin-top:2px;}
+.empty{text-align:center;padding:48px 20px;color:#9CA3AF;font-size:14px;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px;}
 </style>
 </head>
-<body class="min-h-screen flex">
+<body>
+<div id="loadBar"></div>
+<div id="toast"></div>
 
-<!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
-<div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#000 0%,#1a1a1a 100%);align-items:center;justify-content:center;flex-direction:column;">
-  <div style="background:#fff;border-radius:24px;width:100%;max-width:420px;padding:0;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.4);margin:16px;">
-    <!-- Yellow header -->
-    <div style="background:linear-gradient(135deg,#FFCC00,#FF8F00);padding:32px 28px 24px;">
-      <div style="width:52px;height:52px;background:#000;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-        <span style="color:#FFCC00;font-weight:900;font-size:12px;letter-spacing:1px;">MTN</span>
-      </div>
-      <h1 style="color:#000;font-size:22px;font-weight:900;line-height:1.2;margin:0 0 6px;">Sales Hunter Portal</h1>
-      <p style="color:rgba(0,0,0,0.6);font-size:13px;margin:0;">Admin portal — sign in to continue</p>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div style="width:380px;background:white;border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.15);">
+    <div style="background:linear-gradient(135deg,#FFCC00,#FF8F00);padding:36px 28px 28px;">
+      <div style="width:44px;height:44px;background:#111;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><span style="color:#FFCC00;font-weight:900;font-size:12px;">SH</span></div>
+      <h1 style="font-size:22px;font-weight:900;color:#111;margin:0 0 4px;">Sales Hunter Portal</h1>
+      <p style="font-size:13px;color:#5C4500;">Multi-tenant sales management platform</p>
     </div>
-    <!-- Form -->
     <div style="padding:28px;">
-      <div id="loginError" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#DC2626;"></div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Email Address</label>
-        <input id="loginEmail" type="email" placeholder="you@eams.co.ug" autocomplete="username"
-          style="width:100%;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:10px;padding:11px 14px;font-size:14px;outline:none;box-sizing:border-box;"
-          onfocus="this.style.borderColor='#FFCC00'" onblur="this.style.borderColor='#E5E7EB'" />
-      </div>
-      <div style="margin-bottom:20px;">
-        <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">Password</label>
-        <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"
-          style="width:100%;background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:10px;padding:11px 14px;font-size:14px;outline:none;box-sizing:border-box;"
-          onfocus="this.style.borderColor='#FFCC00'" onblur="this.style.borderColor='#E5E7EB'"
-          onkeydown="if(event.key==='Enter')doLogin()" />
-      </div>
-      <button id="loginBtn" onclick="doLogin()"
-        style="width:100%;background:#000;color:#FFCC00;font-weight:800;font-size:14px;padding:14px;border:none;border-radius:12px;cursor:pointer;transition:background 0.15s;">
-        Sign In to Portal
-      </button>
-      <button onclick="enterDemoMode()"
-        style="width:100%;margin-top:10px;background:transparent;color:#6B7280;font-size:13px;font-weight:600;padding:10px;border:1.5px solid #E5E7EB;border-radius:12px;cursor:pointer;">
-        Try Demo Mode (no login needed)
-      </button>
-      <p style="text-align:center;font-size:12px;color:#9CA3AF;margin-top:16px;">
-        Use your EAMS account credentials.<br/>Same login as <a href="https://eamstest.netlify.app" target="_blank" style="color:#FFCC00;font-weight:700;">eamstest.netlify.app</a>
-      </p>
+      <div id="loginErr" style="display:none;background:#FEE2E2;color:#B91C1C;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px;"></div>
+      <div class="fg"><label class="fl">Email address</label><input id="loginEmail" type="email" class="fi" placeholder="admin@example.com" /></div>
+      <div class="fg"><label class="fl">Password</label><input id="loginPassword" type="password" class="fi" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="doLogin()" id="loginBtn">Sign In →</button>
+      <div style="text-align:center;margin-top:14px;"><button onclick="enterDemo()" style="background:none;border:none;color:#6B7280;font-size:12px;cursor:pointer;text-decoration:underline;">Try Demo Mode</button></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════ SIDEBAR ══════════════════ -->
-<aside id="sidebar" class="sidebar w-60 min-h-screen bg-black flex flex-col fixed left-0 top-0 z-40 overflow-hidden">
-  <!-- Logo -->
-  <div class="px-5 py-5 border-b border-white/10">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center">
-        <span class="text-black font-black text-xs tracking-widest">MTN</span>
-      </div>
-      <div>
-        <p class="text-white font-black text-sm leading-none">Sales Hunter</p>
-        <p class="text-yellow-400/70 text-xs mt-0.5">Portal v2.0</p>
-      </div>
+<!-- PORTAL -->
+<div id="portal" style="display:none;flex-direction:row;min-height:100vh;">
+<nav class="sidebar">
+  <div style="padding:20px 16px 12px;border-bottom:1px solid #1F2937;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;background:#FFCC00;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#111;">SH</div>
+      <div><div style="color:#F9FAFB;font-size:13px;font-weight:700;">Sales Hunter</div><div style="color:#6B7280;font-size:11px;">Admin Portal</div></div>
+    </div>
+  </div>
+  <div style="padding:12px 0;flex:1;">
+    <button class="nav-item active" data-sec="dashboard" onclick="navTo('dashboard')">📊 Dashboard</button>
+    <button class="nav-item" data-sec="businesses" onclick="navTo('businesses')">🏢 Businesses</button>
+    <button class="nav-item" data-sec="products" onclick="navTo('products')">💰 Products & Pricing</button>
+    <button class="nav-item" data-sec="agents" onclick="navTo('agents')">👥 Agents & KPIs</button>
+    <button class="nav-item" data-sec="leads" onclick="navTo('leads')">🎯 Lead Seeding</button>
+    <button class="nav-item" data-sec="reports" onclick="navTo('reports')">📈 Reports</button>
+    <button class="nav-item" data-sec="builder" onclick="navTo('builder')">📱 App Builder</button>
+  </div>
+  <div style="padding:12px 16px;border-top:1px solid #1F2937;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span class="rt-dot"></span><span style="font-size:11px;color:#6B7280;">Live — real-time sync</span></div>
+    <div style="font-size:12px;color:#6B7280;margin-bottom:8px;" id="sidebarUser">—</div>
+    <button onclick="logout()" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:#9CA3AF;border-color:#374151;">Sign out</button>
+  </div>
+</nav>
+<main style="flex:1;overflow-y:auto;padding:28px;">
+  <div id="bizBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;"><span style="font-size:12px;font-weight:600;color:#6B7280;">Business:</span></div>
+
+  <!-- DASHBOARD -->
+  <div id="sec-dashboard" class="sec show">
+    <div class="sec-hdr"><div><div class="sec-title">Dashboard</div><div class="sec-sub" id="dashBizName">Loading…</div></div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;" id="dashStats"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:14px;">Recent Leads</div><div id="dashLeads"><div class="empty">Loading…</div></div></div>
+      <div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:14px;">Top Agents by Revenue</div><div id="dashTop"><div class="empty">Loading…</div></div></div>
     </div>
   </div>
 
-  <!-- Business selector -->
-  <div class="px-4 py-3 border-b border-white/10">
-    <p class="text-white/40 text-xs mb-2 uppercase tracking-wider">Active Business</p>
-    <select id="activeBusiness" onchange="switchBusiness(this.value)"
-      class="w-full bg-white/10 text-white text-sm rounded-lg px-3 py-2 border border-white/20 focus:outline-none focus:border-yellow-400">
-      <option value="mtn">📱 MTN Uganda</option>
-      <option value="airtel">📡 Airtel Uganda</option>
-      <option value="stanbic">🏦 Stanbic Bank UG</option>
-      <option value="dfcu">💳 DFCU Bank</option>
-    </select>
+  <!-- BUSINESSES -->
+  <div id="sec-businesses" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Businesses</div><div class="sec-sub">Manage client tenants</div></div><button class="btn btn-primary" onclick="openBizModal()">+ Add Business</button></div>
+    <div id="bizGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
   </div>
 
-  <!-- Nav -->
-  <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-    <div class="text-white/30 text-xs uppercase tracking-widest px-2 mb-2">Main</div>
-    <button onclick="showSection('dashboard')" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-600 text-left" data-section="dashboard">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-      Dashboard
-    </button>
-    <button onclick="showSection('businesses')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="businesses">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
-      Businesses
-    </button>
-    <button onclick="showSection('products')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="products">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M20 7h-4V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-8 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm2-9h-4V5h4v2z"/></svg>
-      Products & Pricing
-    </button>
-    <button onclick="showSection('agents')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="agents">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-      Agents & KPIs
-    </button>
-    <button onclick="showSection('leads')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="leads">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-      Lead Seeding
-    </button>
-    <button onclick="showSection('reports')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="reports">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-      Reports
-    </button>
+  <!-- PRODUCTS -->
+  <div id="sec-products" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Products & Pricing</div><div class="sec-sub">Prices and agent commissions</div></div><button class="btn btn-primary" onclick="openProductModal()">+ Add Product</button></div>
+    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Product</th><th>Category</th><th>Price (UGX)</th><th>Commission %</th><th>Active</th><th>Actions</th></tr></thead><tbody id="productsTbody"></tbody></table></div>
+  </div>
 
-    <div class="text-white/30 text-xs uppercase tracking-widest px-2 mt-5 mb-2">Configuration</div>
-    <button onclick="showSection('appbuilder')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="appbuilder">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-      App Builder
-    </button>
-    <button onclick="showSection('settings')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/80 text-left" data-section="settings">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-      Settings
-    </button>
-  </nav>
+  <!-- AGENTS -->
+  <div id="sec-agents" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Agents & KPIs</div><div class="sec-sub">Manage agents, set targets, track performance</div></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openActualModal()">📝 Record Actuals</button><button class="btn btn-primary" onclick="openAgentModal()">+ Add Agent</button></div></div>
+    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Agent</th><th>Region</th><th>Enrollments</th><th>Calls</th><th>Revenue</th><th>Active</th><th>Actions</th></tr></thead><tbody id="agentsTbody"></tbody></table></div>
+  </div>
 
-  <!-- User -->
-  <div class="px-4 py-4 border-t border-white/10">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-black text-xs">SP</div>
-      <div class="flex-1 min-w-0">
-        <p class="text-white text-xs font-700 truncate">Super Admin</p>
-        <p class="text-white/40 text-xs truncate">EAMS Portal</p>
+  <!-- LEADS -->
+  <div id="sec-leads" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Lead Seeding</div><div class="sec-sub">Add, assign and track leads</div></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openModal('csvModal')">⬆ Import CSV</button><button class="btn btn-primary" onclick="openLeadModal()">+ Add Lead</button></div></div>
+    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table></div>
+  </div>
+
+  <!-- REPORTS -->
+  <div id="sec-reports" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">Reports</div><div class="sec-sub">Performance analytics and commission payouts</div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+      <div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:16px;">Revenue by Agent (UGX)</div><canvas id="revenueChart" height="200"></canvas></div>
+      <div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:16px;">Enrollments by Agent</div><canvas id="enrollChart" height="200"></canvas></div>
+    </div>
+    <div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:14px;">🏆 Leaderboard & Commission Payouts</div>
+    <table class="dt"><thead><tr><th>#</th><th>Agent</th><th>Enrollments</th><th>Calls</th><th>Revenue (UGX)</th><th>Avg Commission</th><th>Payout (UGX)</th></tr></thead><tbody id="leaderTbody"></tbody></table></div>
+  </div>
+
+  <!-- APP BUILDER -->
+  <div id="sec-builder" class="sec">
+    <div class="sec-hdr"><div><div class="sec-title">App Builder</div><div class="sec-sub">Configure branded mobile app per business</div></div><button class="btn btn-primary" onclick="saveBuilder()">💾 Save & Push</button></div>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card"><div style="font-size:13px;font-weight:700;margin-bottom:12px;">App Identity</div>
+          <div class="fg"><label class="fl">App Name (shown on device)</label><input id="bAppName" class="fi" type="text" oninput="bPreview()" /></div></div>
+        <div class="card"><div style="font-size:13px;font-weight:700;margin-bottom:14px;">Brand Colors</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+            <div><label class="fl">Primary</label><div style="display:flex;gap:8px;align-items:center;"><input type="color" id="bColor" oninput="syncHex('bColor','bColorH');bPreview()" style="width:38px;height:38px;border-radius:8px;border:2px solid #E5E7EB;cursor:pointer;"/><input type="text" id="bColorH" class="fi" style="font-size:12px;" oninput="syncPicker('bColor','bColorH')"/></div></div>
+            <div><label class="fl">Text</label><div style="display:flex;gap:8px;align-items:center;"><input type="color" id="bTxt" oninput="syncHex('bTxt','bTxtH');bPreview()" style="width:38px;height:38px;border-radius:8px;border:2px solid #E5E7EB;cursor:pointer;"/><input type="text" id="bTxtH" class="fi" style="font-size:12px;" oninput="syncPicker('bTxt','bTxtH')"/></div></div>
+            <div><label class="fl">Accent</label><div style="display:flex;gap:8px;align-items:center;"><input type="color" id="bAccent" oninput="syncHex('bAccent','bAccentH');bPreview()" style="width:38px;height:38px;border-radius:8px;border:2px solid #E5E7EB;cursor:pointer;"/><input type="text" id="bAccentH" class="fi" style="font-size:12px;" oninput="syncPicker('bAccent','bAccentH')"/></div></div>
+          </div></div>
+        <div class="card"><div style="font-size:13px;font-weight:700;margin-bottom:12px;">Modules (visible to agents)</div><div id="bModules" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div></div>
+      </div>
+      <div>
+        <div class="card" style="padding:20px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:14px;">Live Preview</div>
+          <div class="phone">
+            <div style="background:#000;height:22px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;"><span style="color:#fff;font-size:9px;font-weight:700;">9:41</span><div style="width:14px;height:4px;background:#fff;border-radius:2px;"></div></div>
+            <div id="pHeader" style="padding:12px 10px 10px;min-height:100px;">
+              <div id="pLogo" style="width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:9px;font-weight:900;"></div>
+              <div id="pWelcome" style="font-weight:900;font-size:10px;line-height:1.4;"></div>
+              <div style="font-size:8px;opacity:.7;margin-top:2px;">Sign in to continue</div>
+            </div>
+            <div style="background:#fff;padding:10px;">
+              <div style="font-weight:800;font-size:9px;color:#111;margin-bottom:8px;">Sign In</div>
+              <div style="background:#F9FAFB;border-radius:6px;height:18px;margin-bottom:6px;display:flex;align-items:center;padding:0 6px;"><span style="font-size:8px;color:#9CA3AF;">Email</span></div>
+              <div style="background:#F9FAFB;border-radius:6px;height:18px;margin-bottom:8px;display:flex;align-items:center;padding:0 6px;"><span style="font-size:8px;color:#9CA3AF;">Password</span></div>
+              <div id="pBtn" style="border-radius:6px;height:20px;display:flex;align-items:center;justify-content:center;"><span id="pBtnTxt" style="font-size:8px;font-weight:800;">Sign In</span></div>
+            </div>
+            <div id="pModGrid" style="background:#F9FAFB;padding:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;"></div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;"><div id="bAppLabel" style="font-size:12px;font-weight:700;color:#374151;"></div><div style="font-size:11px;color:#9CA3AF;">Login screen preview</div></div>
       </div>
     </div>
   </div>
-</aside>
-
-<!-- ══════════════════ MAIN CONTENT ══════════════════ -->
-<main class="ml-60 flex-1 min-h-screen">
-
-  <!-- Top bar -->
-  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-    <div>
-      <h1 id="pageTitle" class="text-base font-800 text-gray-900">Dashboard</h1>
-      <p id="pageSubtitle" class="text-xs text-gray-400">Sales Hunter — Multi-Business Management Portal</p>
-    </div>
-    <div class="flex items-center gap-3">
-      <div id="activeBizBadge" class="tag badge-yellow">📱 MTN Uganda</div>
-      <button onclick="openModal('addBusinessModal')" class="bg-black text-yellow-400 text-xs font-700 px-4 py-2 rounded-xl hover:bg-gray-800 transition">+ Add Business</button>
-      <div class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black font-black text-xs cursor-pointer">SP</div>
-    </div>
-  </header>
-
-  <!-- ── DASHBOARD ── -->
-  <section id="sec-dashboard" class="p-6 fade-in">
-    <!-- Summary stats -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
-      <div class="card p-5">
-        <p class="text-xs text-gray-400 mb-1">Total Agents</p>
-        <p class="text-3xl font-900 text-gray-900">400</p>
-        <p class="text-xs text-green-600 mt-1 font-600">↑ 38 this month</p>
-      </div>
-      <div class="card p-5">
-        <p class="text-xs text-gray-400 mb-1">Active Businesses</p>
-        <p class="text-3xl font-900 text-gray-900">4</p>
-        <p class="text-xs text-blue-600 mt-1 font-600">+ 1 onboarding</p>
-      </div>
-      <div class="card p-5">
-        <p class="text-xs text-gray-400 mb-1">Revenue (MTD)</p>
-        <p class="text-3xl font-900 text-gray-900">UGX 1.2B</p>
-        <p class="text-xs text-green-600 mt-1 font-600">↑ 24% vs last month</p>
-      </div>
-      <div class="card p-5">
-        <p class="text-xs text-gray-400 mb-1">Leads Seeded</p>
-        <p class="text-3xl font-900 text-gray-900">2,840</p>
-        <p class="text-xs text-yellow-600 mt-1 font-600">347 unassigned</p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-5 mb-6">
-      <!-- Revenue by Business chart -->
-      <div class="card p-5 col-span-2">
-        <div class="flex items-center justify-between mb-4">
-          <p class="font-700 text-sm">Revenue by Business (Jan 2026)</p>
-          <select class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1">
-            <option>Monthly</option><option>Weekly</option><option>Daily</option>
-          </select>
-        </div>
-        <canvas id="revByBizChart" height="120"></canvas>
-      </div>
-      <!-- Top agents -->
-      <div class="card p-5">
-        <p class="font-700 text-sm mb-4">Top Agents This Week</p>
-        <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-yellow-400 text-black font-900 text-xs flex items-center justify-center">1</span>
-            <div class="flex-1"><p class="text-xs font-700">Aisha Nakato</p><p class="text-xs text-gray-400">MTN · 18 sales</p></div>
-            <span class="tag badge-green">UGX 540K</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-gray-200 text-gray-700 font-900 text-xs flex items-center justify-center">2</span>
-            <div class="flex-1"><p class="text-xs font-700">Brian Ssebugwawo</p><p class="text-xs text-gray-400">MTN · 15 sales</p></div>
-            <span class="tag badge-green">UGX 450K</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-orange-200 text-orange-700 font-900 text-xs flex items-center justify-center">3</span>
-            <div class="flex-1"><p class="text-xs font-700">Grace Atim</p><p class="text-xs text-gray-400">Airtel · 14 sales</p></div>
-            <span class="tag badge-green">UGX 420K</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-gray-100 text-gray-600 font-900 text-xs flex items-center justify-center">4</span>
-            <div class="flex-1"><p class="text-xs font-700">Ivan Mugisha</p><p class="text-xs text-gray-400">MTN · 12 sales</p></div>
-            <span class="tag badge-yellow">UGX 360K</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="w-6 h-6 rounded-full bg-gray-100 text-gray-600 font-900 text-xs flex items-center justify-center">5</span>
-            <div class="flex-1"><p class="text-xs font-700">Prossy Namuli</p><p class="text-xs text-gray-400">Stanbic · 11 sales</p></div>
-            <span class="tag badge-yellow">UGX 330K</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Business cards row -->
-    <p class="font-700 text-sm mb-3">All Businesses</p>
-    <div class="grid grid-cols-4 gap-4">
-      <div class="card p-4 border-l-4 border-yellow-400">
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-9 h-9 rounded-xl bg-yellow-400 flex items-center justify-center text-black font-900 text-xs">MTN</div>
-          <span class="tag badge-green">Active</span>
-        </div>
-        <p class="font-800 text-sm">MTN Uganda</p>
-        <p class="text-xs text-gray-400 mb-3">Telecom · 220 agents</p>
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Revenue MTD</span><span class="font-700">UGX 680M</span></div>
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Enrollments</span><span class="font-700">4,820</span></div>
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Products</span><span class="font-700">6</span></div>
-        </div>
-      </div>
-      <div class="card p-4 border-l-4 border-red-400">
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-9 h-9 rounded-xl bg-red-500 flex items-center justify-center text-white font-900 text-xs">AIR</div>
-          <span class="tag badge-green">Active</span>
-        </div>
-        <p class="font-800 text-sm">Airtel Uganda</p>
-        <p class="text-xs text-gray-400 mb-3">Telecom · 80 agents</p>
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Revenue MTD</span><span class="font-700">UGX 210M</span></div>
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Enrollments</span><span class="font-700">1,640</span></div>
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Products</span><span class="font-700">4</span></div>
-        </div>
-      </div>
-      <div class="card p-4 border-l-4 border-blue-500">
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-900 text-xs">SBK</div>
-          <span class="tag badge-green">Active</span>
-        </div>
-        <p class="font-800 text-sm">Stanbic Bank UG</p>
-        <p class="text-xs text-gray-400 mb-3">Banking · 60 agents</p>
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Revenue MTD</span><span class="font-700">UGX 180M</span></div>
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Enrollments</span><span class="font-700">980</span></div>
-          <div class="flex justify-between text-xs"><span class="text-gray-500">Products</span><span class="font-700">5</span></div>
-        </div>
-      </div>
-      <div class="card p-4 border-l-4 border-gray-300 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition" onclick="openModal('addBusinessModal')">
-        <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-2">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        </div>
-        <p class="text-xs font-700 text-gray-500">Add Business</p>
-        <p class="text-xs text-gray-300 text-center mt-1">Connect a new brand to the portal</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── BUSINESSES ── -->
-  <section id="sec-businesses" class="p-6 fade-in hidden">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="font-800 text-lg">Business Management</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Create and configure businesses that agents can sell for</p>
-      </div>
-      <button onclick="openModal('addBusinessModal')" class="bg-black text-yellow-400 text-sm font-700 px-5 py-2.5 rounded-xl hover:bg-gray-800 transition flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-        Add Business
-      </button>
-    </div>
-
-    <div class="grid grid-cols-3 gap-5">
-      <!-- MTN -->
-      <div class="card p-5">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-yellow-400 flex items-center justify-center text-black font-900 text-sm">MTN</div>
-            <div>
-              <p class="font-800 text-sm">MTN Uganda</p>
-              <p class="text-xs text-gray-400">Telecom / Fintech</p>
-            </div>
-          </div>
-          <span class="tag badge-green">Live</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mb-4">
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">220</p><p class="text-xs text-gray-400">Agents</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">6</p><p class="text-xs text-gray-400">Products</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">4.8K</p><p class="text-xs text-gray-400">Sales</p></div>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-          <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-          Brand color: #FFCC00
-          <div class="w-3 h-3 rounded-full bg-black ml-2"></div>
-          #000000
-        </div>
-        <div class="flex gap-2">
-          <button onclick="showSection('products')" class="flex-1 bg-yellow-50 text-yellow-700 text-xs font-700 py-2 rounded-xl hover:bg-yellow-100 transition">Manage</button>
-          <button class="flex-1 bg-gray-50 text-gray-700 text-xs font-700 py-2 rounded-xl hover:bg-gray-100 transition">Settings</button>
-        </div>
-      </div>
-
-      <!-- Airtel -->
-      <div class="card p-5">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-red-500 flex items-center justify-center text-white font-900 text-sm">AIR</div>
-            <div>
-              <p class="font-800 text-sm">Airtel Uganda</p>
-              <p class="text-xs text-gray-400">Telecom</p>
-            </div>
-          </div>
-          <span class="tag badge-green">Live</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mb-4">
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">80</p><p class="text-xs text-gray-400">Agents</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">4</p><p class="text-xs text-gray-400">Products</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">1.6K</p><p class="text-xs text-gray-400">Sales</p></div>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-          <div class="w-3 h-3 rounded-full bg-red-500"></div>
-          Brand color: #E53935
-          <div class="w-3 h-3 rounded-full bg-gray-900 ml-2"></div>
-          #111111
-        </div>
-        <div class="flex gap-2">
-          <button class="flex-1 bg-red-50 text-red-700 text-xs font-700 py-2 rounded-xl hover:bg-red-100 transition">Manage</button>
-          <button class="flex-1 bg-gray-50 text-gray-700 text-xs font-700 py-2 rounded-xl hover:bg-gray-100 transition">Settings</button>
-        </div>
-      </div>
-
-      <!-- Stanbic -->
-      <div class="card p-5">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-900 text-sm">SBK</div>
-            <div>
-              <p class="font-800 text-sm">Stanbic Bank UG</p>
-              <p class="text-xs text-gray-400">Banking</p>
-            </div>
-          </div>
-          <span class="tag badge-green">Live</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mb-4">
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">60</p><p class="text-xs text-gray-400">Agents</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">5</p><p class="text-xs text-gray-400">Products</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">980</p><p class="text-xs text-gray-400">Sales</p></div>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-          <div class="w-3 h-3 rounded-full bg-blue-600"></div>
-          Brand color: #1565C0
-          <div class="w-3 h-3 rounded-full bg-yellow-400 ml-2"></div>
-          #FFC107
-        </div>
-        <div class="flex gap-2">
-          <button class="flex-1 bg-blue-50 text-blue-700 text-xs font-700 py-2 rounded-xl hover:bg-blue-100 transition">Manage</button>
-          <button class="flex-1 bg-gray-50 text-gray-700 text-xs font-700 py-2 rounded-xl hover:bg-gray-100 transition">Settings</button>
-        </div>
-      </div>
-
-      <!-- DFCU -->
-      <div class="card p-5">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-green-600 flex items-center justify-center text-white font-900 text-sm">DFC</div>
-            <div>
-              <p class="font-800 text-sm">DFCU Bank</p>
-              <p class="text-xs text-gray-400">Banking</p>
-            </div>
-          </div>
-          <span class="tag badge-yellow">Onboarding</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mb-4">
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">40</p><p class="text-xs text-gray-400">Agents</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">3</p><p class="text-xs text-gray-400">Products</p></div>
-          <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-lg font-900">0</p><p class="text-xs text-gray-400">Sales</p></div>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-          <div class="w-3 h-3 rounded-full bg-green-600"></div>
-          Brand color: #2E7D32
-          <div class="w-3 h-3 rounded-full bg-yellow-500 ml-2"></div>
-          #F9A825
-        </div>
-        <div class="flex gap-2">
-          <button class="flex-1 bg-green-50 text-green-700 text-xs font-700 py-2 rounded-xl hover:bg-green-100 transition">Setup</button>
-          <button class="flex-1 bg-gray-50 text-gray-700 text-xs font-700 py-2 rounded-xl hover:bg-gray-100 transition">Settings</button>
-        </div>
-      </div>
-
-      <!-- Add -->
-      <div class="card p-5 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition" onclick="openModal('addBusinessModal')">
-        <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
-          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        </div>
-        <p class="font-700 text-gray-500 text-sm">Add New Business</p>
-        <p class="text-xs text-gray-300 mt-1 text-center">Any industry — telecom, banking, insurance, retail</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── PRODUCTS & PRICING ── -->
-  <section id="sec-products" class="p-6 fade-in hidden">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <h2 class="font-800 text-lg">Products & Pricing</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Set product prices and agent commission rates per business</p>
-      </div>
-      <div class="flex gap-2">
-        <select id="bizFilter" onchange="filterProducts(this.value)" class="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-yellow-400">
-          <option value="mtn">📱 MTN Uganda</option>
-          <option value="airtel">📡 Airtel Uganda</option>
-          <option value="stanbic">🏦 Stanbic Bank</option>
-        </select>
-        <button onclick="openModal('addProductModal')" class="bg-black text-yellow-400 text-sm font-700 px-5 py-2.5 rounded-xl hover:bg-gray-800 transition">+ Add Product</button>
-      </div>
-    </div>
-
-    <div id="productsTable" class="card overflow-hidden">
-      <table class="w-full text-sm">
-        <thead class="bg-gray-50 border-b border-gray-100">
-          <tr>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Product</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Category</th>
-            <th class="text-right px-5 py-3 text-xs font-700 text-gray-500 uppercase">Price (UGX)</th>
-            <th class="text-right px-5 py-3 text-xs font-700 text-gray-500 uppercase">Commission %</th>
-            <th class="text-right px-5 py-3 text-xs font-700 text-gray-500 uppercase">Commission (UGX)</th>
-            <th class="text-center px-5 py-3 text-xs font-700 text-gray-500 uppercase">Status</th>
-            <th class="px-5 py-3"></th>
-          </tr>
-        </thead>
-        <tbody id="productRows"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ── AGENTS & KPIs ── -->
-  <section id="sec-agents" class="p-6 fade-in hidden">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <h2 class="font-800 text-lg">Agents & KPI Management</h2>
-        <p class="text-xs text-gray-400 mt-0.5">View agents, set daily/weekly/monthly targets, manage commissions</p>
-      </div>
-      <div class="flex gap-2">
-        <input type="text" placeholder="Search agents..." class="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-yellow-400 w-48"/>
-        <button onclick="openModal('setKpiModal')" class="bg-black text-yellow-400 text-sm font-700 px-5 py-2.5 rounded-xl hover:bg-gray-800 transition">Set KPI Targets</button>
-      </div>
-    </div>
-
-    <!-- KPI summary cards -->
-    <div class="grid grid-cols-3 gap-4 mb-5">
-      <div class="card p-4">
-        <p class="text-xs text-gray-400 mb-1">Daily Target (per agent)</p>
-        <div class="flex items-end gap-2">
-          <p class="text-2xl font-900">2</p>
-          <p class="text-sm text-gray-400 mb-1">enrollments</p>
-        </div>
-        <p class="text-xs text-gray-400">+ UGX 500,000 revenue</p>
-        <button onclick="openModal('setKpiModal')" class="mt-3 text-xs text-yellow-600 font-700 hover:underline">Edit target →</button>
-      </div>
-      <div class="card p-4">
-        <p class="text-xs text-gray-400 mb-1">Weekly Target (per agent)</p>
-        <div class="flex items-end gap-2">
-          <p class="text-2xl font-900">10</p>
-          <p class="text-sm text-gray-400 mb-1">enrollments</p>
-        </div>
-        <p class="text-xs text-gray-400">+ UGX 2,500,000 revenue</p>
-        <button onclick="openModal('setKpiModal')" class="mt-3 text-xs text-yellow-600 font-700 hover:underline">Edit target →</button>
-      </div>
-      <div class="card p-4">
-        <p class="text-xs text-gray-400 mb-1">Monthly Target (per agent)</p>
-        <div class="flex items-end gap-2">
-          <p class="text-2xl font-900">40</p>
-          <p class="text-sm text-gray-400 mb-1">enrollments</p>
-        </div>
-        <p class="text-xs text-gray-400">+ UGX 10,000,000 revenue</p>
-        <button onclick="openModal('setKpiModal')" class="mt-3 text-xs text-yellow-600 font-700 hover:underline">Edit target →</button>
-      </div>
-    </div>
-
-    <!-- Agents table -->
-    <div class="card overflow-hidden">
-      <table class="w-full text-sm">
-        <thead class="bg-gray-50 border-b border-gray-100">
-          <tr>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Agent</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Business</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Territory</th>
-            <th class="text-center px-5 py-3 text-xs font-700 text-gray-500 uppercase">Monthly KPI</th>
-            <th class="text-right px-5 py-3 text-xs font-700 text-gray-500 uppercase">Earnings MTD</th>
-            <th class="text-center px-5 py-3 text-xs font-700 text-gray-500 uppercase">Status</th>
-            <th class="px-5 py-3"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-yellow-400 text-black font-900 text-xs flex items-center justify-center">AN</div><div><p class="font-700 text-xs">Aisha Nakato</p><p class="text-xs text-gray-400">SH-0041</p></div></div></td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">Nakawa Central</td>
-            <td class="px-5 py-3"><div class="flex flex-col gap-1"><div class="flex justify-between text-xs mb-0.5"><span>28/40</span><span class="text-green-600 font-700">70%</span></div><div class="progress-bar"><div class="progress-fill bg-green-500" style="width:70%"></div></div></div></td>
-            <td class="px-5 py-3 text-right font-700 text-xs text-green-600">UGX 840,000</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-green">Active</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">View</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-500 text-white font-900 text-xs flex items-center justify-center">BS</div><div><p class="font-700 text-xs">Brian Ssebugwawo</p><p class="text-xs text-gray-400">SH-0038</p></div></div></td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">Nakawa East</td>
-            <td class="px-5 py-3"><div class="flex flex-col gap-1"><div class="flex justify-between text-xs mb-0.5"><span>32/40</span><span class="text-green-600 font-700">80%</span></div><div class="progress-bar"><div class="progress-fill bg-green-500" style="width:80%"></div></div></div></td>
-            <td class="px-5 py-3 text-right font-700 text-xs text-green-600">UGX 960,000</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-green">Active</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">View</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-red-400 text-white font-900 text-xs flex items-center justify-center">GA</div><div><p class="font-700 text-xs">Grace Atim</p><p class="text-xs text-gray-400">SH-0022</p></div></div></td>
-            <td class="px-5 py-3"><span class="tag badge-red" style="background:#FFEBEE;color:#C62828">Airtel</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">Kampala North</td>
-            <td class="px-5 py-3"><div class="flex flex-col gap-1"><div class="flex justify-between text-xs mb-0.5"><span>14/40</span><span class="text-yellow-600 font-700">35%</span></div><div class="progress-bar"><div class="progress-fill bg-yellow-400" style="width:35%"></div></div></div></td>
-            <td class="px-5 py-3 text-right font-700 text-xs text-yellow-600">UGX 420,000</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-green">Active</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">View</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-300 text-gray-700 font-900 text-xs flex items-center justify-center">JO</div><div><p class="font-700 text-xs">James Okello</p><p class="text-xs text-gray-400">SH-0055</p></div></div></td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">Nakawa South</td>
-            <td class="px-5 py-3"><div class="flex flex-col gap-1"><div class="flex justify-between text-xs mb-0.5"><span>5/40</span><span class="text-red-600 font-700">12%</span></div><div class="progress-bar"><div class="progress-fill bg-red-500" style="width:12%"></div></div></div></td>
-            <td class="px-5 py-3 text-right font-700 text-xs text-red-500">UGX 150,000</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-yellow">At Risk</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">View</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="px-5 py-3 border-t border-gray-100 flex items-center justify-between">
-        <p class="text-xs text-gray-400">Showing 4 of 400 agents</p>
-        <div class="flex gap-2">
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition">← Prev</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-black text-white">1</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition">2</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition">Next →</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── LEAD SEEDING ── -->
-  <section id="sec-leads" class="p-6 fade-in hidden">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <h2 class="font-800 text-lg">Lead Seeding</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Create, import and assign leads to businesses and agents</p>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="openModal('importLeadsModal')" class="border border-gray-200 text-gray-700 text-sm font-600 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition">↑ Import CSV</button>
-        <button onclick="openModal('addLeadModal')" class="bg-black text-yellow-400 text-sm font-700 px-5 py-2.5 rounded-xl hover:bg-gray-800 transition">+ Add Lead</button>
-      </div>
-    </div>
-
-    <!-- Lead stats -->
-    <div class="grid grid-cols-4 gap-4 mb-5">
-      <div class="card p-4 text-center"><p class="text-2xl font-900">2,840</p><p class="text-xs text-gray-400 mt-1">Total Leads</p></div>
-      <div class="card p-4 text-center"><p class="text-2xl font-900 text-green-600">2,493</p><p class="text-xs text-gray-400 mt-1">Assigned</p></div>
-      <div class="card p-4 text-center"><p class="text-2xl font-900 text-yellow-600">347</p><p class="text-xs text-gray-400 mt-1">Unassigned</p></div>
-      <div class="card p-4 text-center"><p class="text-2xl font-900 text-blue-600">1,120</p><p class="text-xs text-gray-400 mt-1">Converted</p></div>
-    </div>
-
-    <!-- Leads table -->
-    <div class="card overflow-hidden">
-      <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
-        <input type="text" placeholder="Search leads by name, phone, business..." class="flex-1 text-sm bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 focus:outline-none focus:border-yellow-400"/>
-        <select class="text-sm bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 focus:outline-none">
-          <option>All Businesses</option>
-          <option>MTN Uganda</option>
-          <option>Airtel Uganda</option>
-          <option>Stanbic Bank</option>
-        </select>
-        <select class="text-sm bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 focus:outline-none">
-          <option>All Statuses</option>
-          <option>Unassigned</option>
-          <option>Assigned</option>
-          <option>Contacted</option>
-          <option>Converted</option>
-        </select>
-      </div>
-      <table class="w-full text-sm">
-        <thead class="bg-gray-50 border-b border-gray-100">
-          <tr>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Lead</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Contact</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Business</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Product Interest</th>
-            <th class="text-left px-5 py-3 text-xs font-700 text-gray-500 uppercase">Assigned To</th>
-            <th class="text-center px-5 py-3 text-xs font-700 text-gray-500 uppercase">Status</th>
-            <th class="px-5 py-3"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><p class="font-700 text-xs">Capital Insurance Ltd</p><p class="text-xs text-gray-400">Business · Nakawa</p></td>
-            <td class="px-5 py-3 text-xs text-gray-600">0772-440-001</td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">MTN Business</td>
-            <td class="px-5 py-3 text-xs font-600">Aisha Nakato</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-green">Converted</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">Edit</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><p class="font-700 text-xs">Rainbow Hotel Ltd</p><p class="text-xs text-gray-400">Hospitality · Kololo</p></td>
-            <td class="px-5 py-3 text-xs text-gray-600">0704-220-330</td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">MTN Broadband</td>
-            <td class="px-5 py-3 text-xs font-600">Brian Ssebugwawo</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-blue">Contacted</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">Edit</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><p class="font-700 text-xs">Nakawa Crafts Co.</p><p class="text-xs text-gray-400">Retail · Nakawa Market</p></td>
-            <td class="px-5 py-3 text-xs text-gray-600">0756-881-205</td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">Yello Pages</td>
-            <td class="px-5 py-3 text-xs text-gray-400 italic">Unassigned</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-gray">Unassigned</span></td>
-            <td class="px-5 py-3 text-right"><button onclick="openModal('assignLeadModal')" class="text-xs text-yellow-600 hover:underline font-700">Assign</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><p class="font-700 text-xs">Green Energy Uganda</p><p class="text-xs text-gray-400">Energy · Ntinda</p></td>
-            <td class="px-5 py-3 text-xs text-gray-600">0700-115-990</td>
-            <td class="px-5 py-3"><span class="tag badge-blue">Stanbic</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">Business Loan</td>
-            <td class="px-5 py-3 text-xs font-600">Prossy Namuli</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-green">Converted</span></td>
-            <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600">Edit</button></td>
-          </tr>
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50">
-            <td class="px-5 py-3"><p class="font-700 text-xs">Kampala Boda Riders</p><p class="text-xs text-gray-400">Transport · Kireka</p></td>
-            <td class="px-5 py-3 text-xs text-gray-600">0785-442-789</td>
-            <td class="px-5 py-3"><span class="tag badge-yellow">MTN</span></td>
-            <td class="px-5 py-3 text-xs text-gray-600">MTN MoMo</td>
-            <td class="px-5 py-3 text-xs text-gray-400 italic">Unassigned</td>
-            <td class="px-5 py-3 text-center"><span class="tag badge-gray">Unassigned</span></td>
-            <td class="px-5 py-3 text-right"><button onclick="openModal('assignLeadModal')" class="text-xs text-yellow-600 hover:underline font-700">Assign</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="px-5 py-3 border-t border-gray-100 flex items-center justify-between">
-        <p class="text-xs text-gray-400">Showing 5 of 2,840 leads</p>
-        <div class="flex gap-2">
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100">← Prev</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-black text-white">1</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100">2</button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100">Next →</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── REPORTS ── -->
-  <section id="sec-reports" class="p-6 fade-in hidden">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <h2 class="font-800 text-lg">Reports & Analytics</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Performance, revenue, and agent analytics across all businesses</p>
-      </div>
-      <div class="flex gap-2">
-        <select class="text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-yellow-400">
-          <option>January 2026</option><option>December 2025</option><option>November 2025</option>
-        </select>
-        <button class="bg-black text-yellow-400 text-sm font-700 px-5 py-2 rounded-xl hover:bg-gray-800 transition">↓ Export</button>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-5 mb-5">
-      <div class="card p-5">
-        <p class="font-700 text-sm mb-4">Revenue Trend (6 months)</p>
-        <canvas id="revTrendChart" height="140"></canvas>
-      </div>
-      <div class="card p-5">
-        <p class="font-700 text-sm mb-4">Enrollments by Business</p>
-        <canvas id="enrollChart" height="140"></canvas>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-5">
-      <div class="card p-5 col-span-2">
-        <p class="font-700 text-sm mb-4">Agent Performance League</p>
-        <div class="space-y-3">
-          <div class="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl">
-            <span class="w-7 h-7 rounded-full bg-yellow-400 text-black font-900 text-xs flex items-center justify-center">1</span>
-            <div class="flex-1"><p class="text-xs font-700">Aisha Nakato</p><p class="text-xs text-gray-400">28 enrollments · MTN · Nakawa</p></div>
-            <div class="progress-bar w-32"><div class="progress-fill bg-yellow-400" style="width:70%"></div></div>
-            <p class="text-xs font-800 text-yellow-700 w-16 text-right">UGX 840K</p>
-          </div>
-          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-            <span class="w-7 h-7 rounded-full bg-gray-300 text-gray-700 font-900 text-xs flex items-center justify-center">2</span>
-            <div class="flex-1"><p class="text-xs font-700">Brian Ssebugwawo</p><p class="text-xs text-gray-400">32 enrollments · MTN · Nakawa</p></div>
-            <div class="progress-bar w-32"><div class="progress-fill bg-gray-400" style="width:80%"></div></div>
-            <p class="text-xs font-800 text-gray-700 w-16 text-right">UGX 960K</p>
-          </div>
-          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-            <span class="w-7 h-7 rounded-full bg-orange-200 text-orange-700 font-900 text-xs flex items-center justify-center">3</span>
-            <div class="flex-1"><p class="text-xs font-700">Grace Atim</p><p class="text-xs text-gray-400">14 enrollments · Airtel · Kampala</p></div>
-            <div class="progress-bar w-32"><div class="progress-fill bg-orange-400" style="width:35%"></div></div>
-            <p class="text-xs font-800 text-orange-700 w-16 text-right">UGX 420K</p>
-          </div>
-          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-            <span class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 font-900 text-xs flex items-center justify-center">4</span>
-            <div class="flex-1"><p class="text-xs font-700">Ivan Mugisha</p><p class="text-xs text-gray-400">12 enrollments · MTN · Nakawa</p></div>
-            <div class="progress-bar w-32"><div class="progress-fill bg-blue-400" style="width:30%"></div></div>
-            <p class="text-xs font-800 text-blue-700 w-16 text-right">UGX 360K</p>
-          </div>
-        </div>
-      </div>
-      <div class="card p-5">
-        <p class="font-700 text-sm mb-4">Commissions Paid Out</p>
-        <canvas id="commissionChart" height="180"></canvas>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── APP BUILDER ── -->
-  <section id="sec-appbuilder" class="p-6 fade-in hidden">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <h2 class="font-800 text-lg">App Builder</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Configure branded mobile apps per business — modules, colors, features</p>
-      </div>
-      <button class="bg-black text-yellow-400 text-sm font-700 px-5 py-2.5 rounded-xl hover:bg-gray-800 transition">↓ Export Config</button>
-    </div>
-
-    <div class="grid grid-cols-3 gap-5">
-      <!-- Config panel -->
-      <div class="col-span-2 space-y-4">
-        <!-- Business picker -->
-        <div class="card p-5">
-          <p class="font-700 text-sm mb-3">Select Business to Configure</p>
-          <div class="flex gap-3">
-            <div class="business-chip selected flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-yellow-400 bg-yellow-50" onclick="selectBiz(this)">
-              <div class="w-6 h-6 rounded-lg bg-yellow-400 text-black font-900 text-xs flex items-center justify-center">M</div>
-              <span class="text-sm font-700">MTN Uganda</span>
-            </div>
-            <div class="business-chip flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-gray-200" onclick="selectBiz(this)">
-              <div class="w-6 h-6 rounded-lg bg-red-500 text-white font-900 text-xs flex items-center justify-center">A</div>
-              <span class="text-sm font-700">Airtel Uganda</span>
-            </div>
-            <div class="business-chip flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-gray-200" onclick="selectBiz(this)">
-              <div class="w-6 h-6 rounded-lg bg-blue-600 text-white font-900 text-xs flex items-center justify-center">S</div>
-              <span class="text-sm font-700">Stanbic Bank</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Brand colors -->
-        <div class="card p-5">
-          <p class="font-700 text-sm mb-4">Brand Colors</p>
-          <div class="grid grid-cols-3 gap-4">
-            <div>
-              <p class="text-xs text-gray-400 mb-2">Primary Color</p>
-              <div class="flex items-center gap-2">
-                <input type="color" value="#FFCC00" class="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer"/>
-                <input type="text" value="#FFCC00" class="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"/>
-              </div>
-            </div>
-            <div>
-              <p class="text-xs text-gray-400 mb-2">Secondary Color</p>
-              <div class="flex items-center gap-2">
-                <input type="color" value="#000000" class="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer"/>
-                <input type="text" value="#000000" class="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"/>
-              </div>
-            </div>
-            <div>
-              <p class="text-xs text-gray-400 mb-2">Accent Color</p>
-              <div class="flex items-center gap-2">
-                <input type="color" value="#FF8F00" class="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer"/>
-                <input type="text" value="#FF8F00" class="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"/>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modules toggle -->
-        <div class="card p-5">
-          <p class="font-700 text-sm mb-4">App Modules (visible to agents)</p>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">🏠</span><span class="text-sm font-600">Dashboard / Home</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">🎯</span><span class="text-sm font-600">Leads Pipeline</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">📊</span><span class="text-sm font-600">Kanban Pipeline</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">👥</span><span class="text-sm font-600">Customers / CRM</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">🛒</span><span class="text-sm font-600">Products Catalogue</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">💰</span><span class="text-sm font-600">Earnings & KPIs</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">🏆</span><span class="text-sm font-600">Leaderboard</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div class="flex items-center gap-2"><span class="text-base">🤖</span><span class="text-sm font-600">AI Lead Search</span></div>
-              <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"/><div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-yellow-400 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div></label>
-            </div>
-          </div>
-        </div>
-
-        <button class="w-full bg-black text-yellow-400 font-800 py-3 rounded-xl hover:bg-gray-800 transition text-sm">Save Configuration & Push to App</button>
-      </div>
-
-      <!-- Phone preview -->
-      <div class="card p-5 flex flex-col items-center">
-        <p class="font-700 text-sm mb-4 self-start">App Preview</p>
-        <div class="w-48 h-96 bg-black rounded-3xl border-4 border-gray-800 overflow-hidden shadow-2xl relative">
-          <div class="h-full flex flex-col">
-            <!-- Status bar -->
-            <div class="bg-black h-6 flex items-center justify-between px-4">
-              <span class="text-white text-xs font-700">9:41</span>
-              <div class="flex gap-1"><div class="w-3 h-1.5 bg-white rounded-sm"></div><div class="w-1 h-1.5 bg-white/40 rounded-sm"></div></div>
-            </div>
-            <!-- Yellow header -->
-            <div class="bg-yellow-400 flex-1 flex flex-col justify-end pb-2 px-3">
-              <div class="bg-black rounded-lg w-8 h-8 flex items-center justify-center mb-2">
-                <span class="text-yellow-400 font-900 text-xs">MTN</span>
-              </div>
-              <p class="text-black font-900 text-xs leading-tight">Welcome back,<br/>Sales Hunter!</p>
-              <p class="text-black/60 text-xs mt-1">Sign in to your account</p>
-            </div>
-            <!-- White form -->
-            <div class="bg-white h-48 rounded-t-2xl px-3 pt-3">
-              <p class="font-800 text-xs text-gray-800">Sign In</p>
-              <div class="mt-2 bg-gray-100 rounded-lg h-7 flex items-center px-2">
-                <p class="text-gray-400 text-xs">Email address</p>
-              </div>
-              <div class="mt-2 bg-gray-100 rounded-lg h-7 flex items-center px-2">
-                <p class="text-gray-400 text-xs">Password</p>
-              </div>
-              <div class="mt-3 bg-yellow-400 rounded-lg h-7 flex items-center justify-center">
-                <p class="text-black font-800 text-xs">Sign In</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p class="text-xs text-gray-400 mt-3 text-center">Live preview of login screen</p>
-        <p class="text-xs text-yellow-600 font-700 mt-1">MTN Uganda</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── SETTINGS ── -->
-  <section id="sec-settings" class="p-6 fade-in hidden">
-    <h2 class="font-800 text-lg mb-5">Portal Settings</h2>
-    <div class="grid grid-cols-2 gap-5">
-      <div class="card p-5">
-        <p class="font-700 text-sm mb-4">General Settings</p>
-        <div class="space-y-4">
-          <div><label class="text-xs text-gray-500 mb-1 block">Portal Name</label><input type="text" value="Sales Hunter Portal" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Default Currency</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>UGX — Ugandan Shilling</option><option>USD — US Dollar</option><option>KES — Kenyan Shilling</option></select></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Backend API URL</label><input type="text" value="https://eams-t3js.onrender.com/api/v1" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-          <button class="w-full bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm hover:bg-gray-800 transition">Save Settings</button>
-        </div>
-      </div>
-      <div class="card p-5">
-        <p class="font-700 text-sm mb-4">Commission Global Defaults</p>
-        <div class="space-y-4">
-          <div><label class="text-xs text-gray-500 mb-1 block">Default Commission Rate (%)</label><input type="number" value="8" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Payout Cycle</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>Monthly (15th)</option><option>Bi-weekly</option><option>Weekly</option></select></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Minimum Payout Threshold (UGX)</label><input type="number" value="50000" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-          <button class="w-full bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm hover:bg-gray-800 transition">Save Defaults</button>
-        </div>
-      </div>
-    </div>
-  </section>
 </main>
-
-<!-- ══════════════════ MODALS ══════════════════ -->
-
-<!-- Add Business Modal -->
-<div id="addBusinessModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay" onclick="if(event.target===this)closeModal('addBusinessModal')">
-  <div class="bg-white rounded-2xl w-full max-w-lg p-6 m-4 shadow-2xl">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-800 text-lg">Add New Business</h3>
-      <button onclick="closeModal('addBusinessModal')" class="text-gray-400 hover:text-gray-700">✕</button>
-    </div>
-    <div class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Business Name *</label><input type="text" placeholder="e.g. Airtel Uganda" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Industry *</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>Telecom</option><option>Banking</option><option>Insurance</option><option>Retail</option><option>Energy</option><option>Healthcare</option><option>Other</option></select></div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Short Code (3–4 chars) *</label><input type="text" placeholder="e.g. AIR" maxlength="4" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Country</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>Uganda</option><option>Kenya</option><option>Tanzania</option><option>Rwanda</option></select></div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Primary Brand Color</label><div class="flex items-center gap-2"><input type="color" value="#FFCC00" class="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer"/><input type="text" value="#FFCC00" class="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"/></div></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Secondary Color</label><div class="flex items-center gap-2"><input type="color" value="#000000" class="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer"/><input type="text" value="#000000" class="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2"/></div></div>
-      </div>
-      <div><label class="text-xs text-gray-500 mb-1 block">Description</label><textarea rows="2" placeholder="Brief description of what this business sells..." class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:border-yellow-400"></textarea></div>
-    </div>
-    <div class="flex gap-3 mt-5">
-      <button onclick="closeModal('addBusinessModal')" class="flex-1 border border-gray-200 text-gray-700 font-600 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition">Cancel</button>
-      <button onclick="closeModal('addBusinessModal')" class="flex-1 bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm hover:bg-gray-800 transition">Create Business</button>
-    </div>
-  </div>
 </div>
 
-<!-- Add Product Modal -->
-<div id="addProductModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay" onclick="if(event.target===this)closeModal('addProductModal')">
-  <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-2xl">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-800 text-lg">Add Product</h3>
-      <button onclick="closeModal('addProductModal')" class="text-gray-400 hover:text-gray-700">✕</button>
-    </div>
-    <div class="space-y-4">
-      <div><label class="text-xs text-gray-500 mb-1 block">Product Name *</label><input type="text" placeholder="e.g. MTN Business" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Category</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>Mobile Money</option><option>Data/Broadband</option><option>Business</option><option>Insurance</option><option>Loans</option></select></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Price (UGX) *</label><input type="number" placeholder="0" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-      </div>
-      <div><label class="text-xs text-gray-500 mb-1 block">Commission Rate (%)</label>
-        <div class="flex items-center gap-3">
-          <input type="range" min="1" max="20" value="8" class="flex-1" oninput="document.getElementById('commPct').textContent=this.value+'%'"/>
-          <span id="commPct" class="text-sm font-800 text-yellow-600 w-10">8%</span>
-        </div>
-      </div>
-    </div>
-    <div class="flex gap-3 mt-5">
-      <button onclick="closeModal('addProductModal')" class="flex-1 border border-gray-200 text-gray-700 font-600 py-2.5 rounded-xl text-sm">Cancel</button>
-      <button onclick="closeModal('addProductModal')" class="flex-1 bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm">Add Product</button>
-    </div>
+<!-- MODALS -->
+<div class="modal-bg" id="bizModal"><div class="modal-box">
+  <div class="mtitle" id="bizMTitle">Add Business</div><input type="hidden" id="bizId" />
+  <div class="fg"><label class="fl">Business Name *</label><input id="bizName" class="fi" placeholder="e.g. MTN Uganda" /></div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Short Code *</label><input id="bizCode" class="fi" placeholder="MTN" maxlength="5" /></div>
+    <div class="fg"><label class="fl">Primary Color</label><input id="bizColor" class="fi" type="color" value="#FFCC00" style="height:42px;" /></div>
   </div>
-</div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Text Color</label><input id="bizTxtColor" class="fi" type="color" value="#000000" style="height:42px;" /></div>
+    <div class="fg"><label class="fl">Accent Color</label><input id="bizAccent" class="fi" type="color" value="#FF8F00" style="height:42px;" /></div>
+  </div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('bizModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveBusiness()">Save Business</button>
+  </div>
+</div></div>
 
-<!-- Set KPI Modal -->
-<div id="setKpiModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay" onclick="if(event.target===this)closeModal('setKpiModal')">
-  <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-2xl">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-800 text-lg">Set KPI Targets</h3>
-      <button onclick="closeModal('setKpiModal')" class="text-gray-400 hover:text-gray-700">✕</button>
+<div class="modal-bg" id="productModal"><div class="modal-box">
+  <div class="mtitle" id="productMTitle">Add Product</div><input type="hidden" id="productId" />
+  <div class="fg"><label class="fl">Product Name *</label><input id="productName" class="fi" placeholder="e.g. MTN MoMo Savings" /></div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Category</label>
+      <select id="productCat" class="fi"><option>Mobile Money</option><option>Data Bundle</option><option>Voice Bundle</option><option>Insurance</option><option>Loans</option><option>Savings</option><option>Other</option></select>
     </div>
-    <div class="space-y-5">
-      <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
-        <p class="text-xs font-700 text-blue-800 mb-3">📅 Daily Targets</p>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="text-xs text-gray-500 mb-1 block">Enrollments</label><input type="number" value="2" class="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none"/></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Revenue (UGX)</label><input type="number" value="500000" class="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none"/></div>
-        </div>
-      </div>
-      <div class="p-3 bg-purple-50 rounded-xl border border-purple-100">
-        <p class="text-xs font-700 text-purple-800 mb-3">📆 Weekly Targets</p>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="text-xs text-gray-500 mb-1 block">Enrollments</label><input type="number" value="10" class="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none"/></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Revenue (UGX)</label><input type="number" value="2500000" class="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none"/></div>
-        </div>
-      </div>
-      <div class="p-3 bg-green-50 rounded-xl border border-green-100">
-        <p class="text-xs font-700 text-green-800 mb-3">📊 Monthly Targets</p>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="text-xs text-gray-500 mb-1 block">Enrollments</label><input type="number" value="40" class="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none"/></div>
-          <div><label class="text-xs text-gray-500 mb-1 block">Revenue (UGX)</label><input type="number" value="10000000" class="w-full text-sm bg-white border border-gray-200 rounded-xl px-3 py-2 focus:outline-none"/></div>
-        </div>
-      </div>
-      <div><label class="text-xs text-gray-500 mb-1 block">Apply to</label>
-        <select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none">
-          <option>All MTN Uganda agents (220)</option>
-          <option>All agents across all businesses (400)</option>
-          <option>Nakawa territory only</option>
-          <option>Specific agent...</option>
-        </select>
-      </div>
-    </div>
-    <div class="flex gap-3 mt-5">
-      <button onclick="closeModal('setKpiModal')" class="flex-1 border border-gray-200 text-gray-700 font-600 py-2.5 rounded-xl text-sm">Cancel</button>
-      <button onclick="closeModal('setKpiModal')" class="flex-1 bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm">Save KPI Targets</button>
-    </div>
+    <div class="fg"><label class="fl">Price (UGX)</label><input id="productPrice" class="fi" type="number" min="0" placeholder="0" /></div>
   </div>
-</div>
+  <div class="fg"><label class="fl">Commission % <span style="color:#9CA3AF;font-weight:400;">(paid to agent)</span></label><input id="productComm" class="fi" type="number" min="0" max="100" step="0.5" placeholder="10" /></div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('productModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+  </div>
+</div></div>
 
-<!-- Add Lead Modal -->
-<div id="addLeadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay" onclick="if(event.target===this)closeModal('addLeadModal')">
-  <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-2xl">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-800 text-lg">Add Lead</h3>
-      <button onclick="closeModal('addLeadModal')" class="text-gray-400 hover:text-gray-700">✕</button>
-    </div>
-    <div class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Business / Client Name *</label><input type="text" placeholder="e.g. Nakawa Crafts" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Phone *</label><input type="tel" placeholder="07XX XXX XXX" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-yellow-400"/></div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Assign to Business</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>MTN Uganda</option><option>Airtel Uganda</option><option>Stanbic Bank</option></select></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Product Interest</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>MTN MoMo</option><option>MTN Business</option><option>MTN Broadband</option><option>Yello Pages</option><option>MTN Pulse</option></select></div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-gray-500 mb-1 block">Location / Territory</label><input type="text" placeholder="e.g. Nakawa Market" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"/></div>
-        <div><label class="text-xs text-gray-500 mb-1 block">Industry</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option>Retail</option><option>Manufacturing</option><option>Hospitality</option><option>Transport</option><option>Education</option><option>Healthcare</option></select></div>
-      </div>
-      <div><label class="text-xs text-gray-500 mb-1 block">Assign to Agent (optional)</label><select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none"><option value="">— Leave unassigned —</option><option>Aisha Nakato (SH-0041)</option><option>Brian Ssebugwawo (SH-0038)</option><option>Ivan Mugisha (SH-0060)</option></select></div>
-    </div>
-    <div class="flex gap-3 mt-5">
-      <button onclick="closeModal('addLeadModal')" class="flex-1 border border-gray-200 text-gray-700 font-600 py-2.5 rounded-xl text-sm">Cancel</button>
-      <button onclick="closeModal('addLeadModal')" class="flex-1 bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm">Seed Lead</button>
-    </div>
+<div class="modal-bg" id="agentModal"><div class="modal-box">
+  <div class="mtitle" id="agentMTitle">Add Agent</div><input type="hidden" id="agentId" />
+  <div class="fg"><label class="fl">Full Name *</label><input id="agentName" class="fi" placeholder="e.g. John Mukasa" /></div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Phone</label><input id="agentPhone" class="fi" placeholder="+256 7xx xxx xxx" /></div>
+    <div class="fg"><label class="fl">Email</label><input id="agentEmail" class="fi" type="email" /></div>
   </div>
-</div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Region / Territory</label><input id="agentRegion" class="fi" placeholder="e.g. Kampala Central" /></div>
+    <div class="fg"><label class="fl">Joined Date</label><input id="agentJoined" class="fi" type="date" /></div>
+  </div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('agentModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveAgent()">Save Agent</button>
+  </div>
+</div></div>
 
-<!-- Assign Lead Modal -->
-<div id="assignLeadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay" onclick="if(event.target===this)closeModal('assignLeadModal')">
-  <div class="bg-white rounded-2xl w-full max-w-sm p-6 m-4 shadow-2xl">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-800 text-lg">Assign Lead</h3>
-      <button onclick="closeModal('assignLeadModal')" class="text-gray-400 hover:text-gray-700">✕</button>
+<div class="modal-bg" id="kpiModal"><div class="modal-box wide">
+  <div class="mtitle">Set KPI Targets — <span id="kpiAgentName" style="color:#D97706;"></span></div>
+  <input type="hidden" id="kpiAgentId" />
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+    <div style="background:#EFF6FF;border-radius:12px;padding:16px;">
+      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:12px;">📅 Daily</div>
+      <div class="fg"><label class="fl">Enrollments</label><input id="kDE" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Calls</label><input id="kDC" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Revenue (UGX)</label><input id="kDR" class="fi" type="number" min="0" value="0" /></div>
     </div>
-    <p class="text-sm text-gray-600 mb-4">Assigning: <strong>Nakawa Crafts Co.</strong></p>
-    <div class="space-y-3 mb-5">
-      <div onclick="this.parentElement.querySelectorAll('div').forEach(d=>d.classList.remove('border-yellow-400','bg-yellow-50'));this.classList.add('border-yellow-400','bg-yellow-50')" class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl cursor-pointer hover:border-yellow-300 transition">
-        <div class="w-8 h-8 rounded-full bg-yellow-400 text-black font-900 text-xs flex items-center justify-center">AN</div>
-        <div><p class="text-xs font-700">Aisha Nakato</p><p class="text-xs text-gray-400">Nakawa Central · 28 sales this month</p></div>
-      </div>
-      <div onclick="this.parentElement.querySelectorAll('div').forEach(d=>d.classList.remove('border-yellow-400','bg-yellow-50'));this.classList.add('border-yellow-400','bg-yellow-50')" class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl cursor-pointer hover:border-yellow-300 transition">
-        <div class="w-8 h-8 rounded-full bg-blue-500 text-white font-900 text-xs flex items-center justify-center">BS</div>
-        <div><p class="text-xs font-700">Brian Ssebugwawo</p><p class="text-xs text-gray-400">Nakawa East · 32 sales this month</p></div>
-      </div>
-      <div onclick="this.parentElement.querySelectorAll('div').forEach(d=>d.classList.remove('border-yellow-400','bg-yellow-50'));this.classList.add('border-yellow-400','bg-yellow-50')" class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl cursor-pointer hover:border-yellow-300 transition">
-        <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-700 font-900 text-xs flex items-center justify-center">IM</div>
-        <div><p class="text-xs font-700">Ivan Mugisha</p><p class="text-xs text-gray-400">Nakawa South · 12 sales this month</p></div>
-      </div>
+    <div style="background:#F3E8FF;border-radius:12px;padding:16px;">
+      <div style="font-size:13px;font-weight:700;color:#7E22CE;margin-bottom:12px;">📆 Weekly</div>
+      <div class="fg"><label class="fl">Enrollments</label><input id="kWE" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Calls</label><input id="kWC" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Revenue (UGX)</label><input id="kWR" class="fi" type="number" min="0" value="0" /></div>
     </div>
-    <div class="flex gap-3">
-      <button onclick="closeModal('assignLeadModal')" class="flex-1 border border-gray-200 text-gray-700 font-600 py-2.5 rounded-xl text-sm">Cancel</button>
-      <button onclick="closeModal('assignLeadModal')" class="flex-1 bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm">Assign</button>
+    <div style="background:#F0FDF4;border-radius:12px;padding:16px;">
+      <div style="font-size:13px;font-weight:700;color:#15803D;margin-bottom:12px;">🗓 Monthly</div>
+      <div class="fg"><label class="fl">Enrollments</label><input id="kME" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Calls</label><input id="kMC" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Revenue (UGX)</label><input id="kMR" class="fi" type="number" min="0" value="0" /></div>
+      <div class="fg"><label class="fl">Retention %</label><input id="kMRet" class="fi" type="number" min="0" max="100" value="80" /></div>
     </div>
   </div>
-</div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('kpiModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveKpiTargets()">Save Targets</button>
+  </div>
+</div></div>
 
-<!-- Import Leads Modal -->
-<div id="importLeadsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay" onclick="if(event.target===this)closeModal('importLeadsModal')">
-  <div class="bg-white rounded-2xl w-full max-w-md p-6 m-4 shadow-2xl">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-800 text-lg">Import Leads from CSV</h3>
-      <button onclick="closeModal('importLeadsModal')" class="text-gray-400 hover:text-gray-700">✕</button>
-    </div>
-    <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center mb-4 hover:border-yellow-400 cursor-pointer transition">
-      <svg class="w-10 h-10 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-      <p class="text-sm font-700 text-gray-500">Drop CSV file here or click to browse</p>
-      <p class="text-xs text-gray-300 mt-1">Columns: name, phone, email, location, industry, product</p>
-    </div>
-    <div class="bg-yellow-50 rounded-xl p-3 border border-yellow-200">
-      <p class="text-xs font-700 text-yellow-800 mb-1">📋 Required CSV columns:</p>
-      <p class="text-xs text-yellow-700 font-mono">name, phone, location, business, product_interest</p>
-      <a href="#" class="text-xs text-yellow-600 font-700 hover:underline">Download template →</a>
-    </div>
-    <div class="flex gap-3 mt-4">
-      <button onclick="closeModal('importLeadsModal')" class="flex-1 border border-gray-200 text-gray-700 font-600 py-2.5 rounded-xl text-sm">Cancel</button>
-      <button onclick="closeModal('importLeadsModal')" class="flex-1 bg-black text-yellow-400 font-700 py-2.5 rounded-xl text-sm">Import</button>
+<div class="modal-bg" id="actualModal"><div class="modal-box">
+  <div class="mtitle">Record Performance</div>
+  <div class="fg"><label class="fl">Agent *</label><select id="actualAgent" class="fi"></select></div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Period</label><select id="actualPeriod" class="fi"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly" selected>Monthly</option></select></div>
+    <div class="fg"><label class="fl">Date</label><input id="actualDate" class="fi" type="date" /></div>
+  </div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Enrollments</label><input id="actualE" class="fi" type="number" min="0" value="0" /></div>
+    <div class="fg"><label class="fl">Calls Made</label><input id="actualC" class="fi" type="number" min="0" value="0" /></div>
+  </div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Revenue (UGX)</label><input id="actualR" class="fi" type="number" min="0" value="0" /></div>
+    <div class="fg"><label class="fl">Retention %</label><input id="actualRet" class="fi" type="number" min="0" max="100" value="0" /></div>
+  </div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('actualModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="recordActual()">Record</button>
+  </div>
+</div></div>
+
+<div class="modal-bg" id="leadModal"><div class="modal-box">
+  <div class="mtitle" id="leadMTitle">Add Lead</div><input type="hidden" id="leadId" />
+  <div class="fg"><label class="fl">Name *</label><input id="leadName" class="fi" placeholder="Full name or company" /></div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Phone</label><input id="leadPhone" class="fi" placeholder="+256 7xx xxx xxx" /></div>
+    <div class="fg"><label class="fl">Email</label><input id="leadEmail" class="fi" type="email" /></div>
+  </div>
+  <div class="fi-row">
+    <div class="fg"><label class="fl">Location</label><input id="leadLoc" class="fi" placeholder="e.g. Kampala" /></div>
+    <div class="fg"><label class="fl">Product Interest</label><input id="leadProd" class="fi" placeholder="e.g. MoMo" /></div>
+  </div>
+  <div class="fg"><label class="fl">Notes</label><textarea id="leadNotes" class="fi" rows="2" placeholder="Extra details…"></textarea></div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('leadModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveLead()">Save Lead</button>
+  </div>
+</div></div>
+
+<div class="modal-bg" id="assignModal"><div class="modal-box">
+  <div class="mtitle">Assign Lead — <span id="assignLeadName" style="color:#D97706;"></span></div>
+  <input type="hidden" id="assignLeadId" />
+  <div class="fg"><label class="fl">Assign to Agent</label><select id="assignAgent" class="fi"></select></div>
+  <div class="fg"><label class="fl">Update Status</label>
+    <select id="assignStatus" class="fi"><option value="assigned">Assigned</option><option value="contacted">Contacted</option><option value="converted">Converted ✅</option><option value="lost">Lost ❌</option></select>
+  </div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('assignModal')">Cancel</button>
+    <button class="btn btn-primary" onclick="assignLead()">Assign</button>
+  </div>
+</div></div>
+
+<div class="modal-bg" id="csvModal"><div class="modal-box wide">
+  <div class="mtitle">Import Leads via CSV</div>
+  <p style="font-size:13px;color:#6B7280;margin-bottom:14px;">Required headers: <code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:12px;">name,phone,email,location,product_interest,notes</code></p>
+  <div class="fg"><label class="fl">Select CSV File</label><input type="file" id="csvFile" accept=".csv" class="fi" style="padding:8px;" onchange="previewCSV()" /></div>
+  <div id="csvPreview" style="display:none;">
+    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;" id="csvCount"></div>
+    <div style="max-height:200px;overflow-y:auto;border:1px solid #E5E7EB;border-radius:10px;">
+      <table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Product</th></tr></thead><tbody id="csvTbody"></tbody></table>
     </div>
   </div>
-</div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+    <button class="btn btn-secondary" onclick="closeModal('csvModal')">Cancel</button>
+    <button class="btn btn-primary" id="csvImportBtn" disabled onclick="importCSV()">Import Leads</button>
+  </div>
+</div></div>
 
 <script>
-// ── Product data ──────────────────────────────
-const productData = {
-  mtn: [
-    { name: 'MTN MoMo',     cat: 'Mobile Money', price: 200000,  rate: 8.75,  active: true },
-    { name: 'MTN Business', cat: 'Enterprise',   price: 5000000, rate: 10.0,  active: true },
-    { name: 'MTN Broadband',cat: 'Internet',     price: 1800000, rate: 8.0,   active: true },
-    { name: 'Yello Pages',  cat: 'Listings',     price: 3200000, rate: 12.0,  active: true },
-    { name: 'MTN Pulse',    cat: 'Youth Bundle', price: 800000,  rate: 5.0,   active: true },
-    { name: 'MTN Home',     cat: 'Home Internet',price: 450000,  rate: 6.0,   active: false},
-  ],
-  airtel: [
-    { name: 'Airtel Money',  cat: 'Mobile Money', price: 150000,  rate: 7.5,  active: true },
-    { name: 'Airtel Business',cat:'Enterprise',   price: 4000000, rate: 9.0,  active: true },
-    { name: 'Airtel Broadband',cat:'Internet',    price: 1500000, rate: 7.5,  active: true },
-    { name: 'Airtel Trace',  cat: 'Music/TV',     price: 50000,   rate: 4.0,  active: true },
-  ],
-  stanbic: [
-    { name: 'FlexiPay Account', cat: 'Banking',  price: 0,       rate: 15.0, active: true },
-    { name: 'SME Business Loan',cat: 'Loans',    price: 5000000, rate: 3.0,  active: true },
-    { name: 'Home Loan',        cat: 'Mortgage', price:50000000, rate: 2.0,  active: true },
-    { name: 'Motor Insurance',  cat: 'Insurance',price: 800000,  rate: 12.0, active: true },
-    { name: 'Stanbic PayWay',   cat: 'Payments', price: 0,       rate: 8.0,  active: false},
-  ],
-};
+const SB_URL='https://htygdhjhrjimrrttaqxd.supabase.co'
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0eWdkaGpocmppbXJydHRhcXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MTcwNzcsImV4cCI6MjA5MzI5MzA3N30.RscD_9R2S0YJee3uVQPaPZdJ06wAP78Xt4LMpi86h5o'
+const API='https://eams-t3js.onrender.com/api/v1'
+const LS_TOK='sh_portal_token',LS_USR='sh_portal_user'
+const sb=supabase.createClient(SB_URL,SB_KEY)
+const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',csvRows:[],charts:{}}
 
-function filterProducts(biz) {
-  renderProducts(biz);
+const ugx=n=>'UGX '+Number(n||0).toLocaleString()
+const pc=(a,t)=>Math.min(100,t>0?Math.round(a/t*100):0)
+const pcCol=(a,t)=>{const r=pc(a,t);return r>=100?'#16A34A':r>=70?'#D97706':'#DC2626'}
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=type==='ok'?'#16A34A':'#DC2626';t.style.color='#fff';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200)}
+const load=on=>document.getElementById('loadBar').style.display=on?'block':'none'
+const openModal=id=>document.getElementById(id).classList.add('open')
+const closeModal=id=>document.getElementById(id).classList.remove('open')
+const esc=s=>String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")
+const activeBiz=()=>S.biz.find(b=>b.id===S.bizId)
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}))
+
+// AUTH
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value
+  const er=document.getElementById('loginErr'),btn=document.getElementById('loginBtn')
+  er.style.display='none';btn.textContent='Signing in…';btn.disabled=true
+  try{
+    const res=await fetch(`${API}/user-management/login/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})})
+    const data=await res.json()
+    if(!res.ok)throw new Error(data.detail||data.message||'Invalid credentials')
+    const tok=data.token||data.access||data.key;if(!tok)throw new Error('No token received')
+    localStorage.setItem(LS_TOK,tok);localStorage.setItem(LS_USR,JSON.stringify({email,name:data.first_name||email}))
+    showPortal()
+  }catch(e){er.textContent=e.message;er.style.display='block';btn.textContent='Sign In →';btn.disabled=false}
+}
+function enterDemo(){localStorage.setItem(LS_TOK,'demo');localStorage.setItem(LS_USR,JSON.stringify({email:'demo@saleshunter.app',name:'Demo User'}));showPortal()}
+function showPortal(){
+  document.getElementById('loginScreen').style.display='none'
+  const p=document.getElementById('portal');p.style.display='flex'
+  const u=JSON.parse(localStorage.getItem(LS_USR)||'{}')
+  document.getElementById('sidebarUser').textContent=u.name||u.email||'User'
+  init()
+}
+function logout(){localStorage.removeItem(LS_TOK);localStorage.removeItem(LS_USR);location.reload()}
+function checkAuth(){if(localStorage.getItem(LS_TOK))showPortal()}
+
+// NAV
+function navTo(sec){
+  S.section=sec
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.sec===sec))
+  document.querySelectorAll('.sec').forEach(el=>el.classList.toggle('show',el.id===`sec-${sec}`))
+  loadSection(sec)
+}
+async function loadSection(sec){
+  load(true)
+  try{
+    if(sec==='dashboard')await loadDashboard()
+    else if(sec==='businesses')await loadBusinesses()
+    else if(sec==='products')await loadProducts()
+    else if(sec==='agents')await loadAgents()
+    else if(sec==='leads')await loadLeads()
+    else if(sec==='reports')await loadReports()
+    else if(sec==='builder')await loadBuilder()
+  }catch(e){console.error(e);toast(e.message,'err')}finally{load(false)}
 }
 
-function renderProducts(biz) {
-  const rows = document.getElementById('productRows');
-  const products = productData[biz] || productData.mtn;
-  const fmt = n => n === 0 ? 'Free' : 'UGX ' + n.toLocaleString();
-  rows.innerHTML = products.map(p => {
-    const comm = p.price > 0 ? Math.round(p.price * p.rate / 100) : '—';
-    const commStr = typeof comm === 'number' ? 'UGX ' + comm.toLocaleString() : comm;
-    return `<tr class="border-b border-gray-50 hover:bg-gray-50/50">
-      <td class="px-5 py-3 font-700 text-xs">${p.name}</td>
-      <td class="px-5 py-3 text-xs text-gray-500">${p.cat}</td>
-      <td class="px-5 py-3 text-right text-xs font-600">${fmt(p.price)}</td>
-      <td class="px-5 py-3 text-right text-xs font-700 text-yellow-600">${p.rate}%</td>
-      <td class="px-5 py-3 text-right text-xs font-700 text-green-600">${commStr}</td>
-      <td class="px-5 py-3 text-center"><span class="tag ${p.active ? 'badge-green' : 'badge-gray'}">${p.active ? 'Active' : 'Inactive'}</span></td>
-      <td class="px-5 py-3 text-right"><button class="text-xs text-blue-600 hover:underline font-600 mr-2">Edit</button><button class="text-xs text-red-400 hover:underline font-600">Del</button></td>
-    </tr>`;
-  }).join('');
+// BIZ SELECTOR
+async function fetchBiz(){
+  const{data,error}=await sb.from('sh_businesses').select('*').order('name')
+  if(error)throw error
+  S.biz=data||[];if(!S.bizId&&S.biz.length)S.bizId=S.biz[0].id;renderBizBar()
+}
+function renderBizBar(){
+  const bar=document.getElementById('bizBar')
+  bar.innerHTML='<span style="font-size:12px;font-weight:600;color:#6B7280;">Business:</span>'
+  S.biz.forEach(b=>{
+    const btn=document.createElement('button');btn.className='biz-tab'+(b.id===S.bizId?' active':'')
+    btn.textContent=b.code+' — '+b.name
+    if(b.id===S.bizId){btn.style.background=b.color;btn.style.color=b.txt_color}
+    btn.onclick=()=>switchBiz(b.id);bar.appendChild(btn)
+  })
+}
+async function switchBiz(id){S.bizId=id;renderBizBar();await loadSection(S.section)}
+
+// DASHBOARD
+async function loadDashboard(){
+  await fetchBiz();const biz=activeBiz()
+  document.getElementById('dashBizName').textContent=biz?biz.name:'—'
+  const[{count:ag},{count:pr},{count:nl},{data:rl},{data:acts}]=await Promise.all([
+    sb.from('sh_agents').select('id',{count:'exact',head:true}).eq('business_id',S.bizId).eq('is_active',true),
+    sb.from('sh_products').select('id',{count:'exact',head:true}).eq('business_id',S.bizId).eq('is_active',true),
+    sb.from('sh_leads').select('id',{count:'exact',head:true}).eq('business_id',S.bizId).eq('status','new'),
+    sb.from('sh_leads').select('name,location,status').eq('business_id',S.bizId).order('created_at',{ascending:false}).limit(6),
+    sb.from('sh_kpi_actuals').select('agent_id,revenue,sh_agents!inner(name,business_id)').eq('sh_agents.business_id',S.bizId)
+  ])
+  const totalRev=(acts||[]).reduce((s,r)=>s+Number(r.revenue||0),0)
+  document.getElementById('dashStats').innerHTML=`
+    <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">👥 Active Agents</div><div style="font-size:32px;font-weight:900;">${ag||0}</div></div>
+    <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">🛒 Products</div><div style="font-size:32px;font-weight:900;">${pr||0}</div></div>
+    <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">🎯 New Leads</div><div style="font-size:32px;font-weight:900;">${nl||0}</div></div>
+    <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">💰 Total Revenue</div><div style="font-size:18px;font-weight:900;">${ugx(totalRev)}</div></div>`
+  document.getElementById('dashLeads').innerHTML=!rl?.length?`<div class="empty">No leads yet. <a href="#" onclick="navTo('leads')">Seed some →</a></div>`
+    :`<table class="dt"><thead><tr><th>Name</th><th>Location</th><th>Status</th></tr></thead><tbody>${rl.map(l=>`<tr><td style="font-weight:600;">${l.name}</td><td style="color:#6B7280;">${l.location||'—'}</td><td>${sBadge(l.status)}</td></tr>`).join('')}</tbody></table>`
+  const revMap={};(acts||[]).forEach(a=>{const n=a.sh_agents?.name||'?';revMap[n]=(revMap[n]||0)+Number(a.revenue||0)})
+  const top=Object.entries(revMap).sort((a,b)=>b[1]-a[1]).slice(0,5),mx=top[0]?.[1]||1
+  document.getElementById('dashTop').innerHTML=!top.length?`<div class="empty">No performance data yet.</div>`
+    :top.map(([name,rev],i)=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="width:22px;height:22px;border-radius:50%;background:${i===0?'#FFCC00':i===1?'#D1D5DB':'#F3F4F6'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">${i+1}</div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${name}</div><div class="pw" style="margin-top:4px;"><div class="pb" style="width:${Math.round(rev/mx*100)}%;background:#FFCC00;"></div></div></div>
+      <div style="font-size:12px;font-weight:700;white-space:nowrap;">${ugx(rev)}</div></div>`).join('')
 }
 
-// ── Section navigation ──────────────────────────────
-function showSection(name) {
-  document.querySelectorAll('[id^="sec-"]').forEach(s => s.classList.add('hidden'));
-  const el = document.getElementById('sec-' + name);
-  if (el) { el.classList.remove('hidden'); el.classList.add('fade-in'); }
-
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.remove('active');
-    b.style.color = '';
-  });
-  const btn = document.querySelector(`.nav-item[data-section="${name}"]`);
-  if (btn) btn.classList.add('active');
-
-  const titles = {
-    dashboard: ['Dashboard', 'Overview of all businesses and agents'],
-    businesses: ['Business Management', 'Create and configure your business tenants'],
-    products: ['Products & Pricing', 'Manage product catalogue and commission rates'],
-    agents: ['Agents & KPIs', 'Agent performance and target management'],
-    leads: ['Lead Seeding', 'Create, import and assign leads'],
-    reports: ['Reports & Analytics', 'Performance reports across all businesses'],
-    appbuilder: ['App Builder', 'Configure branded mobile apps per business'],
-    settings: ['Settings', 'Portal and commission defaults'],
-  };
-  if (titles[name]) {
-    document.getElementById('pageTitle').textContent = titles[name][0];
-    document.getElementById('pageSubtitle').textContent = titles[name][1];
-  }
-
-  // render charts lazily
-  if (name === 'dashboard') initDashboardCharts();
-  if (name === 'reports')   initReportCharts();
+// BUSINESSES
+async function loadBusinesses(){
+  await fetchBiz();const ids=S.biz.map(b=>b.id)
+  const[{data:agC},{data:prC}]=await Promise.all([
+    ids.length?sb.from('sh_agents').select('business_id').in('business_id',ids).eq('is_active',true):Promise.resolve({data:[]}),
+    ids.length?sb.from('sh_products').select('business_id').in('business_id',ids).eq('is_active',true):Promise.resolve({data:[]})
+  ])
+  const agM={},prM={};(agC||[]).forEach(r=>agM[r.business_id]=(agM[r.business_id]||0)+1);(prC||[]).forEach(r=>prM[r.business_id]=(prM[r.business_id]||0)+1)
+  document.getElementById('bizGrid').innerHTML=!S.biz.length?`<div class="empty" style="grid-column:1/-1;">No businesses yet.</div>`
+    :S.biz.map(b=>`<div class="card" style="border-top:4px solid ${b.color};">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:${b.color};color:${b.txt_color};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;">${b.code}</div>
+        <div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-xs" onclick='editBiz(${JSON.stringify(b)})'>✏️</button><button class="btn btn-danger btn-xs" onclick="delBiz('${b.id}')">🗑</button></div>
+      </div>
+      <div style="font-size:15px;font-weight:800;">${b.name}</div>
+      <div style="display:flex;gap:16px;margin-top:12px;align-items:center;">
+        <div><div style="font-size:18px;font-weight:900;text-align:center;">${agM[b.id]||0}</div><div style="font-size:11px;color:#6B7280;">Agents</div></div>
+        <div><div style="font-size:18px;font-weight:900;text-align:center;">${prM[b.id]||0}</div><div style="font-size:11px;color:#6B7280;">Products</div></div>
+        <span class="badge ${b.is_active?'bg':'bgray'}" style="margin-left:auto;">${b.is_active?'Active':'Inactive'}</span>
+      </div></div>`).join('')
+}
+function openBizModal(){document.getElementById('bizMTitle').textContent='Add Business';document.getElementById('bizId').value='';openModal('bizModal')}
+function editBiz(b){
+  document.getElementById('bizMTitle').textContent='Edit Business';document.getElementById('bizId').value=b.id
+  document.getElementById('bizName').value=b.name;document.getElementById('bizCode').value=b.code
+  document.getElementById('bizColor').value=b.color;document.getElementById('bizTxtColor').value=b.txt_color;document.getElementById('bizAccent').value=b.accent
+  openModal('bizModal')
+}
+async function saveBusiness(){
+  const id=document.getElementById('bizId').value
+  const d={name:document.getElementById('bizName').value.trim(),code:document.getElementById('bizCode').value.trim().toUpperCase(),
+    color:document.getElementById('bizColor').value,txt_color:document.getElementById('bizTxtColor').value,accent:document.getElementById('bizAccent').value}
+  if(!d.name||!d.code)return toast('Name and code required','err')
+  load(true);try{const{error}=id?await sb.from('sh_businesses').update(d).eq('id',id):await sb.from('sh_businesses').insert(d);if(error)throw error;toast(id?'Updated':'Created');closeModal('bizModal');document.getElementById('bizId').value='';await loadBusinesses()}catch(e){toast(e.message,'err')}finally{load(false)}
+}
+async function delBiz(id){
+  if(!confirm('Delete this business? All related data will be removed.'))return
+  load(true);try{const{error}=await sb.from('sh_businesses').delete().eq('id',id);if(error)throw error;if(S.bizId===id)S.bizId=null;toast('Deleted');await loadBusinesses()}catch(e){toast(e.message,'err')}finally{load(false)}
 }
 
-// ── Business switcher ──────────────────────────────
-const bizNames = { mtn:'📱 MTN Uganda', airtel:'📡 Airtel Uganda', stanbic:'🏦 Stanbic Bank', dfcu:'💳 DFCU Bank' };
-function switchBusiness(val) {
-  document.getElementById('activeBizBadge').textContent = bizNames[val] || val;
-  document.getElementById('bizFilter').value = val;
-  renderProducts(val);
+// PRODUCTS
+async function loadProducts(){
+  await fetchBiz();const{data,error}=await sb.from('sh_products').select('*').eq('business_id',S.bizId).order('name');if(error)throw error;S.products=data||[]
+  document.getElementById('productsTbody').innerHTML=!S.products.length?`<tr><td colspan="6"><div class="empty">No products yet.</div></td></tr>`
+    :S.products.map(p=>`<tr>
+      <td style="font-weight:600;">${p.name}</td><td><span class="badge bb">${p.category}</span></td>
+      <td style="font-weight:700;">${ugx(p.price)}</td>
+      <td><div style="display:flex;align-items:center;gap:8px;"><div class="pw" style="width:70px;"><div class="pb" style="width:${p.commission_pct}%;background:#FFCC00;"></div></div><span style="font-weight:700;">${p.commission_pct}%</span></div></td>
+      <td><label class="toggle-wrap"><input type="checkbox" ${p.is_active?'checked':''} onchange="toggleProd('${p.id}',this.checked)"/><div class="toggle-track"></div></label></td>
+      <td><div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-xs" onclick='editProduct(${JSON.stringify(p)})'>✏️ Edit</button><button class="btn btn-danger btn-xs" onclick="delProduct('${p.id}')">🗑</button></div></td>
+    </tr>`).join('')
+}
+function openProductModal(){document.getElementById('productMTitle').textContent='Add Product';document.getElementById('productId').value='';openModal('productModal')}
+function editProduct(p){
+  document.getElementById('productMTitle').textContent='Edit Product';document.getElementById('productId').value=p.id
+  document.getElementById('productName').value=p.name;document.getElementById('productCat').value=p.category
+  document.getElementById('productPrice').value=p.price;document.getElementById('productComm').value=p.commission_pct;openModal('productModal')
+}
+async function saveProduct(){
+  const id=document.getElementById('productId').value
+  const d={business_id:S.bizId,name:document.getElementById('productName').value.trim(),category:document.getElementById('productCat').value,price:parseFloat(document.getElementById('productPrice').value)||0,commission_pct:parseFloat(document.getElementById('productComm').value)||10}
+  if(!d.name)return toast('Product name required','err')
+  load(true);try{const{error}=id?await sb.from('sh_products').update(d).eq('id',id):await sb.from('sh_products').insert(d);if(error)throw error;toast(id?'Updated':'Added');closeModal('productModal');document.getElementById('productId').value='';await loadProducts()}catch(e){toast(e.message,'err')}finally{load(false)}
+}
+async function toggleProd(id,active){const{error}=await sb.from('sh_products').update({is_active:active}).eq('id',id);if(error)toast(error.message,'err')}
+async function delProduct(id){if(!confirm('Delete product?'))return;load(true);try{const{error}=await sb.from('sh_products').delete().eq('id',id);if(error)throw error;toast('Deleted');await loadProducts()}catch(e){toast(e.message,'err')}finally{load(false)}}
+
+// AGENTS
+async function loadAgents(){
+  await fetchBiz();const{data:agents}=await sb.from('sh_agents').select('*').eq('business_id',S.bizId).order('name');S.agents=agents||[]
+  const ids=S.agents.map(a=>a.id)
+  const[{data:targets},{data:actuals}]=ids.length?await Promise.all([sb.from('sh_kpi_targets').select('*').in('agent_id',ids),sb.from('sh_kpi_actuals').select('*').in('agent_id',ids)]):[{data:[]},{data:[]}]
+  S.kpiTargets={};S.kpiActuals=actuals||[];(targets||[]).forEach(t=>{if(!S.kpiTargets[t.agent_id])S.kpiTargets[t.agent_id]={};S.kpiTargets[t.agent_id][t.period]=t})
+  document.getElementById('agentsTbody').innerHTML=!S.agents.length?`<tr><td colspan="7"><div class="empty">No agents yet.</div></td></tr>`
+    :S.agents.map(a=>{
+      const ac=S.kpiActuals.filter(x=>x.agent_id===a.id)
+      const tE=ac.reduce((s,x)=>s+Number(x.enrollments||0),0),tC=ac.reduce((s,x)=>s+Number(x.calls||0),0),tR=ac.reduce((s,x)=>s+Number(x.revenue||0),0)
+      const mt=S.kpiTargets[a.id]?.monthly,gE=mt?.enrollments_target||0,gC=mt?.calls_target||0,gR=mt?.revenue_target||0
+      return`<tr>
+        <td><div style="font-weight:700;">${a.name}</div><div style="font-size:11px;color:#6B7280;">${a.phone||''}</div></td>
+        <td style="font-size:12px;color:#6B7280;">${a.region||'—'}</td>
+        <td><div style="font-weight:700;">${tE}${gE?` <span style="color:#9CA3AF;font-weight:400;">/ ${gE}</span>`:''}</div>${gE?`<div class="pw" style="margin-top:3px;width:70px;"><div class="pb" style="width:${pc(tE,gE)}%;background:${pcCol(tE,gE)};"></div></div>`:''}</td>
+        <td><div style="font-weight:700;">${tC}${gC?` <span style="color:#9CA3AF;font-weight:400;">/ ${gC}</span>`:''}</div>${gC?`<div class="pw" style="margin-top:3px;width:70px;"><div class="pb" style="width:${pc(tC,gC)}%;background:${pcCol(tC,gC)};"></div></div>`:''}</td>
+        <td><div style="font-size:12px;font-weight:700;">${ugx(tR)}</div>${gR?`<div style="font-size:11px;color:#9CA3AF;">/ ${ugx(gR)}</div><div class="pw" style="margin-top:3px;width:70px;"><div class="pb" style="width:${pc(tR,gR)}%;background:${pcCol(tR,gR)};"></div></div>`:''}</td>
+        <td><label class="toggle-wrap"><input type="checkbox" ${a.is_active?'checked':''} onchange="toggleAgent('${a.id}',this.checked)"/><div class="toggle-track"></div></label></td>
+        <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-xs" onclick="openKpiModal('${a.id}','${esc(a.name)}')">🎯 KPIs</button>
+          <button class="btn btn-ghost btn-xs" onclick='editAgent(${JSON.stringify(a)})'>✏️</button>
+          <button class="btn btn-danger btn-xs" onclick="delAgent('${a.id}')">🗑</button>
+        </div></td></tr>`
+    }).join('')
+}
+function openAgentModal(){document.getElementById('agentMTitle').textContent='Add Agent';document.getElementById('agentId').value='';openModal('agentModal')}
+function editAgent(a){
+  document.getElementById('agentMTitle').textContent='Edit Agent';document.getElementById('agentId').value=a.id
+  document.getElementById('agentName').value=a.name;document.getElementById('agentPhone').value=a.phone||''
+  document.getElementById('agentEmail').value=a.email||'';document.getElementById('agentRegion').value=a.region||''
+  document.getElementById('agentJoined').value=a.joined_at||'';openModal('agentModal')
+}
+async function saveAgent(){
+  const id=document.getElementById('agentId').value
+  const d={business_id:S.bizId,name:document.getElementById('agentName').value.trim(),phone:document.getElementById('agentPhone').value.trim()||null,email:document.getElementById('agentEmail').value.trim()||null,region:document.getElementById('agentRegion').value.trim()||null,joined_at:document.getElementById('agentJoined').value||new Date().toISOString().split('T')[0]}
+  if(!d.name)return toast('Agent name required','err')
+  load(true);try{const{error}=id?await sb.from('sh_agents').update(d).eq('id',id):await sb.from('sh_agents').insert(d);if(error)throw error;toast(id?'Updated':'Added');closeModal('agentModal');document.getElementById('agentId').value='';await loadAgents()}catch(e){toast(e.message,'err')}finally{load(false)}
+}
+async function toggleAgent(id,active){const{error}=await sb.from('sh_agents').update({is_active:active}).eq('id',id);if(error)toast(error.message,'err');else toast(active?'Activated':'Deactivated')}
+async function delAgent(id){if(!confirm('Delete agent?'))return;load(true);try{const{error}=await sb.from('sh_agents').delete().eq('id',id);if(error)throw error;toast('Deleted');await loadAgents()}catch(e){toast(e.message,'err')}finally{load(false)}}
+function openKpiModal(agentId,agentName){
+  document.getElementById('kpiAgentId').value=agentId;document.getElementById('kpiAgentName').textContent=agentName
+  const t=S.kpiTargets[agentId]||{},f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||0}
+  const d=t.daily||{},w=t.weekly||{},m=t.monthly||{}
+  f('kDE',d.enrollments_target);f('kDC',d.calls_target);f('kDR',d.revenue_target)
+  f('kWE',w.enrollments_target);f('kWC',w.calls_target);f('kWR',w.revenue_target)
+  f('kME',m.enrollments_target);f('kMC',m.calls_target);f('kMR',m.revenue_target);f('kMRet',m.retention_target||80)
+  openModal('kpiModal')
+}
+async function saveKpiTargets(){
+  const aid=document.getElementById('kpiAgentId').value,v=id=>+document.getElementById(id).value||0
+  const rows=[{agent_id:aid,period:'daily',enrollments_target:v('kDE'),calls_target:v('kDC'),revenue_target:v('kDR'),retention_target:80},
+    {agent_id:aid,period:'weekly',enrollments_target:v('kWE'),calls_target:v('kWC'),revenue_target:v('kWR'),retention_target:80},
+    {agent_id:aid,period:'monthly',enrollments_target:v('kME'),calls_target:v('kMC'),revenue_target:v('kMR'),retention_target:v('kMRet')}]
+  load(true);try{const{error}=await sb.from('sh_kpi_targets').upsert(rows,{onConflict:'agent_id,period'});if(error)throw error;toast('KPI targets saved');closeModal('kpiModal');await loadAgents()}catch(e){toast(e.message,'err')}finally{load(false)}
+}
+function openActualModal(){
+  document.getElementById('actualAgent').innerHTML=S.agents.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
+  document.getElementById('actualDate').value=new Date().toISOString().split('T')[0];openModal('actualModal')
+}
+async function recordActual(){
+  const d={agent_id:document.getElementById('actualAgent').value,period:document.getElementById('actualPeriod').value,period_date:document.getElementById('actualDate').value,enrollments:+document.getElementById('actualE').value,calls:+document.getElementById('actualC').value,revenue:+document.getElementById('actualR').value,retention_pct:+document.getElementById('actualRet').value}
+  if(!d.agent_id)return toast('Select an agent','err')
+  load(true);try{const{error}=await sb.from('sh_kpi_actuals').insert(d);if(error)throw error;toast('Performance recorded');closeModal('actualModal');await loadAgents()}catch(e){toast(e.message,'err')}finally{load(false)}
 }
 
-// ── Modals ──────────────────────────────
-function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-// ── Business chip selector ──────────────────────────────
-function selectBiz(el) {
-  document.querySelectorAll('.business-chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
+// LEADS
+async function loadLeads(){
+  await fetchBiz()
+  const[{data:leads},{data:agents}]=await Promise.all([sb.from('sh_leads').select('*,sh_agents(name)').eq('business_id',S.bizId).order('created_at',{ascending:false}),sb.from('sh_agents').select('id,name').eq('business_id',S.bizId).eq('is_active',true).order('name')])
+  S.leads=leads||[];S.agents=agents||[]
+  document.getElementById('leadsTbody').innerHTML=!S.leads.length?`<tr><td colspan="7"><div class="empty">No leads yet.</div></td></tr>`
+    :S.leads.map(l=>`<tr>
+      <td style="font-weight:600;">${l.name}</td><td style="color:#6B7280;font-size:12px;">${l.phone||'—'}</td>
+      <td style="color:#6B7280;font-size:12px;">${l.location||'—'}</td><td style="font-size:12px;">${l.product_interest||'—'}</td>
+      <td>${sBadge(l.status)}</td>
+      <td style="font-size:12px;font-weight:600;">${l.sh_agents?.name||'<span style="color:#9CA3AF;">Unassigned</span>'}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="btn btn-ghost btn-xs" onclick="openAssignModal('${l.id}','${esc(l.name)}')">👤 Assign</button>
+        <button class="btn btn-ghost btn-xs" onclick='editLead(${JSON.stringify(l)})'>✏️</button>
+        <button class="btn btn-danger btn-xs" onclick="delLead('${l.id}')">🗑</button>
+      </div></td></tr>`).join('')
+}
+function sBadge(s){const m={new:'bb',assigned:'by',contacted:'borg',converted:'bg',lost:'br'};return`<span class="badge ${m[s]||'bgray'}">${s||'—'}</span>`}
+function openLeadModal(){document.getElementById('leadMTitle').textContent='Add Lead';document.getElementById('leadId').value='';openModal('leadModal')}
+function editLead(l){
+  document.getElementById('leadMTitle').textContent='Edit Lead';document.getElementById('leadId').value=l.id
+  document.getElementById('leadName').value=l.name;document.getElementById('leadPhone').value=l.phone||''
+  document.getElementById('leadEmail').value=l.email||'';document.getElementById('leadLoc').value=l.location||''
+  document.getElementById('leadProd').value=l.product_interest||'';document.getElementById('leadNotes').value=l.notes||'';openModal('leadModal')
+}
+async function saveLead(){
+  const id=document.getElementById('leadId').value
+  const d={business_id:S.bizId,name:document.getElementById('leadName').value.trim(),phone:document.getElementById('leadPhone').value.trim()||null,email:document.getElementById('leadEmail').value.trim()||null,location:document.getElementById('leadLoc').value.trim()||null,product_interest:document.getElementById('leadProd').value.trim()||null,notes:document.getElementById('leadNotes').value.trim()||null}
+  if(!d.name)return toast('Lead name required','err')
+  load(true);try{const{error}=id?await sb.from('sh_leads').update(d).eq('id',id):await sb.from('sh_leads').insert(d);if(error)throw error;toast(id?'Updated':'Added');closeModal('leadModal');document.getElementById('leadId').value='';await loadLeads()}catch(e){toast(e.message,'err')}finally{load(false)}
+}
+async function delLead(id){if(!confirm('Delete lead?'))return;load(true);try{const{error}=await sb.from('sh_leads').delete().eq('id',id);if(error)throw error;toast('Deleted');await loadLeads()}catch(e){toast(e.message,'err')}finally{load(false)}}
+function openAssignModal(leadId,leadName){
+  document.getElementById('assignLeadId').value=leadId;document.getElementById('assignLeadName').textContent=leadName
+  document.getElementById('assignAgent').innerHTML=S.agents.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');openModal('assignModal')
+}
+async function assignLead(){
+  const lid=document.getElementById('assignLeadId').value,aid=document.getElementById('assignAgent').value,st=document.getElementById('assignStatus').value
+  load(true);try{const{error}=await sb.from('sh_leads').update({assigned_to:aid,status:st}).eq('id',lid);if(error)throw error;toast('Assigned');closeModal('assignModal');await loadLeads()}catch(e){toast(e.message,'err')}finally{load(false)}
+}
+function previewCSV(){
+  const file=document.getElementById('csvFile').files[0];if(!file)return
+  const r=new FileReader();r.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2)return toast('Need headers + 1 row','err')
+    const hdrs=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/"/g,''))
+    const rows=lines.slice(1).map(ln=>{const vals=ln.split(',').map(v=>v.trim().replace(/^"|"$/g,''));const o={};hdrs.forEach((h,i)=>o[h]=vals[i]||'');return o}).filter(r=>r.name)
+    S.csvRows=rows;document.getElementById('csvCount').textContent=`${rows.length} leads ready`
+    document.getElementById('csvTbody').innerHTML=rows.slice(0,10).map(r=>`<tr><td>${r.name}</td><td>${r.phone||''}</td><td>${r.location||''}</td><td>${r.product_interest||''}</td></tr>`).join('')
+    document.getElementById('csvPreview').style.display='block';document.getElementById('csvImportBtn').disabled=false
+  };r.readAsText(file)
+}
+async function importCSV(){
+  if(!S.csvRows.length)return;load(true)
+  try{const rows=S.csvRows.map(r=>({business_id:S.bizId,name:r.name,phone:r.phone||null,email:r.email||null,location:r.location||null,product_interest:r.product_interest||null,notes:r.notes||null,status:'new'}))
+    const{error}=await sb.from('sh_leads').insert(rows);if(error)throw error;toast(`${rows.length} leads imported!`);closeModal('csvModal')
+    document.getElementById('csvFile').value='';document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').disabled=true;S.csvRows=[];await loadLeads()
+  }catch(e){toast(e.message,'err')}finally{load(false)}
 }
 
-// ── Charts ──────────────────────────────
-let dashChartInited = false;
-function initDashboardCharts() {
-  if (dashChartInited) return;
-  dashChartInited = true;
-  new Chart(document.getElementById('revByBizChart'), {
-    type: 'bar',
-    data: {
-      labels: ['MTN Uganda', 'Airtel Uganda', 'Stanbic Bank', 'DFCU Bank'],
-      datasets: [{
-        label: 'Revenue (M UGX)',
-        data: [680, 210, 180, 0],
-        backgroundColor: ['#FFCC00', '#EF5350', '#1565C0', '#2E7D32'],
-        borderRadius: 8,
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { grid: { color: '#F5F5F5' }, ticks: { font: { size: 10 } } },
-        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
-      }
-    }
-  });
+// REPORTS
+async function loadReports(){
+  await fetchBiz();const{data:agents}=await sb.from('sh_agents').select('id,name').eq('business_id',S.bizId).eq('is_active',true).order('name')
+  const ids=(agents||[]).map(a=>a.id)
+  const[{data:actuals},{data:products}]=await Promise.all([ids.length?sb.from('sh_kpi_actuals').select('agent_id,enrollments,calls,revenue').in('agent_id',ids):Promise.resolve({data:[]}),sb.from('sh_products').select('commission_pct').eq('business_id',S.bizId).eq('is_active',true)])
+  const avgComm=products?.length?products.reduce((s,p)=>s+Number(p.commission_pct||0),0)/products.length:10
+  const map={};(agents||[]).forEach(a=>{map[a.id]={name:a.name,E:0,C:0,R:0}})
+  ;(actuals||[]).forEach(r=>{if(!map[r.agent_id])return;map[r.agent_id].E+=Number(r.enrollments||0);map[r.agent_id].C+=Number(r.calls||0);map[r.agent_id].R+=Number(r.revenue||0)})
+  const lb=Object.values(map).sort((a,b)=>b.R-a.R),labels=lb.map(a=>a.name)
+  const mkC=(id,lbl,data,color)=>{if(S.charts[id])S.charts[id].destroy();S.charts[id]=new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{label:lbl,data,backgroundColor:color,borderRadius:8}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#F3F4F6'}},x:{grid:{display:false}}}}})}
+  mkC('revenueChart','Revenue',lb.map(a=>a.R),'#FFCC00');mkC('enrollChart','Enrollments',lb.map(a=>a.E),'#3B82F6')
+  document.getElementById('leaderTbody').innerHTML=lb.map((a,i)=>`<tr>
+    <td><div style="width:24px;height:24px;border-radius:50%;background:${i===0?'#FFCC00':i===1?'#D1D5DB':'#F3F4F6'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">${i+1}</div></td>
+    <td style="font-weight:700;">${a.name}</td><td>${a.E.toLocaleString()}</td><td>${a.C.toLocaleString()}</td>
+    <td style="font-weight:700;">${ugx(a.R)}</td><td><span class="badge by">${avgComm.toFixed(1)}%</span></td>
+    <td style="font-weight:700;color:#16A34A;">${ugx(Math.round(a.R*avgComm/100))}</td>
+  </tr>`).join('')
 }
 
-let reportChartsInited = false;
-function initReportCharts() {
-  if (reportChartsInited) return;
-  reportChartsInited = true;
-  new Chart(document.getElementById('revTrendChart'), {
-    type: 'line',
-    data: {
-      labels: ['Aug','Sep','Oct','Nov','Dec','Jan'],
-      datasets: [
-        { label: 'MTN', data: [420,510,580,640,700,680], borderColor: '#FFCC00', tension: 0.4, fill: false, pointRadius: 3 },
-        { label: 'Airtel', data: [80,120,150,180,200,210], borderColor: '#EF5350', tension: 0.4, fill: false, pointRadius: 3 },
-        { label: 'Stanbic', data: [60,90,120,150,165,180], borderColor: '#1565C0', tension: 0.4, fill: false, pointRadius: 3 },
-      ]
-    },
-    options: { plugins: { legend: { labels: { font: { size: 10 } } } }, scales: { y: { grid: { color: '#F5F5F5' }, ticks: { font: { size: 10 } } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } } }
-  });
-  new Chart(document.getElementById('enrollChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['MTN Uganda', 'Airtel Uganda', 'Stanbic Bank'],
-      datasets: [{ data: [4820, 1640, 980], backgroundColor: ['#FFCC00','#EF5350','#1565C0'], borderWidth: 0 }]
-    },
-    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 12 } } }, cutout: '65%' }
-  });
-  new Chart(document.getElementById('commissionChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Aug','Sep','Oct','Nov','Dec','Jan'],
-      datasets: [{ label: 'Paid (M UGX)', data: [12,15,18,22,28,24], backgroundColor: '#00C853', borderRadius: 6 }]
-    },
-    options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#F5F5F5' }, ticks: { font: { size: 9 } } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } } }
-  });
+// APP BUILDER
+const DEF_MODS=[{id:'home',label:'Dashboard / Home',icon:'🏠',on:true},{id:'leads',label:'Leads Pipeline',icon:'🎯',on:true},{id:'pipeline',label:'Kanban Pipeline',icon:'📊',on:true},{id:'customers',label:'Customers / CRM',icon:'👥',on:true},{id:'products',label:'Product Catalogue',icon:'🛒',on:true},{id:'earnings',label:'Earnings & KPIs',icon:'💰',on:true},{id:'leaderboard',label:'Leaderboard',icon:'🏆',on:true},{id:'ai_search',label:'AI Lead Search',icon:'🤖',on:true},{id:'marketplace',label:'Lead Marketplace',icon:'🗺️',on:false},{id:'profile',label:'Agent Profile',icon:'👤',on:true}]
+async function loadBuilder(){
+  await fetchBiz();const biz=activeBiz()
+  const{data}=await sb.from('sh_app_configs').select('*').eq('business_id',S.bizId).maybeSingle()
+  S.appConfig=data||{business_id:S.bizId,app_name:(biz?.name||'')+' Sales Hunter',primary_color:biz?.color||'#FFCC00',txt_color:biz?.txt_color||'#000000',accent_color:biz?.accent||'#FF8F00',modules_config:DEF_MODS.map(m=>({...m}))}
+  const cfg=S.appConfig,mods=Array.isArray(cfg.modules_config)?cfg.modules_config:DEF_MODS.map(m=>({...m}))
+  document.getElementById('bAppName').value=cfg.app_name
+  document.getElementById('bColor').value=cfg.primary_color;document.getElementById('bColorH').value=cfg.primary_color
+  document.getElementById('bTxt').value=cfg.txt_color;document.getElementById('bTxtH').value=cfg.txt_color
+  document.getElementById('bAccent').value=cfg.accent_color;document.getElementById('bAccentH').value=cfg.accent_color
+  document.getElementById('bModules').innerHTML=DEF_MODS.map(m=>{const saved=mods.find(x=>x.id===m.id),on=saved?saved.on:m.on;return`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#F9FAFB;border-radius:10px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">${m.icon}</span><span style="font-size:12px;font-weight:600;">${m.label}</span></div><label class="toggle-wrap"><input type="checkbox" data-mod="${m.id}" ${on?'checked':''} onchange="bPreview()"/><div class="toggle-track"></div></label></div>`}).join('')
+  bPreview()
+}
+function syncHex(pid,hid){document.getElementById(hid).value=document.getElementById(pid).value}
+function syncPicker(pid,hid){const v=document.getElementById(hid).value;if(/^#[0-9a-fA-F]{6}$/.test(v)){document.getElementById(pid).value=v;bPreview()}}
+function bPreview(){
+  const color=document.getElementById('bColor').value,txt=document.getElementById('bTxt').value,accent=document.getElementById('bAccent').value,name=document.getElementById('bAppName').value,biz=activeBiz()
+  document.getElementById('pHeader').style.background=color
+  document.getElementById('pLogo').style.background=accent;document.getElementById('pLogo').style.color=txt;document.getElementById('pLogo').textContent=biz?.code||'SH'
+  document.getElementById('pWelcome').style.color=txt;document.getElementById('pWelcome').textContent='Welcome,\nSales Hunter!'
+  document.getElementById('pBtn').style.background=color;document.getElementById('pBtnTxt').style.color=txt
+  document.getElementById('bAppLabel').textContent=name
+  const active=[...document.querySelectorAll('[data-mod]')].filter(cb=>cb.checked).map(cb=>DEF_MODS.find(m=>m.id===cb.dataset.mod)?.icon||'◾').slice(0,9)
+  document.getElementById('pModGrid').innerHTML=active.map(ico=>`<div style="background:white;border-radius:6px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;">${ico}</div>`).join('')
+}
+async function saveBuilder(){
+  const mods=DEF_MODS.map(m=>{const cb=document.querySelector(`[data-mod="${m.id}"]`);return{...m,on:cb?cb.checked:m.on}})
+  const d={business_id:S.bizId,app_name:document.getElementById('bAppName').value,primary_color:document.getElementById('bColor').value,txt_color:document.getElementById('bTxt').value,accent_color:document.getElementById('bAccent').value,modules_config:mods,updated_at:new Date().toISOString()}
+  load(true);try{const{error}=await sb.from('sh_app_configs').upsert(d,{onConflict:'business_id'});if(error)throw error;toast('App config saved & pushed!')}catch(e){toast(e.message,'err')}finally{load(false)}
 }
 
-// ── Auth ──────────────────────────────
-const API_BASE = 'https://eams-t3js.onrender.com/api/v1';
-const LS_TOKEN = 'sh_portal_token';
-const LS_USER  = 'sh_portal_user';
-
-function checkAuth() {
-  const token = localStorage.getItem(LS_TOKEN);
-  if (token) {
-    showPortal();
-  } else {
-    const ls = document.getElementById('loginScreen');
-    ls.style.display = 'flex';
-  }
+// REAL-TIME
+function setupRealtime(){
+  const dot=document.querySelector('.rt-dot')
+  sb.channel('portal_live')
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_businesses'},()=>{fetchBiz().then(()=>{if(S.section==='businesses')loadBusinesses()})})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_products'},()=>{if(S.section==='products')loadProducts()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_agents'},()=>{if(S.section==='agents')loadAgents()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_kpi_targets'},()=>{if(S.section==='agents')loadAgents()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_kpi_actuals'},()=>{if(S.section==='agents')loadAgents();if(S.section==='reports')loadReports()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_leads'},()=>{if(S.section==='leads')loadLeads();if(S.section==='dashboard')loadDashboard()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_app_configs'},()=>{if(S.section==='builder')loadBuilder()})
+    .subscribe(status=>{if(dot)dot.style.background=status==='SUBSCRIBED'?'#22C55E':'#F59E0B'})
 }
 
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-  const btn   = document.getElementById('loginBtn');
-  const errEl = document.getElementById('loginError');
-
-  if (!email || !pass) { showLoginError('Please enter your email and password.'); return; }
-
-  btn.textContent = 'Signing in…';
-  btn.disabled = true;
-  errEl.style.display = 'none';
-
-  try {
-    const res = await fetch(`${API_BASE}/user-management/login/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: pass }),
-    });
-    const data = await res.json();
-
-    if (res.ok && (data.token || data.access)) {
-      const token = data.token || data.access;
-      localStorage.setItem(LS_TOKEN, token);
-      localStorage.setItem(LS_USER, JSON.stringify({
-        name: data.first_name ? `${data.first_name} ${data.last_name || ''}`.trim() : email.split('@')[0],
-        email,
-      }));
-      showPortal();
-    } else {
-      const msg = data.message || data.detail || data.non_field_errors?.[0] || 'Login failed. Check your credentials.';
-      showLoginError(msg);
-    }
-  } catch(e) {
-    const s = e.toString().toLowerCase();
-    if (s.includes('failed to fetch') || s.includes('network')) {
-      showLoginError('Cannot reach server. Check your internet or try again in 30s (server may be starting up).');
-    } else {
-      showLoginError('An error occurred. Please try again.');
-    }
-  } finally {
-    btn.textContent = 'Sign In to Portal';
-    btn.disabled = false;
-  }
-}
-
-function showLoginError(msg) {
-  const el = document.getElementById('loginError');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-function enterDemoMode() {
-  localStorage.setItem(LS_TOKEN, 'demo');
-  localStorage.setItem(LS_USER, JSON.stringify({ name: 'Demo Admin', email: 'demo@eams.co.ug' }));
-  showPortal();
-}
-
-function showPortal() {
-  document.getElementById('loginScreen').style.display = 'none';
-  // Update user display
-  const user = JSON.parse(localStorage.getItem(LS_USER) || '{}');
-  const initials = (user.name || 'SA').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-  document.querySelectorAll('.portal-user-initials').forEach(el => el.textContent = initials);
-  document.querySelectorAll('.portal-user-name').forEach(el => el.textContent = user.name || 'Admin');
-}
-
-function logout() {
-  localStorage.removeItem(LS_TOKEN);
-  localStorage.removeItem(LS_USER);
-  location.reload();
-}
-
-// ── Init ──────────────────────────────
-renderProducts('mtn');
-initDashboardCharts();
-checkAuth();
+async function init(){setupRealtime();await loadSection('dashboard')}
+checkAuth()
 </script>
 </body>
 </html>
