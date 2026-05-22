@@ -210,6 +210,17 @@ main{background:transparent;}
 .sh-ctx-len{font-size:11px;font-weight:600;color:#94A3B8;}
 .sh-ctx-warn{color:#DC2626;}
 .sh-export-card{max-width:680px;}
+.seed-map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:12px;}
+.seed-map-row{display:flex;flex-direction:column;gap:4px;padding:8px 10px;background:#F8FAFC;border:1px solid #E5E7EB;border-radius:8px;font-size:12px;}
+.seed-map-row label{font-weight:600;color:#475569;}
+.seed-map-row select{padding:6px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:12px;background:#fff;}
+.seed-stat-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.seed-stat{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;}
+.seed-stat-ok{background:#DCFCE7;color:#15803D;}
+.seed-stat-warn{background:#FEF3C7;color:#B45309;}
+.seed-stat-muted{background:#F1F5F9;color:#64748B;}
+.seed-row-warn td{background:#FFFBEB!important;}
+.seed-row-skip td{background:#FEF2F2!important;opacity:.85;}
 @media(max-width:900px){.sh-agent-layout,.sh-push-grid{grid-template-columns:1fr;}}
 @media(max-width:640px){.sh-upload-grid,.sh-charts-row{grid-template-columns:1fr;}.sh-kpi-grid{grid-template-columns:repeat(2,1fr);}}
 .reg-tab{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:#9CA3AF;border-bottom:3px solid transparent;margin-bottom:-2px;}
@@ -467,8 +478,8 @@ main{background:transparent;}
         <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
           <div style="width:44px;height:44px;border-radius:10px;background:rgba(79,70,229,.1);color:#4F46E5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📊</div>
           <div>
-            <div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">CSV / Excel import</div>
-            <div style="font-size:12px;color:#64748B;">Columns: <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">company_name</code> (or <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">name</code>), <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">phone</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">email</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">website</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">location</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">asset_interests</code></div>
+            <div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Import any spreadsheet</div>
+            <div style="font-size:12px;color:#64748B;">Upload any CSV, TSV, or Excel file. Columns are auto-mapped to lead fields — adjust the mapping below if needed. Extra columns are saved into notes.</div>
           </div>
         </div>
         <div class="fi-row" style="margin-bottom:12px;">
@@ -478,18 +489,21 @@ main{background:transparent;}
         <label class="sh-pill" style="margin-bottom:10px;display:inline-flex;"><input type="checkbox" id="seedTrackBiz" checked /> Track imported leads for active business</label>
         <div class="sh-dz" onclick="document.getElementById('seedFile').click()">
           <div class="sh-dz-ico">⬆</div>
-          <div style="font-weight:600;">Drop CSV / Excel or click to browse</div>
-          <div style="font-size:12px;margin-top:6px;opacity:.6;" id="seedFileName">.csv, .xlsx, .xls</div>
-          <input id="seedFile" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none;" onchange="seedFileSelected()" />
+          <div style="font-weight:600;">Drop any CSV / Excel file or click to browse</div>
+          <div style="font-size:12px;margin-top:6px;opacity:.6;" id="seedFileName">Any .csv, .tsv, .txt, .xlsx, .xls</div>
+          <input id="seedFile" type="file" accept=".csv,.tsv,.txt,.xlsx,.xls,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none;" onchange="seedFileSelected()" />
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" onclick="importSpreadsheet()" id="seedImportBtn">⬆ Import to master pool</button>
           <button class="btn btn-ghost btn-sm" onclick="downloadCSVTemplate()">⬇ Template</button>
         </div>
         <div id="seedPreview" style="display:none;margin-top:12px;">
-          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;" id="seedPreviewCount"></div>
-          <div style="max-height:160px;overflow-y:auto;border:1px solid #E5E7EB;border-radius:10px;">
-            <table class="dt"><thead><tr><th>Company</th><th>Phone</th><th>Email</th><th>Location</th></tr></thead><tbody id="seedPreviewBody"></tbody></table>
+          <div id="seedPreviewStats" class="seed-stat-row"></div>
+          <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">Column mapping</div>
+          <div id="seedMapping" class="seed-map-grid"></div>
+          <div style="font-size:12px;font-weight:700;color:#374151;margin:12px 0 8px;" id="seedPreviewCount"></div>
+          <div style="max-height:240px;overflow:auto;border:1px solid #E5E7EB;border-radius:10px;">
+            <table class="dt"><thead id="seedPreviewHead"></thead><tbody id="seedPreviewBody"></tbody></table>
           </div>
         </div>
       </div>
@@ -938,7 +952,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const API='https://eams-t3js.onrender.com/api/v1'
 const LS_TOK='sh_portal_token',LS_USR='sh_portal_user',LS_DTOK='sh_django_tok'
 const sb=supabase.createClient(SB_URL,SB_KEY)
-const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',lpNavCollapsed:false,seedRows:[],charts:{}}
+const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',lpNavCollapsed:false,seedRows:[],seedImport:null,charts:{}}
 
 const ugx=n=>'UGX '+Number(n||0).toLocaleString()
 const pc=(a,t)=>Math.min(100,t>0?Math.round(a/t*100):0)
@@ -1414,14 +1428,18 @@ async function assignLead(){
 }
 function seedFileSelected(){
   const f=document.getElementById('seedFile').files[0]
-  document.getElementById('seedFileName').textContent=f?f.name:'.csv, .xlsx, .xls'
-  if(!f){S.seedRows=[];document.getElementById('seedPreview').style.display='none';return}
-  parseSpreadsheetFile(f).then(rows=>{
-    S.seedRows=rows
-    document.getElementById('seedPreviewCount').textContent=`${rows.length} row(s) ready to import`
-    document.getElementById('seedPreviewBody').innerHTML=rows.slice(0,8).map(r=>`<tr><td>${r.company_name}</td><td>${r.phone||'—'}</td><td>${r.email||'—'}</td><td>${r.location||'—'}</td></tr>`).join('')
-    document.getElementById('seedPreview').style.display='block'
-  }).catch(e=>{toast(e.message,'err');S.seedRows=[];document.getElementById('seedPreview').style.display='none'})
+  document.getElementById('seedFileName').textContent=f?f.name:'Any .csv, .tsv, .txt, .xlsx, .xls'
+  if(!f){S.seedRows=[];S.seedImport=null;document.getElementById('seedPreview').style.display='none';return}
+  parseSpreadsheetFile(f).then(parsed=>{
+    S.seedImport=parsed
+    seedAutoMapColumns()
+    seedRefreshRows()
+    renderSeedImportPreview()
+  }).catch(e=>{
+    toast(e.message,'err')
+    S.seedRows=[];S.seedImport=null
+    document.getElementById('seedPreview').style.display='none'
+  })
 }
 async function importSpreadsheet(){
   if(demoGuard())return
@@ -1429,23 +1447,23 @@ async function importSpreadsheet(){
   btn.textContent='Importing…';btn.disabled=true
   shFlashClear('seedFlash')
   try{
-    let rows=S.seedRows
-    if(!rows.length){
+    if(!S.seedRows.length){
       const file=document.getElementById('seedFile').files[0]
-      if(!file)throw new Error('Select a CSV or Excel file first.')
-      rows=await parseSpreadsheetFile(file)
-      S.seedRows=rows
+      if(!file)throw new Error('Select a file first.')
+      S.seedImport=await parseSpreadsheetFile(file)
+      seedAutoMapColumns()
+      seedRefreshRows()
     }
-    const result=await bulkImportRows(rows,{
+    const result=await bulkImportRows(S.seedRows,{
       industry:document.getElementById('seedIndustry').value,
       trackBiz:document.getElementById('seedTrackBiz').checked,
       defaultAgent:document.getElementById('seedDefaultAgent').value
     })
-    shFlash('seedFlash',`✅ ${result.created} added to master pool · ℹ ${result.skipped_dupe} duplicates · ⚠ ${result.skipped_incomplete} incomplete${result.tracked?` · ${result.tracked} tracked for business`:''}`,'ok')
+    shFlash('seedFlash',`✅ ${result.created} added to master pool · ℹ ${result.skipped_dupe||0} duplicates · ⚠ ${result.skipped_incomplete||0} incomplete · ${result.skippedFile||0} skipped in file${result.tracked?` · ${result.tracked} tracked for business`:''}`,'ok')
     document.getElementById('seedFile').value=''
-    document.getElementById('seedFileName').textContent='.csv, .xlsx, .xls'
+    document.getElementById('seedFileName').textContent='Any .csv, .tsv, .txt, .xlsx, .xls'
     document.getElementById('seedPreview').style.display='none'
-    S.seedRows=[]
+    S.seedRows=[];S.seedImport=null
     await loadLeads()
   }catch(e){shFlash('seedFlash',e.message,'err')}
   finally{btn.textContent='⬆ Import to master pool';btn.disabled=false}
@@ -1460,22 +1478,26 @@ async function importJSONBulk(){
   btn.textContent='Importing…';btn.disabled=true
   shFlashClear('seedFlash')
   try{
-    const rows=parsed.map(normImportRow)
-    const result=await bulkImportRows(rows,{
+    S.seedImport={headers:Object.keys(parsed[0]||{}),rawRows:parsed}
+    seedAutoMapColumns()
+    seedRefreshRows()
+    const result=await bulkImportRows(S.seedRows,{
       industry:document.getElementById('seedIndustry').value,
       trackBiz:document.getElementById('seedTrackBiz').checked,
       defaultAgent:document.getElementById('seedDefaultAgent').value
     })
-    shFlash('seedFlash',`✅ ${result.created} added · ℹ ${result.skipped_dupe} duplicates · ⚠ ${result.skipped_incomplete} incomplete`,'ok')
+    shFlash('seedFlash',`✅ ${result.created} added · ℹ ${result.skipped_dupe||0} duplicates · ⚠ ${result.skipped_incomplete||0} incomplete`,'ok')
     document.getElementById('seedJSON').value=''
     await loadLeads()
   }catch(e){shFlash('seedFlash',e.message,'err')}
   finally{btn.textContent='✔ Import JSON';btn.disabled=false}
 }
 function downloadCSVTemplate(){
-  const cols='company_name,contact_person,phone,email,location,country,website,linkedin,asset_interests,notes\n'
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([cols],{type:'text/csv'}))
-  a.download='eams_leads_template.csv';a.click()
+  const header='company_name,contact_person,phone,email,location,country,website,linkedin,asset_interests,social_media,source_url,notes'
+  const sample='"Kampala Logistics Ltd","James Okello","+256 700 123456","info@kampala-logistics.ug","Kampala","Uganda","https://kampala-logistics.ug","https://linkedin.com/company/example","Fleet · Warehousing · IT services","@kampalalogistics","https://example.com/source","Trade fair lead — full product suite interest"'
+  const blob=new Blob([header+'\n'+sample+'\n'],{type:'text/csv;charset=utf-8'})
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob)
+  a.download='eams_leads_full_template.csv';a.click()
 }
 
 // REPORTS
@@ -2194,56 +2216,215 @@ function demoGuard(){
   return false
 }
 
+const LEAD_IMPORT_FIELDS=[
+  {key:'company_name',label:'Company / Organisation *',required:true,aliases:['company','name','business','business_name','organisation','organization','org','client','client_name','customer','firm','account','lead_name','account_name','vendor','supplier','employer']},
+  {key:'contact_person',label:'Contact person',aliases:['contact','contact_name','full_name','fullname','person','rep','representative','first_name','lastname','last_name','owner','manager','lead_contact']},
+  {key:'phone',label:'Phone',aliases:['mobile','tel','telephone','phone_number','cell','whatsapp','phone_no','contact_phone','msisdn','work_phone']},
+  {key:'email',label:'Email',aliases:['e_mail','email_address','mail','contact_email','work_email']},
+  {key:'website',label:'Website',aliases:['url','web','site','website_url','homepage','domain']},
+  {key:'linkedin',label:'LinkedIn',aliases:['linkedin_url','linkedin_profile','li','linkedin_link']},
+  {key:'location',label:'Location',aliases:['city','address','region','area','territory','district','town','state','province']},
+  {key:'country',label:'Country',aliases:['nation']},
+  {key:'asset_interests',label:'Products / services / interests',aliases:['product','products','product_interest','interest','interests','needs','services','category','categories','equipment','equipments','assets','asset','asset_type','asset_types','fleet','machinery','offerings','vertical','sector_interest','use_case']},
+  {key:'social_media',label:'Social media',aliases:['social','facebook','twitter','instagram','x_handle','handle']},
+  {key:'source_url',label:'Source URL',aliases:['source_link','reference_url','link']},
+  {key:'source_snippet',label:'Source / evidence',aliases:['source','evidence','snippet','reference']},
+  {key:'notes',label:'Notes',aliases:['note','comments','comment','description','remarks','details','extra','info','summary','about']},
+]
+const LEAD_PREVIEW_COLS=['company_name','contact_person','phone','email','location','asset_interests','notes']
+
 function normImportKey(k){
-  return String(k||'').trim().toLowerCase().replace(/\s+/g,'_')
+  return String(k||'').trim().toLowerCase().replace(/[^\w]+/g,'_').replace(/^_|_$/g,'')
 }
-function normImportRow(raw){
-  const row={}
-  Object.entries(raw||{}).forEach(([k,v])=>{row[normImportKey(k)]=typeof v==='string'?v.trim():String(v??'').trim()})
-  const company=(row.company_name||row.company||row.name||row.business||'').trim()
-  return{
-    company_name:company,
-    contact_person:(row.contact_person||row.contact||'').trim(),
-    phone:(row.phone||row.mobile||row.tel||'').trim(),
-    email:(row.email||row.e_mail||'').trim(),
-    website:(row.website||row.url||'').trim(),
-    linkedin:(row.linkedin||row.linkedin_url||'').trim(),
-    location:(row.location||row.city||row.territory||'').trim(),
-    country:(row.country||'Uganda').trim()||'Uganda',
-    asset_interests:(row.asset_interests||row.product_interest||row.interest||row.product||'').trim(),
-    notes:(row.notes||row.note||'').trim()
+function guessFieldForHeader(header){
+  const h=normImportKey(header)
+  if(!h)return ''
+  for(const f of LEAD_IMPORT_FIELDS){
+    if(f.key===h)return f.key
+    if(f.aliases.includes(h))return f.key
   }
+  for(const f of LEAD_IMPORT_FIELDS){
+    if(h.includes(f.key.replace('_','')))return f.key
+    for(const a of f.aliases){if(h.includes(a)||a.includes(h))return f.key}
+  }
+  return ''
+}
+function seedAutoMapColumns(){
+  if(!S.seedImport)return
+  const mapping={}
+  S.seedImport.headers.forEach(h=>{
+    mapping[h]=guessFieldForHeader(h)||''
+  })
+  S.seedImport.mapping=mapping
+}
+function seedSetMapping(header,value){
+  if(!S.seedImport)return
+  S.seedImport.mapping[header]=value
+  seedRefreshRows()
+  renderSeedImportPreview()
+}
+function blankLeadRow(){
+  return{company_name:'',contact_person:'',phone:'',email:'',website:'',linkedin:'',location:'',country:'Uganda',asset_interests:'',social_media:'',source_url:'',source_snippet:'',notes:'',_status:'',_issues:[]}
+}
+function applyImportMapping(rawRow,mapping){
+  const out=blankLeadRow()
+  const extras=[]
+  Object.entries(rawRow||{}).forEach(([header,val])=>{
+    const v=typeof val==='string'?val.trim():String(val??'').trim()
+    if(!v)return
+    const target=(mapping&&mapping[header])||guessFieldForHeader(header)
+    if(target&&Object.prototype.hasOwnProperty.call(out,target)){
+      if(!out[target])out[target]=v
+      else if(target==='notes')out.notes+=(out.notes?'; ':'')+v
+      else out.notes+=(out.notes?'; ':'')+`${target}: ${v}`
+    }else{
+      extras.push(`${header}: ${v}`)
+    }
+  })
+  if(extras.length){
+    const extraNotes=extras.join(' | ')
+    out.notes=out.notes?(out.notes+' | '+extraNotes):extraNotes
+  }
+  if(!out.company_name){
+    for(const [header,val] of Object.entries(rawRow||{})){
+      const v=String(val||'').trim()
+      if(!v)continue
+      const target=(mapping&&mapping[header])||guessFieldForHeader(header)
+      if(target==='company_name'){out.company_name=v.slice(0,255);break}
+    }
+  }
+  if(!out.company_name){
+    const first=Object.values(rawRow||{}).map(v=>String(v||'').trim()).find(v=>v.length>2)
+    if(first)out.company_name=first.slice(0,255)
+  }
+  return out
 }
 function rowHasContact(r){
   return !!(r.phone||r.email||r.website||r.linkedin||r.contact_person)
 }
+function classifyImportRow(r){
+  const issues=[]
+  if(!r.company_name)issues.push('Missing company')
+  if(!rowHasContact(r))issues.push('No contact field')
+  if(!r.company_name&&!rowHasContact(r))return{status:'skip',issues}
+  if(!r.company_name||!rowHasContact(r))return{status:'warn',issues}
+  return{status:'ok',issues}
+}
+function seedRefreshRows(){
+  if(!S.seedImport)return
+  S.seedRows=S.seedImport.rawRows.map(raw=>{
+    const row=applyImportMapping(raw,S.seedImport.mapping)
+    const c=classifyImportRow(row)
+    row._status=c.status
+    row._issues=c.issues
+    return row
+  })
+}
+function renderSeedImportPreview(){
+  const panel=document.getElementById('seedPreview')
+  if(!S.seedImport||!S.seedRows.length){panel.style.display='none';return}
+  panel.style.display='block'
+  const ok=S.seedRows.filter(r=>r._status==='ok').length
+  const warn=S.seedRows.filter(r=>r._status==='warn').length
+  const skip=S.seedRows.filter(r=>r._status==='skip').length
+  document.getElementById('seedPreviewStats').innerHTML=
+    `<span class="seed-stat seed-stat-ok">✔ ${ok} ready</span>`+
+    (warn?`<span class="seed-stat seed-stat-warn">⚠ ${warn} partial</span>`:'')+
+    (skip?`<span class="seed-stat seed-stat-muted">○ ${skip} skipped</span>`:'')+
+    `<span class="seed-stat seed-stat-muted">${S.seedRows.length} rows · ${S.seedImport.headers.length} columns</span>`
+  const mapEl=document.getElementById('seedMapping')
+  mapEl.innerHTML=S.seedImport.headers.map((h,idx)=>{
+    const opts=['<option value="">— Extra → notes —</option>']
+      .concat(LEAD_IMPORT_FIELDS.map(f=>{
+        const sel=S.seedImport.mapping[h]===f.key?' selected':''
+        return `<option value="${f.key}"${sel}>${f.label}</option>`
+      })).join('')
+    return `<div class="seed-map-row"><label>${esc(h)||'(blank)'}</label><select data-map-idx="${idx}">${opts}</select></div>`
+  }).join('')
+  mapEl.querySelectorAll('select[data-map-idx]').forEach(sel=>{
+    const idx=+sel.dataset.mapIdx
+    const h=S.seedImport.headers[idx]
+    sel.value=S.seedImport.mapping[h]||''
+    sel.onchange=()=>seedSetMapping(h,sel.value)
+  })
+  document.getElementById('seedPreviewCount').textContent=`Preview (${Math.min(S.seedRows.length,20)} of ${S.seedRows.length} rows)`
+  document.getElementById('seedPreviewHead').innerHTML=`<tr><th>Status</th>${LEAD_PREVIEW_COLS.map(c=>`<th>${LEAD_IMPORT_FIELDS.find(f=>f.key===c)?.label||c}</th>`).join('')}</tr>`
+  document.getElementById('seedPreviewBody').innerHTML=S.seedRows.slice(0,20).map(r=>{
+    const cls=r._status==='skip'?'seed-row-skip':r._status==='warn'?'seed-row-warn':''
+    const badge=r._status==='ok'?'✔':r._status==='warn'?'⚠':'○'
+    const tip=r._issues.length?` title="${esc(r._issues.join(', '))}"`:''
+    return `<tr class="${cls}"${tip}><td>${badge}</td>${LEAD_PREVIEW_COLS.map(c=>`<td>${esc(r[c]||'—')}</td>`).join('')}</tr>`
+  }).join('')
+}
+function detectCSVDelimiter(line){
+  const c=(line.match(/,/g)||[]).length
+  const s=(line.match(/;/g)||[]).length
+  const t=(line.match(/\t/g)||[]).length
+  if(t>=c&&t>=s&&t>0)return '\t'
+  if(s>c&&s>0)return ';'
+  return ','
+}
+function parseCSVLine(line,delim){
+  const out=[]
+  let cur='',inQ=false
+  for(let i=0;i<line.length;i++){
+    const ch=line[i],nx=line[i+1]
+    if(ch==='"'){if(inQ&&nx==='"'){cur+='"';i++}else inQ=!inQ}
+    else if(ch===delim&&!inQ){out.push(cur);cur=''}
+    else cur+=ch
+  }
+  out.push(cur)
+  return out.map(v=>v.trim())
+}
 function parseCSVText(text){
-  const lines=text.split(/\r?\n/).filter(l=>l.trim())
-  if(lines.length<2)return []
-  const hdrs=lines[0].split(',').map(h=>normImportKey(h.replace(/^"|"$/g,'')))
-  return lines.slice(1).map(ln=>{
-    const vals=ln.match(/("([^"]|"")*"|[^,]*)/g)||[]
-    const clean=vals.map(v=>v.replace(/^"|"$/g,'').replace(/""/g,'"').trim())
+  const cleaned=text.replace(/^\uFEFF/,'')
+  const lines=cleaned.split(/\r?\n/).filter(l=>l.trim())
+  if(!lines.length)return{headers:[],rawRows:[]}
+  const delim=detectCSVDelimiter(lines[0])
+  const headers=parseCSVLine(lines[0],delim).map(h=>String(h||'').trim()).filter((h,i,arr)=>h||arr.length>1)
+  const rawRows=[]
+  for(let i=1;i<lines.length;i++){
+    const vals=parseCSVLine(lines[i],delim)
+    if(!vals.some(v=>String(v||'').trim()))continue
     const o={}
-    hdrs.forEach((h,i)=>{if(h)o[h]=clean[i]||''})
-    return normImportRow(o)
-  }).filter(r=>r.company_name)
+    headers.forEach((h,idx)=>{o[h||`column_${idx+1}`]=vals[idx]||''})
+    rawRows.push(o)
+  }
+  if(!headers.length&&rawRows.length) return parseCSVText('column_1\n'+lines.join('\n'))
+  return{headers:headers.length?headers:Object.keys(rawRows[0]||{}),rawRows}
 }
 async function parseSpreadsheetFile(file){
   const ext=(file.name.split('.').pop()||'').toLowerCase()
-  if(ext==='csv'||file.type.includes('csv')){
+  const isExcel=ext==='xlsx'||ext==='xls'||file.type.includes('sheet')||file.type.includes('excel')
+  const isText=ext==='csv'||ext==='tsv'||ext==='txt'||file.type.includes('csv')||file.type.includes('text')
+  if(isText&&!isExcel){
     const text=await file.text()
-    return parseCSVText(text)
+    const parsed=parseCSVText(text)
+    if(!parsed.rawRows.length)throw new Error('File is empty or has no data rows.')
+    return parsed
   }
-  if(ext==='xlsx'||ext==='xls'||file.type.includes('sheet')||file.type.includes('excel')){
-    if(typeof XLSX==='undefined')throw new Error('Excel parser not loaded — refresh the page and try again.')
-    const buf=await file.arrayBuffer()
-    const wb=XLSX.read(buf,{type:'array'})
-    const sheet=wb.Sheets[wb.SheetNames[0]]
-    const raw=XLSX.utils.sheet_to_json(sheet,{defval:''})
-    return raw.map(normImportRow).filter(r=>r.company_name)
+  if(isExcel||(!isText&&['xlsx','xls','csv','tsv','txt'].indexOf(ext)<0)){
+    try{
+      if(typeof XLSX!=='undefined'){
+        const buf=await file.arrayBuffer()
+        const wb=XLSX.read(buf,{type:'array'})
+        const sheet=wb.Sheets[wb.SheetNames[0]]
+        const rawRows=XLSX.utils.sheet_to_json(sheet,{defval:''})
+        if(rawRows.length){
+          return{headers:Object.keys(rawRows[0]||{}),rawRows}
+        }
+      }
+    }catch(_){}
   }
-  throw new Error('Unsupported file type — use .csv, .xlsx, or .xls')
+  if(isText||ext==='csv'||ext==='tsv'||ext==='txt'||!ext){
+    const text=await file.text()
+    const parsed=parseCSVText(text)
+    if(parsed.rawRows.length)return parsed
+  }
+  throw new Error('Could not read rows from this file. Try CSV, TSV, or Excel (.xlsx).')
+}
+function normImportRow(raw){
+  return applyImportMapping(raw,null)
 }
 async function trackLeadForBusiness(row,opts={}){
   const agentId=opts.agentId||''
@@ -2273,23 +2454,31 @@ async function trackLeadForBusiness(row,opts={}){
   if(error)throw error
 }
 async function bulkImportRows(rows,{industry,trackBiz,defaultAgent}={}){
-  const valid=rows.filter(r=>r.company_name&&rowHasContact(r))
-  if(!valid.length)throw new Error('No valid rows — each lead needs company_name (or name) plus phone, email, website, or LinkedIn.')
+  const payloadRows=rows.filter(r=>r._status!=='skip').map(r=>{
+    const o={}
+    ;['company_name','contact_person','phone','email','website','linkedin','location','country','asset_interests','social_media','source_url','source_snippet','notes'].forEach(k=>{if(r[k])o[k]=r[k]})
+    if(!o.country)o.country='Uganda'
+    return o
+  }).filter(r=>r.company_name&&rowHasContact(r))
+  const skippedFile=rows.length-payloadRows.length
+  if(!payloadRows.length){
+    throw new Error(`No importable rows — ${rows.length} row(s) parsed but none have both a company name and a contact field (phone, email, website, LinkedIn, or contact person). Adjust column mapping above.`)
+  }
   const d=await apiPost('/sales-hunter/admin/upload-leads/',{
     industry:industry||'other',
     source_type:'csv_upload',
-    leads:valid
+    leads:payloadRows
   },120000)
   let tracked=0
   if(trackBiz&&S.bizId){
-    for(const row of valid){
+    for(const row of payloadRows){
       try{
         await trackLeadForBusiness(row,{agentId:defaultAgent||''})
         tracked++
       }catch(_){}
     }
   }
-  return{...d,tracked,validCount:valid.length,skippedFile:rows.length-valid.length}
+  return{...d,tracked,validCount:payloadRows.length,skippedFile}
 }
 
 // ═══════════════════════════════════════════════
