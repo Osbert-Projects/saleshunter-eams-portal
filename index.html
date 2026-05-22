@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-#stitchBg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#FFFFFF;}
+#meshBg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#FFFFFF;}
 #portal,#loginScreen{position:relative;z-index:1;}
 .sidebar{width:230px;min-height:100vh;background:#111827;flex-shrink:0;display:flex;flex-direction:column;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:10px;color:#9CA3AF;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:none;width:calc(100% - 20px);text-align:left;}
@@ -199,6 +199,11 @@ main{background:transparent;}
 @media(max-width:640px){.sh-upload-grid,.sh-charts-row{grid-template-columns:1fr;}.sh-kpi-grid{grid-template-columns:repeat(2,1fr);}}
 .reg-tab{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:#6B7280;border-bottom:3px solid transparent;margin-bottom:-2px;}
 .reg-tab-active{color:#111827;border-bottom-color:#FFCC00;font-weight:700;}
+.lp-tab-bar{display:flex;gap:0;border-bottom:2px solid #E5E7EB;margin-bottom:20px;flex-wrap:wrap;overflow-x:auto;}
+.lp-tab{padding:10px 14px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:#6B7280;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+.lp-tab:hover{color:#374151;}
+.lp-tab-active{color:#4F46E5;border-bottom-color:#6366F1;}
+.lp-panel{display:none;}.lp-panel.show{display:block;}
 .rating-star{font-size:24px;cursor:pointer;color:#D1D5DB;transition:color .1s;}
 .rating-star.filled{color:#FFCC00;}
 .login-card{width:380px;background:white;border-radius:24px;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.12);}
@@ -206,7 +211,7 @@ main{background:transparent;}
 </style>
 </head>
 <body>
-<canvas id="stitchBg" aria-hidden="true"></canvas>
+<canvas id="meshBg" aria-hidden="true"></canvas>
 <div id="loadBar"></div>
 <div id="toast"></div>
 
@@ -243,17 +248,10 @@ main{background:transparent;}
     <button class="nav-item" data-sec="products" onclick="navTo('products')">💰 Products & Pricing</button>
     <button class="nav-item" data-sec="agents" onclick="navTo('agents')">👥 Agents & KPIs</button>
     <button class="nav-item" data-sec="registrations" onclick="navTo('registrations')">📋 Registrations</button>
-    <button class="nav-item" data-sec="leads" onclick="navTo('leads')">🎯 Lead Seeding</button>
     <button class="nav-item" data-sec="reports" onclick="navTo('reports')">📈 Reports</button>
     <button class="nav-item" data-sec="builder" onclick="navTo('builder')">📱 App Builder</button>
     <div class="nav-sep"><span class="nav-sep-lbl">Lead Operations</span></div>
     <button class="nav-item" data-sec="leadpool" onclick="navTo('leadpool')">🗄 Lead Pool</button>
-    <button class="nav-item" data-sec="upload" onclick="navTo('upload')">⬆ Upload Leads</button>
-    <button class="nav-item" data-sec="push" onclick="navTo('push')">📤 Push to Clients</button>
-    <button class="nav-item" data-sec="offers" onclick="navTo('offers')">🏷 Offers</button>
-    <button class="nav-item" data-sec="analytics" onclick="navTo('analytics')">📊 Analytics</button>
-    <button class="nav-item" data-sec="aiagent" onclick="navTo('aiagent')">🤖 AI Agent</button>
-    <button class="nav-item" data-sec="export" onclick="navTo('export')">⬇ Export</button>
   </div>
   <div style="padding:12px 16px;border-top:1px solid #1F2937;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span class="rt-dot"></span><span style="font-size:11px;color:#6B7280;">Live — real-time sync</span></div>
@@ -263,6 +261,17 @@ main{background:transparent;}
 </nav>
 <main style="flex:1;overflow-y:auto;padding:28px;">
   <div id="bizBar" style="display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;"><span style="font-size:12px;font-weight:600;color:#6B7280;">Business:</span></div>
+
+  <div id="lpTabBar" class="lp-tab-bar" style="display:none;">
+    <button type="button" class="lp-tab lp-tab-active" data-lp-tab="pool" onclick="lpSwitchTab('pool')">🗄 Pool</button>
+    <button type="button" class="lp-tab" data-lp-tab="seed" onclick="lpSwitchTab('seed')">🌱 Seed & Assign</button>
+    <button type="button" class="lp-tab" data-lp-tab="upload" onclick="lpSwitchTab('upload')">⬆ Upload</button>
+    <button type="button" class="lp-tab" data-lp-tab="push" onclick="lpSwitchTab('push')">📤 Push</button>
+    <button type="button" class="lp-tab" data-lp-tab="offers" onclick="lpSwitchTab('offers')">🏷 Offers</button>
+    <button type="button" class="lp-tab" data-lp-tab="analytics" onclick="lpSwitchTab('analytics')">📊 Analytics</button>
+    <button type="button" class="lp-tab" data-lp-tab="aiagent" onclick="lpSwitchTab('aiagent')">🤖 AI Agent</button>
+    <button type="button" class="lp-tab" data-lp-tab="export" onclick="lpSwitchTab('export')">⬇ Export</button>
+  </div>
 
   <!-- DASHBOARD -->
   <div id="sec-dashboard" class="sec show">
@@ -293,11 +302,11 @@ main{background:transparent;}
     <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Agent</th><th>Region</th><th>Enrollments</th><th>Calls</th><th>Revenue</th><th>Active</th><th>Actions</th></tr></thead><tbody id="agentsTbody"></tbody></table></div>
   </div>
 
-  <!-- LEADS -->
-  <div id="sec-leads" class="sec">
-    <div class="sec-hdr"><div><div class="sec-title">Lead Seeding</div><div class="sec-sub">Add, assign and track leads</div></div>
+  <!-- LEADS (Seed & Assign — part of Lead Pool module) -->
+  <div id="sec-leads" class="sec lp-panel" data-lp-tab="seed">
+    <div class="sec-hdr"><div><div class="sec-title">Seed & Assign</div><div class="sec-sub">Add leads to the master pool, then assign to agents or push for credit purchase</div></div>
     <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openModal('csvModal')">⬆ Import CSV</button><button class="btn btn-primary" onclick="openLeadModal()">+ Add Lead</button></div></div>
-    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table></div>
+    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Pool ID</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table></div>
   </div>
 
   <!-- REPORTS -->
@@ -351,8 +360,8 @@ main{background:transparent;}
   </div>
 
   <!-- LEAD POOL -->
-  <div id="sec-leadpool" class="sec">
-    <div class="sec-hdr"><div><div class="sec-title">Lead Pool</div><div class="sec-sub">Master lead database — browse, add, edit and archive</div></div></div>
+  <div id="sec-leadpool" class="sec lp-panel" data-lp-tab="pool">
+    <div class="sec-hdr"><div><div class="sec-title">Master Lead Pool</div><div class="sec-sub">Browse, seed, push to businesses for purchase, or unlock with credits for agents</div></div></div>
     <div id="lpFlash"></div>
     <div class="sh-toolbar">
       <div class="sh-filters">
@@ -373,6 +382,8 @@ main{background:transparent;}
         </select>
         <span class="sh-chip" id="lpCount">—</span>
         <button class="btn btn-danger btn-sm" id="lpArchBtn" style="display:none;" onclick="lpArchiveSelected()">🗄 Archive selected</button>
+        <button class="btn btn-ghost btn-sm" id="lpPushBtn" style="display:none;" onclick="lpPushSelected()">📤 Push for purchase</button>
+        <button class="btn btn-ghost btn-sm" id="lpUnlockBtn" style="display:none;" onclick="lpUnlockSelected()">🔓 Unlock (credits)</button>
         <button class="btn btn-primary btn-sm" onclick="lpToggleAdd()">+ Add Lead</button>
       </div>
     </div>
@@ -399,7 +410,7 @@ main{background:transparent;}
   </div>
 
   <!-- UPLOAD -->
-  <div id="sec-upload" class="sec">
+  <div id="sec-upload" class="sec lp-panel" data-lp-tab="upload">
     <div class="sec-hdr"><div><div class="sec-title">Upload Leads</div><div class="sec-sub">CSV or bulk JSON into the master pool</div></div></div>
     <div id="upFlash"></div>
     <div class="sh-upload-grid">
@@ -440,7 +451,7 @@ main{background:transparent;}
   </div>
 
   <!-- PUSH TO CLIENTS -->
-  <div id="sec-push" class="sec">
+  <div id="sec-push" class="sec lp-panel" data-lp-tab="push">
     <div class="sec-hdr"><div><div class="sec-title">Push to Clients</div><div class="sec-sub">Deliver curated leads to tenant clients</div></div>
       <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="pushBusiness" onchange="pushBizFilter()" title="Filter by business"></select></div>
     </div>
@@ -472,7 +483,7 @@ main{background:transparent;}
   </div>
 
   <!-- OFFERS -->
-  <div id="sec-offers" class="sec">
+  <div id="sec-offers" class="sec lp-panel" data-lp-tab="offers">
     <div class="sec-hdr"><div><div class="sec-title">Offers</div><div class="sec-sub">Track pushed leads and client unlocks</div></div>
       <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="offersBusiness" onchange="offersBizFilter()" title="Filter by business"></select></div>
     </div>
@@ -492,7 +503,7 @@ main{background:transparent;}
   </div>
 
   <!-- ANALYTICS -->
-  <div id="sec-analytics" class="sec">
+  <div id="sec-analytics" class="sec lp-panel" data-lp-tab="analytics">
     <div class="sec-hdr"><div><div class="sec-title">Analytics</div><div class="sec-sub">Master pool stats, quality breakdown, industry and source distribution</div></div>
       <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="analyticsBusiness" onchange="analyticsBizFilter()" title="Filter by business"></select></div>
     </div>
@@ -500,7 +511,7 @@ main{background:transparent;}
   </div>
 
   <!-- AI AGENT -->
-  <div id="sec-aiagent" class="sec">
+  <div id="sec-aiagent" class="sec lp-panel" data-lp-tab="aiagent">
     <div class="sec-hdr"><div><div class="sec-title">AI Agent</div><div class="sec-sub">Product-scoped prospecting into the master lead pool</div></div></div>
     <div id="agentFlash"></div>
     <div class="sh-agent-layout">
@@ -657,7 +668,7 @@ main{background:transparent;}
         </div>
       </div>
     </div>
-    <div id="sec-export" class="sec">
+    <div id="sec-export" class="sec lp-panel" data-lp-tab="export">
     <div class="sec-hdr"><div><div class="sec-title">Export</div><div class="sec-sub">CRM-ready CSV · max 5,000 rows per export</div></div></div>
     <div id="exportFlash"></div>
     <div class="card sh-export-card">
@@ -788,21 +799,29 @@ main{background:transparent;}
   </div>
 </div></div>
 
-<div class="modal-bg" id="leadModal"><div class="modal-box">
-  <div class="mtitle" id="leadMTitle">Add Lead</div><input type="hidden" id="leadId" />
-  <div class="fg"><label class="fl">Name *</label><input id="leadName" class="fi" placeholder="Full name or company" /></div>
+<div class="modal-bg" id="leadModal"><div class="modal-box wide">
+  <div class="mtitle" id="leadMTitle">Seed Lead</div><input type="hidden" id="leadId" /><input type="hidden" id="leadMasterId" />
+  <div class="fg"><label class="fl">Company / Client Name *</label><input id="leadName" class="fi" placeholder="e.g. Nakawa Crafts Ltd" /></div>
   <div class="fi-row">
     <div class="fg"><label class="fl">Phone</label><input id="leadPhone" class="fi" placeholder="+256 7xx xxx xxx" /></div>
     <div class="fg"><label class="fl">Email</label><input id="leadEmail" class="fi" type="email" /></div>
   </div>
   <div class="fi-row">
     <div class="fg"><label class="fl">Location</label><input id="leadLoc" class="fi" placeholder="e.g. Kampala" /></div>
-    <div class="fg"><label class="fl">Product Interest</label><input id="leadProd" class="fi" placeholder="e.g. MoMo" /></div>
+    <div class="fg"><label class="fl">Product / Asset Interest</label><input id="leadProd" class="fi" placeholder="e.g. MTN MoMo" /></div>
   </div>
+  <div class="fg"><label class="fl">Website (optional contact)</label><input id="leadWebsite" class="fi" placeholder="https://…" /></div>
   <div class="fg"><label class="fl">Notes</label><textarea id="leadNotes" class="fi" rows="2" placeholder="Extra details…"></textarea></div>
+  <div class="card" style="padding:14px;margin-bottom:14px;background:#F8FAFC;">
+    <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">Dispatch to active business</div>
+    <label class="sh-pill" style="margin-right:8px;margin-bottom:6px;"><input type="checkbox" id="leadPushOffer" /> 📤 Push for credit purchase</label>
+    <label class="sh-pill" style="margin-bottom:6px;"><input type="checkbox" id="leadUnlockCredits" /> 🔓 Unlock now (1 credit)</label>
+    <div style="font-size:11px;color:#64748B;margin-top:8px;">Seeds into the master pool first. Push creates an offer; unlock grants contact details to the business wallet.</div>
+  </div>
+  <div class="fg"><label class="fl">Assign to Agent (optional)</label><select id="leadAgent" class="fi"><option value="">— Leave unassigned —</option></select></div>
   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
     <button class="btn btn-secondary" onclick="closeModal('leadModal')">Cancel</button>
-    <button class="btn btn-primary" onclick="saveLead()">Save Lead</button>
+    <button class="btn btn-primary" onclick="saveLead()">Seed to Pool</button>
   </div>
 </div></div>
 
@@ -872,7 +891,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const API='https://eams-t3js.onrender.com/api/v1'
 const LS_TOK='sh_portal_token',LS_USR='sh_portal_user',LS_DTOK='sh_django_tok'
 const sb=supabase.createClient(SB_URL,SB_KEY)
-const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',csvRows:[],charts:{}}
+const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',csvRows:[],charts:{}}
 
 const ugx=n=>'UGX '+Number(n||0).toLocaleString()
 const pc=(a,t)=>Math.min(100,t>0?Math.round(a/t*100):0)
@@ -933,7 +952,7 @@ function showPortal(){
   const p=document.getElementById('portal');p.style.display='flex'
   const u=JSON.parse(localStorage.getItem(LS_USR)||'{}')
   document.getElementById('sidebarUser').textContent=u.name||u.email||'User'
-  initStitchBg()
+  initMeshBg()
   init()
 }
 
@@ -962,8 +981,34 @@ async function checkAuth(){
 function navTo(sec){
   S.section=sec
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.sec===sec))
+  const isLeadModule=sec==='leadpool'
+  document.getElementById('lpTabBar').style.display=isLeadModule?'flex':'none'
+  if(isLeadModule){
+    document.querySelectorAll('.sec:not(.lp-panel)').forEach(el=>el.classList.remove('show'))
+    lpSwitchTab(S.lpTab||'pool')
+    return
+  }
+  document.querySelectorAll('.lp-panel').forEach(el=>el.classList.remove('show'))
   document.querySelectorAll('.sec').forEach(el=>el.classList.toggle('show',el.id===`sec-${sec}`))
   loadSection(sec)
+}
+async function lpSwitchTab(tabId){
+  S.lpTab=tabId
+  S.section='leadpool'
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.sec==='leadpool'))
+  document.querySelectorAll('.lp-tab').forEach(b=>b.classList.toggle('lp-tab-active',b.dataset.lpTab===tabId))
+  document.querySelectorAll('.lp-panel').forEach(p=>p.classList.toggle('show',p.dataset.lpTab===tabId))
+  load(true)
+  try{
+    if(tabId==='pool')await lpLoad()
+    else if(tabId==='seed')await loadLeads()
+    else if(tabId==='upload')lpuInit()
+    else if(tabId==='push')await pushInit()
+    else if(tabId==='offers')await offersLoad()
+    else if(tabId==='analytics')await analyticsLoad()
+    else if(tabId==='aiagent')await agInit()
+    else if(tabId==='export')expInit()
+  }catch(e){console.error(e);toast(e.message,'err')}finally{load(false)}
 }
 async function loadSection(sec){
   load(true)
@@ -973,16 +1018,8 @@ async function loadSection(sec){
     else if(sec==='products')await loadProducts()
     else if(sec==='agents')await loadAgents()
     else if(sec==='registrations')await loadRegistrations()
-    else if(sec==='leads')await loadLeads()
     else if(sec==='reports')await loadReports()
     else if(sec==='builder')await loadBuilder()
-    else if(sec==='leadpool')await lpLoad()
-    else if(sec==='upload')lpuInit()
-    else if(sec==='push')await pushInit()
-    else if(sec==='offers')await offersLoad()
-    else if(sec==='analytics')await analyticsLoad()
-    else if(sec==='aiagent')await agInit()
-    else if(sec==='export')expInit()
   }catch(e){console.error(e);toast(e.message,'err')}finally{load(false)}
 }
 
@@ -1021,7 +1058,7 @@ async function loadDashboard(){
     <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">🛒 Products</div><div style="font-size:32px;font-weight:900;">${pr||0}</div></div>
     <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">🎯 New Leads</div><div style="font-size:32px;font-weight:900;">${nl||0}</div></div>
     <div class="card"><div style="color:#6B7280;font-size:12px;font-weight:600;margin-bottom:8px;">💰 Total Revenue</div><div style="font-size:18px;font-weight:900;">${ugx(totalRev)}</div></div>`
-  document.getElementById('dashLeads').innerHTML=!rl?.length?`<div class="empty">No leads yet. <a href="#" onclick="navTo('leads')">Seed some →</a></div>`
+  document.getElementById('dashLeads').innerHTML=!rl?.length?`<div class="empty">No leads yet. <a href="#" onclick="navTo('leadpool');lpSwitchTab('seed');return false;">Seed some →</a></div>`
     :`<table class="dt"><thead><tr><th>Name</th><th>Location</th><th>Status</th></tr></thead><tbody>${rl.map(l=>`<tr><td style="font-weight:600;">${l.name}</td><td style="color:#6B7280;">${l.location||'—'}</td><td>${sBadge(l.status)}</td></tr>`).join('')}</tbody></table>`
   const revMap={};(acts||[]).forEach(a=>{const n=a.sh_agents?.name||'?';revMap[n]=(revMap[n]||0)+Number(a.revenue||0)})
   const top=Object.entries(revMap).sort((a,b)=>b[1]-a[1]).slice(0,5),mx=top[0]?.[1]||1
@@ -1165,15 +1202,20 @@ async function recordActual(){
   load(true);try{const{error}=await sb.from('sh_kpi_actuals').insert(d);if(error)throw error;toast('Performance recorded');closeModal('actualModal');await loadAgents()}catch(e){toast(e.message,'err')}finally{load(false)}
 }
 
-// LEADS
+// LEADS — seed into master pool + optional agent assignment
+function activeBizClientId(){
+  const biz=activeBiz()
+  return biz?(biz.client_id||biz.id||''):''
+}
 async function loadLeads(){
   await fetchBiz()
   const[{data:leads},{data:agents}]=await Promise.all([sb.from('sh_leads').select('*,sh_agents(name)').eq('business_id',S.bizId).order('created_at',{ascending:false}),sb.from('sh_agents').select('id,name').eq('business_id',S.bizId).eq('is_active',true).order('name')])
   S.leads=leads||[];S.agents=agents||[]
-  document.getElementById('leadsTbody').innerHTML=!S.leads.length?`<tr><td colspan="7"><div class="empty">No leads yet.</div></td></tr>`
+  document.getElementById('leadsTbody').innerHTML=!S.leads.length?`<tr><td colspan="8"><div class="empty">No seeded leads yet. Add one to push into the master pool.</div></td></tr>`
     :S.leads.map(l=>`<tr>
       <td style="font-weight:600;">${l.name}</td><td style="color:#6B7280;font-size:12px;">${l.phone||'—'}</td>
       <td style="color:#6B7280;font-size:12px;">${l.location||'—'}</td><td style="font-size:12px;">${l.product_interest||'—'}</td>
+      <td style="font-size:11px;font-family:monospace;color:#6366F1;">${l.master_lead_id||(l.notes&&l.notes.match(/\[pool:(\d+)\]/)?.[1])||'—'}</td>
       <td>${sBadge(l.status)}</td>
       <td style="font-size:12px;font-weight:600;">${l.sh_agents?.name||'<span style="color:#9CA3AF;">Unassigned</span>'}</td>
       <td><div style="display:flex;gap:4px;">
@@ -1183,18 +1225,84 @@ async function loadLeads(){
       </div></td></tr>`).join('')
 }
 function sBadge(s){const m={new:'bb',assigned:'by',contacted:'borg',converted:'bg',lost:'br'};return`<span class="badge ${m[s]||'bgray'}">${s||'—'}</span>`}
-function openLeadModal(){document.getElementById('leadMTitle').textContent='Add Lead';document.getElementById('leadId').value='';openModal('leadModal')}
+function openLeadModal(){
+  document.getElementById('leadMTitle').textContent='Seed Lead'
+  document.getElementById('leadId').value=''
+  document.getElementById('leadMasterId').value=''
+  document.getElementById('leadPushOffer').checked=false
+  document.getElementById('leadUnlockCredits').checked=false
+  const agSel=document.getElementById('leadAgent')
+  agSel.innerHTML='<option value="">— Leave unassigned —</option>'+(S.agents||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
+  openModal('leadModal')
+}
 function editLead(l){
-  document.getElementById('leadMTitle').textContent='Edit Lead';document.getElementById('leadId').value=l.id
-  document.getElementById('leadName').value=l.name;document.getElementById('leadPhone').value=l.phone||''
-  document.getElementById('leadEmail').value=l.email||'';document.getElementById('leadLoc').value=l.location||''
-  document.getElementById('leadProd').value=l.product_interest||'';document.getElementById('leadNotes').value=l.notes||'';openModal('leadModal')
+  document.getElementById('leadMTitle').textContent='Edit Lead'
+  document.getElementById('leadId').value=l.id
+  document.getElementById('leadMasterId').value=l.master_lead_id||''
+  document.getElementById('leadName').value=l.name
+  document.getElementById('leadPhone').value=l.phone||''
+  document.getElementById('leadEmail').value=l.email||''
+  document.getElementById('leadLoc').value=l.location||''
+  document.getElementById('leadProd').value=l.product_interest||''
+  document.getElementById('leadNotes').value=l.notes||''
+  document.getElementById('leadWebsite').value=l.website||''
+  const agSel=document.getElementById('leadAgent')
+  agSel.innerHTML='<option value="">— Leave unassigned —</option>'+(S.agents||[]).map(a=>`<option value="${a.id}"${l.assigned_to===a.id?' selected':''}>${a.name}</option>`).join('')
+  openModal('leadModal')
+}
+async function seedLeadToPool(payload){
+  if(demoGuard())return null
+  return apiPost('/sales-hunter/admin/seed-lead/',payload)
 }
 async function saveLead(){
   const id=document.getElementById('leadId').value
-  const d={business_id:S.bizId,name:document.getElementById('leadName').value.trim(),phone:document.getElementById('leadPhone').value.trim()||null,email:document.getElementById('leadEmail').value.trim()||null,location:document.getElementById('leadLoc').value.trim()||null,product_interest:document.getElementById('leadProd').value.trim()||null,notes:document.getElementById('leadNotes').value.trim()||null}
-  if(!d.name)return toast('Lead name required','err')
-  load(true);try{const{error}=id?await sb.from('sh_leads').update(d).eq('id',id):await sb.from('sh_leads').insert(d);if(error)throw error;toast(id?'Updated':'Added');closeModal('leadModal');document.getElementById('leadId').value='';await loadLeads()}catch(e){toast(e.message,'err')}finally{load(false)}
+  const name=document.getElementById('leadName').value.trim()
+  const phone=document.getElementById('leadPhone').value.trim()||null
+  const email=document.getElementById('leadEmail').value.trim()||null
+  const website=document.getElementById('leadWebsite').value.trim()||null
+  if(!name)return toast('Lead name required','err')
+  if(!phone&&!email&&!website)return toast('Add phone, email, or website for the master pool','err')
+  const d={
+    business_id:S.bizId,name,phone,email,location:document.getElementById('leadLoc').value.trim()||null,
+    product_interest:document.getElementById('leadProd').value.trim()||null,
+    notes:document.getElementById('leadNotes').value.trim()||null,
+    website,status:'new'
+  }
+  const agentId=document.getElementById('leadAgent').value
+  if(agentId){d.assigned_to=agentId;d.status='assigned'}
+  load(true)
+  try{
+    let masterLeadId=document.getElementById('leadMasterId').value||null
+    if(!id){
+      const seed=await seedLeadToPool({
+        company_name:name,contact_person:name,phone,email,website,
+        location:d.location,asset_interests:d.product_interest,notes:d.notes,
+        industry:'other',source_type:'manual',
+        client_id:activeBizClientId(),
+        push_for_purchase:document.getElementById('leadPushOffer').checked,
+        unlock_for_client:document.getElementById('leadUnlockCredits').checked,
+        deduct_credits:true
+      })
+      masterLeadId=seed?.master_lead?.id||null
+      if(masterLeadId){
+        d.master_lead_id=String(masterLeadId)
+        if(!d.notes)d.notes=`[pool:${masterLeadId}]`
+        else if(!d.notes.includes('[pool:'))d.notes+=` [pool:${masterLeadId}]`
+      }
+    }
+    let sbErr=null
+    let ins=d
+    ;({error:sbErr}=id?await sb.from('sh_leads').update(ins).eq('id',id):await sb.from('sh_leads').insert(ins))
+    if(sbErr&&sbErr.message&&sbErr.message.includes('master_lead_id')){
+      delete ins.master_lead_id
+      ;({error:sbErr}=id?await sb.from('sh_leads').update(ins).eq('id',id):await sb.from('sh_leads').insert(ins))
+    }
+    if(sbErr)throw sbErr
+    toast(id?'Updated':'Seeded to pool and tracked')
+    closeModal('leadModal')
+    document.getElementById('leadId').value=''
+    await loadLeads()
+  }catch(e){toast(e.message,'err')}finally{load(false)}
 }
 async function delLead(id){if(!confirm('Delete lead?'))return;load(true);try{const{error}=await sb.from('sh_leads').delete().eq('id',id);if(error)throw error;toast('Deleted');await loadLeads()}catch(e){toast(e.message,'err')}finally{load(false)}}
 function openAssignModal(leadId,leadName){
@@ -1218,8 +1326,28 @@ function previewCSV(){
 }
 async function importCSV(){
   if(!S.csvRows.length)return;load(true)
-  try{const rows=S.csvRows.map(r=>({business_id:S.bizId,name:r.name,phone:r.phone||null,email:r.email||null,location:r.location||null,product_interest:r.product_interest||null,notes:r.notes||null,status:'new'}))
-    const{error}=await sb.from('sh_leads').insert(rows);if(error)throw error;toast(`${rows.length} leads imported!`);closeModal('csvModal')
+  const clientId=activeBizClientId()
+  try{
+    let ok=0,fail=0
+    for(const r of S.csvRows){
+      const phone=r.phone||null,email=r.email||null
+      if(!r.name||(!phone&&!email)) { fail++; continue }
+      try{
+        const seed=await seedLeadToPool({
+          company_name:r.name,phone,email,
+          location:r.location||null,asset_interests:r.product_interest||null,notes:r.notes||null,
+          industry:'other',source_type:'manual',client_id:clientId,
+          push_for_purchase:false,unlock_for_client:false
+        })
+        const row={business_id:S.bizId,name:r.name,phone,email:r.email||null,location:r.location||null,product_interest:r.product_interest||null,notes:r.notes||null,status:'new'}
+        if(seed?.master_lead?.id)row.master_lead_id=String(seed.master_lead.id)
+        const{error}=await sb.from('sh_leads').insert(row)
+        if(error)throw error
+        ok++
+      }catch{fail++}
+    }
+    toast(`${ok} seeded to pool${fail?`, ${fail} skipped`:''}`)
+    closeModal('csvModal')
     document.getElementById('csvFile').value='';document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').disabled=true;S.csvRows=[];await loadLeads()
   }catch(e){toast(e.message,'err')}finally{load(false)}
 }
@@ -1284,7 +1412,7 @@ function setupRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'sh_agents'},()=>{if(S.section==='agents')loadAgents()})
     .on('postgres_changes',{event:'*',schema:'public',table:'sh_kpi_targets'},()=>{if(S.section==='agents')loadAgents()})
     .on('postgres_changes',{event:'*',schema:'public',table:'sh_kpi_actuals'},()=>{if(S.section==='agents')loadAgents();if(S.section==='reports')loadReports()})
-    .on('postgres_changes',{event:'*',schema:'public',table:'sh_leads'},()=>{if(S.section==='leads')loadLeads();if(S.section==='dashboard')loadDashboard()})
+    .on('postgres_changes',{event:'*',schema:'public',table:'sh_leads'},()=>{if(S.section==='leadpool'&&S.lpTab==='seed')loadLeads();if(S.section==='dashboard')loadDashboard()})
     .on('postgres_changes',{event:'*',schema:'public',table:'sh_app_configs'},()=>{if(S.section==='builder')loadBuilder()})
     .subscribe(status=>{if(dot)dot.style.background=status==='SUBSCRIBED'?'#22C55E':'#F59E0B'})
 }
@@ -1530,15 +1658,15 @@ async function submitRating() {
   loadRegistrations();
 }
 
-async function init(){setupRealtime();initStitchBg();await loadSection('dashboard')}
+async function init(){setupRealtime();initMeshBg();await loadSection('dashboard')}
 
-// ── Corporate dotted stitch background (static, redraw on resize) ──
-function initStitchBg(){
-  const canvas=document.getElementById('stitchBg')
+// ── Corporate wire mesh background (static isometric grid) ──
+function initMeshBg(){
+  const canvas=document.getElementById('meshBg')
   if(!canvas)return
   const ctx=canvas.getContext('2d')
-  const SP=32
-  const dotR=1.35
+  const STEP=44
+  const SQ3=Math.sqrt(3)
   let W=0,H=0
 
   function paint(){
@@ -1547,51 +1675,56 @@ function initStitchBg(){
     ctx.fillStyle='#FFFFFF'
     ctx.fillRect(0,0,W,H)
 
-    const cols=Math.ceil(W/SP)+3
-    const rows=Math.ceil(H/SP)+2
+    const pad=STEP*4
+    ctx.lineCap='square'
+    ctx.lineJoin='miter'
 
-    ctx.lineCap='round'
-    ctx.setLineDash([5,7])
-
-    for(let r=0;r<rows-1;r++){
-      const y1=r*SP
-      const y2=(r+1)*SP
-      const off1=(r%2)*(SP/2)
-      const off2=((r+1)%2)*(SP/2)
-      for(let c=-1;c<cols;c++){
-        const x1=c*SP+off1
-        const x2a=(c)*SP+off2
-        const x2b=(c+1)*SP+off2
-        ctx.strokeStyle='rgba(148,163,184,0.38)'
-        ctx.lineWidth=1
-        ctx.beginPath()
-        ctx.moveTo(x1,y1)
-        ctx.lineTo(x2a,y2)
-        ctx.stroke()
-        if((c+r)%2===0){
-          ctx.strokeStyle='rgba(191,219,254,0.5)'
-          ctx.lineWidth=.85
-          ctx.beginPath()
-          ctx.moveTo(x1,y1)
-          ctx.lineTo(x2b,y2)
-          ctx.stroke()
-        }
-      }
+    // Horizontal wires
+    ctx.strokeStyle='rgba(203,213,225,0.55)'
+    ctx.lineWidth=1
+    for(let y=0;y<=H+STEP;y+=STEP){
+      ctx.beginPath()
+      ctx.moveTo(0,y)
+      ctx.lineTo(W,y)
+      ctx.stroke()
     }
-    ctx.setLineDash([])
 
-    for(let r=0;r<rows;r++){
-      const y=r*SP
-      const off=(r%2)*(SP/2)
-      for(let c=-1;c<cols;c++){
-        const x=c*SP+off
-        const accent=(c+r)%6===0
+    // Diagonal wires ↘ (60°)
+    ctx.strokeStyle='rgba(148,163,184,0.32)'
+    const span=H/SQ3
+    for(let i=-pad;i<W+H;i+=STEP){
+      ctx.beginPath()
+      ctx.moveTo(i,0)
+      ctx.lineTo(i+span,H)
+      ctx.stroke()
+    }
+
+    // Diagonal wires ↙ (-60°)
+    ctx.strokeStyle='rgba(191,219,254,0.45)'
+    for(let i=-span-pad;i<W+H;i+=STEP){
+      ctx.beginPath()
+      ctx.moveTo(i,0)
+      ctx.lineTo(i-span,H)
+      ctx.stroke()
+    }
+
+    // Intersection nodes on primary grid
+    for(let y=0;y<=H+STEP;y+=STEP){
+      for(let x=0;x<=W+STEP;x+=STEP){
+        const accent=(Math.round(x/STEP)+Math.round(y/STEP))%7===0
         ctx.beginPath()
-        ctx.arc(x,y,dotR,0,Math.PI*2)
-        ctx.fillStyle=accent?'rgba(30,64,175,0.3)':'rgba(71,85,105,0.2)'
+        ctx.arc(x,y,1.5,0,Math.PI*2)
+        ctx.fillStyle=accent?'rgba(30,64,175,0.32)':'rgba(100,116,139,0.16)'
         ctx.fill()
       }
     }
+
+    // Soft vignette — keeps mesh subtle at edges
+    const vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.2,W/2,H/2,Math.max(W,H)*.75)
+    vg.addColorStop(0,'rgba(255,255,255,0)')
+    vg.addColorStop(1,'rgba(255,255,255,0.55)')
+    ctx.fillStyle=vg
+    ctx.fillRect(0,0,W,H)
   }
 
   paint()
@@ -1601,7 +1734,7 @@ function initStitchBg(){
     tid=setTimeout(paint,120)
   })
 }
-initStitchBg()
+initMeshBg()
 checkAuth()
 
 /* ═══════════════════════════════════════════════
@@ -1934,6 +2067,8 @@ function lpRenderTable(){
   document.getElementById('lpCount').textContent=`${LP.total.toLocaleString()} leads`
   const archBtn=document.getElementById('lpArchBtn')
   archBtn.style.display=LP.selected.length?'inline-flex':'none'
+  document.getElementById('lpPushBtn').style.display=LP.selected.length?'inline-flex':'none'
+  document.getElementById('lpUnlockBtn').style.display=LP.selected.length?'inline-flex':'none'
   if(!LP.leads.length){tbl.innerHTML='<div class="empty">No leads match your filters.</div>';return}
   const showBizCol=!LP.clientId  // show business column only when showing all businesses
   tbl.innerHTML=`<div class="sh-tbl-shell"><div class="sh-tbl-scroll"><table class="sh-tbl">
@@ -2020,6 +2155,37 @@ async function lpArchiveSelected(){
   load(true)
   try{await Promise.all(LP.selected.map(id=>apiDel('/sales-hunter/admin/master-leads/',{id}).catch(()=>{})));LP.selected=[];await lpFetch()}
   catch(e){shFlash('lpFlash',e.message,'err')}
+  finally{load(false)}
+}
+async function lpPushSelected(){
+  if(!LP.selected.length)return toast('Select leads from the pool first','err')
+  const clientId=LP.clientId||activeBizClientId()
+  if(!clientId)return toast('Select a business filter or active business tab','err')
+  if(demoGuard())return
+  load(true)
+  try{
+    const d=await apiPost('/sales-hunter/admin/push-leads/',{
+      lead_ids:LP.selected,client_ids:[clientId],quality_only:true
+    })
+    shFlash('lpFlash',d.message||'Leads pushed for purchase.','ok')
+    LP.selected=[];lpRenderTable()
+  }catch(e){shFlash('lpFlash',e.message,'err')}
+  finally{load(false)}
+}
+async function lpUnlockSelected(){
+  if(!LP.selected.length)return toast('Select leads from the pool first','err')
+  const clientId=LP.clientId||activeBizClientId()
+  if(!clientId)return toast('Select a business filter or active business tab','err')
+  if(!confirm(`Unlock ${LP.selected.length} lead(s) for this business? 1 credit each.`))return
+  if(demoGuard())return
+  load(true)
+  try{
+    const d=await apiPost('/sales-hunter/admin/unlock-for-client/',{
+      lead_ids:LP.selected,client_id:clientId,deduct_credits:true
+    })
+    shFlash('lpFlash',d.message||'Leads unlocked.','ok')
+    LP.selected=[];lpRenderTable()
+  }catch(e){shFlash('lpFlash',e.message,'err')}
   finally{load(false)}
 }
 // Drawer
