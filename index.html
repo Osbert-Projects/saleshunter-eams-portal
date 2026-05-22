@@ -6,6 +6,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#0F1117;--bg-elevated:#FFFFFF;--surface:#FFFFFF;--surface-solid:#F9FAFB;
@@ -299,9 +300,8 @@ main{background:transparent;}
       </button>
       <div class="nav-sublist" id="navLeadSubs">
         <button type="button" class="nav-sub active" data-lp-tab="pool" onclick="lpSwitchTab('pool')">Master Pool</button>
-        <button type="button" class="nav-sub" data-lp-tab="seed" onclick="lpSwitchTab('seed')">Seed & Assign</button>
-        <button type="button" class="nav-sub" data-lp-tab="upload" onclick="lpSwitchTab('upload')">Upload</button>
-        <button type="button" class="nav-sub" data-lp-tab="push" onclick="lpSwitchTab('push')">Push to Clients</button>
+        <button type="button" class="nav-sub" data-lp-tab="seed" onclick="lpSwitchTab('seed')">Import & Assign</button>
+        <button type="button" class="nav-sub" data-lp-tab="push" onclick="lpSwitchTab('push')">Push for Purchase</button>
         <button type="button" class="nav-sub" data-lp-tab="offers" onclick="lpSwitchTab('offers')">Offers</button>
         <button type="button" class="nav-sub" data-lp-tab="analytics" onclick="lpSwitchTab('analytics')">Analytics</button>
         <button type="button" class="nav-sub" data-lp-tab="aiagent" onclick="lpSwitchTab('aiagent')">AI Agent</button>
@@ -455,58 +455,66 @@ main{background:transparent;}
     <div class="sh-pgn" id="lpPgn"></div>
   </div>
 
-  <!-- SEED & ASSIGN -->
+  <!-- IMPORT & ASSIGN (merged seed + upload) -->
   <div id="sec-leads" class="lp-panel lp-module" data-lp-tab="seed">
-    <div class="sec-hdr"><div><div class="sec-title">Seed & Assign</div><div class="sec-sub">Add leads to the master pool, then assign to agents or push for credit purchase</div></div>
-    <div style="display:flex;gap:8px;"><button class="btn btn-ghost" onclick="openModal('csvModal')">⬆ Import CSV</button><button class="btn btn-primary" onclick="openLeadModal()">+ Add Lead</button></div></div>
-    <div class="card" style="overflow:auto;"><table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Pool ID</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table></div>
-  </div>
-
-  <!-- UPLOAD -->
-  <div id="sec-upload" class="lp-panel lp-module" data-lp-tab="upload">
-    <div class="sec-hdr"><div><div class="sec-title">Upload Leads</div><div class="sec-sub">CSV or bulk JSON into the master pool</div></div></div>
-    <div id="upFlash"></div>
-    <div class="sh-upload-grid">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Import & Assign</div><div class="sec-sub">Seed leads into the master pool, bulk-import CSV/Excel, and assign to agents for the active business</div></div>
+      <button class="btn btn-primary" onclick="openLeadModal()">+ Add Lead</button>
+    </div>
+    <div id="seedFlash"></div>
+    <div class="sh-upload-grid" style="margin-bottom:20px;">
       <div class="card">
         <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
           <div style="width:44px;height:44px;border-radius:10px;background:rgba(79,70,229,.1);color:#4F46E5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📊</div>
-          <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">CSV Upload</div>
-          <div style="font-size:12px;color:#64748B;">Columns: <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">company_name</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">contact_person</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">phone</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">email</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">location</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">website</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">asset_interests</code></div></div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">CSV / Excel import</div>
+            <div style="font-size:12px;color:#64748B;">Columns: <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">company_name</code> (or <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">name</code>), <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">phone</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">email</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">website</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">location</code>, <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">asset_interests</code></div>
+          </div>
         </div>
-        <div class="fg" style="margin-bottom:12px;"><label class="fl">Industry / sector</label><select id="upIndustry" class="fi" style="padding:10px 12px;"></select></div>
-        <div class="sh-dz" id="upDropzone" onclick="document.getElementById('upFile').click()">
+        <div class="fi-row" style="margin-bottom:12px;">
+          <div class="fg"><label class="fl">Industry / sector</label><select id="seedIndustry" class="fi" style="padding:10px 12px;"></select></div>
+          <div class="fg"><label class="fl">Default agent (optional)</label><select id="seedDefaultAgent" class="fi" style="padding:10px 12px;"><option value="">— Leave unassigned —</option></select></div>
+        </div>
+        <label class="sh-pill" style="margin-bottom:10px;display:inline-flex;"><input type="checkbox" id="seedTrackBiz" checked /> Track imported leads for active business</label>
+        <div class="sh-dz" onclick="document.getElementById('seedFile').click()">
           <div class="sh-dz-ico">⬆</div>
-          <div style="font-weight:600;">Drop CSV or click to browse</div>
-          <div style="font-size:12px;margin-top:6px;opacity:.6;" id="upFileName">.csv only</div>
-          <input id="upFile" type="file" accept=".csv" style="display:none;" onchange="upFileSelected()" />
+          <div style="font-weight:600;">Drop CSV / Excel or click to browse</div>
+          <div style="font-size:12px;margin-top:6px;opacity:.6;" id="seedFileName">.csv, .xlsx, .xls</div>
+          <input id="seedFile" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" style="display:none;" onchange="seedFileSelected()" />
         </div>
-        <button class="btn btn-primary btn-sm" onclick="uploadCSV()" id="upCSVBtn">⬆ Upload CSV</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="importSpreadsheet()" id="seedImportBtn">⬆ Import to master pool</button>
+          <button class="btn btn-ghost btn-sm" onclick="downloadCSVTemplate()">⬇ Template</button>
+        </div>
+        <div id="seedPreview" style="display:none;margin-top:12px;">
+          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;" id="seedPreviewCount"></div>
+          <div style="max-height:160px;overflow-y:auto;border:1px solid #E5E7EB;border-radius:10px;">
+            <table class="dt"><thead><tr><th>Company</th><th>Phone</th><th>Email</th><th>Location</th></tr></thead><tbody id="seedPreviewBody"></tbody></table>
+          </div>
+        </div>
       </div>
       <div class="card">
         <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
           <div style="width:44px;height:44px;border-radius:10px;background:rgba(8,145,178,.1);color:#0891B2;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">{ }</div>
-          <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Bulk JSON</div>
-          <div style="font-size:12px;color:#64748B;">Paste an array of objects. Each needs at least <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;font-size:11px;color:#7C3AED;">company_name</code> + one contact field.</div></div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">Bulk JSON</div>
+            <div style="font-size:12px;color:#64748B;">Paste an array of lead objects — same fields as the spreadsheet import.</div>
+          </div>
         </div>
-        <div class="fg" style="margin-bottom:12px;"><label class="fl">Industry / sector</label><select id="upIndustryJSON" class="fi" style="padding:10px 12px;"></select></div>
-        <textarea id="upJSON" class="fi" rows="8" placeholder='[&#10;  {"company_name": "Acme Ltd", "email": "info@acme.co", "phone": "+256 700 000000"}&#10;]'></textarea>
-        <button class="btn btn-primary btn-sm" onclick="uploadJSON()" id="upJSONBtn" style="margin-top:10px;">✔ Save Leads</button>
+        <textarea id="seedJSON" class="fi" rows="8" placeholder='[&#10;  {"company_name": "Acme Ltd", "email": "info@acme.co", "phone": "+256 700 000000"}&#10;]'></textarea>
+        <button class="btn btn-primary btn-sm" onclick="importJSONBulk()" id="seedJSONBtn" style="margin-top:10px;">✔ Import JSON</button>
       </div>
     </div>
-    <div class="card" style="margin-top:20px;max-width:540px;">
-      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(100,116,139,.1);color:#64748B;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⬇</div>
-        <div><div style="font-size:15px;font-weight:700;color:#1e293b;margin:0 0 4px;">CSV Template</div>
-        <div style="font-size:12px;color:#64748B;">Download a blank header row. Fill offline, then upload above.</div></div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="downloadCSVTemplate()">⬇ Download template</button>
+    <div class="card" style="overflow:auto;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px;">Business leads — assign & track</div>
+      <table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Interest</th><th>Pool ID</th><th>Status</th><th>Assigned To</th><th>Actions</th></tr></thead><tbody id="leadsTbody"></tbody></table>
     </div>
   </div>
 
-  <!-- PUSH TO CLIENTS -->
+  <!-- PUSH FOR PURCHASE -->
   <div id="sec-push" class="lp-panel lp-module" data-lp-tab="push">
-    <div class="sec-hdr"><div><div class="sec-title">Push to Clients</div><div class="sec-sub">Deliver curated leads to tenant clients</div></div>
-      <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="pushBusiness" onchange="pushBizFilter()" title="Filter by business"></select></div>
+    <div class="sec-hdr"><div><div class="sec-title">Push for Purchase</div><div class="sec-sub">Offer leads to Sales Hunter businesses and agents — they unlock with credits in their marketplace</div></div>
+      <div style="margin-top:10px;"><select class="sh-sel sh-biz-sel" id="pushBusiness" onchange="pushBizFilter()" title="Filter leads by business"></select></div>
     </div>
     <div id="pushFlash"></div>
     <div class="sh-push-mode">
@@ -522,16 +530,17 @@ main{background:transparent;}
         <div class="sh-pgn" id="pushLeadsPgn"></div>
       </div>
       <div class="card">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Step 2 — Clients</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Step 2 — Recipients</div>
+        <p class="sh-sub" style="margin:0 0 10px;">Registered businesses and sales agents on this app — not EAMS tenant clients.</p>
         <label class="sh-crow sh-crow-feat" style="margin-bottom:8px;">
-          <input type="checkbox" id="pushAllClients" onchange="pushRender()" /> 👥 Push to all tenants
+          <input type="checkbox" id="pushAllClients" onchange="pushRender()" /> 👥 Push to all registered businesses &amp; agents
         </label>
         <div class="sh-scroll-list" id="pushClientsList"></div>
       </div>
     </div>
     <div class="sh-push-foot">
-      <div class="fg" style="flex:1;"><label class="fl">Note to clients (optional)</label><input id="pushNote" class="fi" placeholder="e.g. Recommended based on your fleet type…" /></div>
-      <button class="sh-btn-push" id="pushBtn" onclick="doPush()">📤 Push leads</button>
+      <div class="fg" style="flex:1;"><label class="fl">Note to recipients (optional)</label><input id="pushNote" class="fi" placeholder="e.g. High-intent leads for your product line — unlock with 1 credit each" /></div>
+      <button class="sh-btn-push" id="pushBtn" onclick="doPush()">📤 Push leads for credit purchase</button>
     </div>
   </div>
 
@@ -892,22 +901,6 @@ main{background:transparent;}
   </div>
 </div></div>
 
-<div class="modal-bg" id="csvModal"><div class="modal-box wide">
-  <div class="mtitle">Import Leads via CSV</div>
-  <p style="font-size:13px;color:#6B7280;margin-bottom:14px;">Required headers: <code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:12px;">name,phone,email,location,product_interest,notes</code></p>
-  <div class="fg"><label class="fl">Select CSV File</label><input type="file" id="csvFile" accept=".csv" class="fi" style="padding:8px;" onchange="previewCSV()" /></div>
-  <div id="csvPreview" style="display:none;">
-    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;" id="csvCount"></div>
-    <div style="max-height:200px;overflow-y:auto;border:1px solid #E5E7EB;border-radius:10px;">
-      <table class="dt"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Product</th></tr></thead><tbody id="csvTbody"></tbody></table>
-    </div>
-  </div>
-  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
-    <button class="btn btn-secondary" onclick="closeModal('csvModal')">Cancel</button>
-    <button class="btn btn-primary" id="csvImportBtn" disabled onclick="importCSV()">Import Leads</button>
-  </div>
-</div></div>
-
 <!-- EDIT DRAWER -->
 <div class="sh-drawer-overlay" id="lpDrawer" style="display:none;" onclick="if(event.target===this)lpCloseDrawer()">
   <div class="sh-drawer">
@@ -945,7 +938,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const API='https://eams-t3js.onrender.com/api/v1'
 const LS_TOK='sh_portal_token',LS_USR='sh_portal_user',LS_DTOK='sh_django_tok'
 const sb=supabase.createClient(SB_URL,SB_KEY)
-const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',lpNavCollapsed:false,csvRows:[],charts:{}}
+const S={biz:[],bizId:null,agents:[],products:[],leads:[],kpiTargets:{},kpiActuals:[],appConfig:null,section:'dashboard',lpTab:'pool',lpNavCollapsed:false,seedRows:[],charts:{}}
 
 const ugx=n=>'UGX '+Number(n||0).toLocaleString()
 const pc=(a,t)=>Math.min(100,t>0?Math.round(a/t*100):0)
@@ -977,8 +970,7 @@ async function doLogin(){
       const tok=sbData.session.access_token
       localStorage.setItem(LS_TOK,tok)
       localStorage.setItem(LS_USR,JSON.stringify({email,name:sbData.user?.user_metadata?.full_name||sbData.user?.email||email}))
-      // Fetch Django token in background for Lead Operations (non-blocking)
-      fetchDjangoToken(email,pass)
+      await fetchDjangoToken(email,pass)
       showPortal();return
     }
     // ── Fallback: Django auth (may be slow on cold start) ──
@@ -994,9 +986,14 @@ async function doLogin(){
   finally{clearTimeout(warmTimer)}
 }
 
-function fetchDjangoToken(email,pass){
-  fetch(`${API}/user-management/login/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})})
-    .then(r=>r.json()).then(d=>{const t=d.token||d.access||d.key;if(t)localStorage.setItem(LS_DTOK,t)}).catch(()=>{})
+async function fetchDjangoToken(email,pass){
+  try{
+    const res=await fetch(`${API}/user-management/login/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})})
+    const d=await res.json()
+    const t=d.token||d.access||d.key
+    if(t)localStorage.setItem(LS_DTOK,t)
+    return t||null
+  }catch{return null}
 }
 
 function enterDemo(){localStorage.setItem(LS_TOK,'demo');localStorage.setItem(LS_USR,JSON.stringify({email:'demo@saleshunter.app',name:'Demo User'}));showPortal()}
@@ -1072,8 +1069,7 @@ async function lpSwitchTab(tabId){
   load(true)
   try{
     if(tabId==='pool')await lpLoad()
-    else if(tabId==='seed')await loadLeads()
-    else if(tabId==='upload')lpuInit()
+    else if(tabId==='seed')await seedInit()
     else if(tabId==='push')await pushInit()
     else if(tabId==='offers')await offersLoad()
     else if(tabId==='analytics')await analyticsLoad()
@@ -1277,16 +1273,36 @@ async function recordActual(){
   load(true);try{const{error}=await sb.from('sh_kpi_actuals').insert(d);if(error)throw error;toast('Performance recorded');closeModal('actualModal');await loadAgents()}catch(e){toast(e.message,'err')}finally{load(false)}
 }
 
-// LEADS — seed into master pool + optional agent assignment
+// LEADS — import, seed into master pool + agent assignment
 function activeBizClientId(){
   const biz=activeBiz()
   return biz?(biz.client_id||biz.id||''):''
 }
+async function seedInit(){
+  shFlashClear('seedFlash')
+  await fetchBiz()
+  const ind=document.getElementById('seedIndustry')
+  if(ind&&!ind.options.length)ind.innerHTML=indOpts('other')
+  await loadSeedAgents()
+  await loadLeads()
+}
+async function loadSeedAgents(){
+  const{data:agents}=await sb.from('sh_agents').select('id,name').eq('business_id',S.bizId).eq('is_active',true).order('name')
+  S.agents=agents||[]
+  const fill=sel=>{
+    if(!sel)return
+    const cur=sel.value
+    sel.innerHTML='<option value="">— Leave unassigned —</option>'+S.agents.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
+    if(cur)sel.value=cur
+  }
+  fill(document.getElementById('seedDefaultAgent'))
+  fill(document.getElementById('leadAgent'))
+}
 async function loadLeads(){
   await fetchBiz()
-  const[{data:leads},{data:agents}]=await Promise.all([sb.from('sh_leads').select('*,sh_agents(name)').eq('business_id',S.bizId).order('created_at',{ascending:false}),sb.from('sh_agents').select('id,name').eq('business_id',S.bizId).eq('is_active',true).order('name')])
-  S.leads=leads||[];S.agents=agents||[]
-  document.getElementById('leadsTbody').innerHTML=!S.leads.length?`<tr><td colspan="8"><div class="empty">No seeded leads yet. Add one to push into the master pool.</div></td></tr>`
+  const{data:leads}=await sb.from('sh_leads').select('*,sh_agents(name)').eq('business_id',S.bizId).order('created_at',{ascending:false})
+  S.leads=leads||[]
+  document.getElementById('leadsTbody').innerHTML=!S.leads.length?`<tr><td colspan="8"><div class="empty">No leads yet. Add one manually or import CSV/Excel above.</div></td></tr>`
     :S.leads.map(l=>`<tr>
       <td style="font-weight:600;">${l.name}</td><td style="color:#6B7280;font-size:12px;">${l.phone||'—'}</td>
       <td style="color:#6B7280;font-size:12px;">${l.location||'—'}</td><td style="font-size:12px;">${l.product_interest||'—'}</td>
@@ -1300,14 +1316,20 @@ async function loadLeads(){
       </div></td></tr>`).join('')
 }
 function sBadge(s){const m={new:'bb',assigned:'by',contacted:'borg',converted:'bg',lost:'br'};return`<span class="badge ${m[s]||'bgray'}">${s||'—'}</span>`}
-function openLeadModal(){
+async function openLeadModal(){
+  await loadSeedAgents()
   document.getElementById('leadMTitle').textContent='Seed Lead'
   document.getElementById('leadId').value=''
   document.getElementById('leadMasterId').value=''
+  document.getElementById('leadName').value=''
+  document.getElementById('leadPhone').value=''
+  document.getElementById('leadEmail').value=''
+  document.getElementById('leadLoc').value=''
+  document.getElementById('leadProd').value=''
+  document.getElementById('leadNotes').value=''
+  document.getElementById('leadWebsite').value=''
   document.getElementById('leadPushOffer').checked=false
   document.getElementById('leadUnlockCredits').checked=false
-  const agSel=document.getElementById('leadAgent')
-  agSel.innerHTML='<option value="">— Leave unassigned —</option>'+(S.agents||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
   openModal('leadModal')
 }
 function editLead(l){
@@ -1321,8 +1343,9 @@ function editLead(l){
   document.getElementById('leadProd').value=l.product_interest||''
   document.getElementById('leadNotes').value=l.notes||''
   document.getElementById('leadWebsite').value=l.website||''
-  const agSel=document.getElementById('leadAgent')
-  agSel.innerHTML='<option value="">— Leave unassigned —</option>'+(S.agents||[]).map(a=>`<option value="${a.id}"${l.assigned_to===a.id?' selected':''}>${a.name}</option>`).join('')
+  loadSeedAgents().then(()=>{
+    if(l.assigned_to)document.getElementById('leadAgent').value=l.assigned_to
+  })
   openModal('leadModal')
 }
 async function seedLeadToPool(payload){
@@ -1330,6 +1353,7 @@ async function seedLeadToPool(payload){
   return apiPost('/sales-hunter/admin/seed-lead/',payload)
 }
 async function saveLead(){
+  if(demoGuard())return
   const id=document.getElementById('leadId').value
   const name=document.getElementById('leadName').value.trim()
   const phone=document.getElementById('leadPhone').value.trim()||null
@@ -1352,18 +1376,18 @@ async function saveLead(){
       const seed=await seedLeadToPool({
         company_name:name,contact_person:name,phone,email,website,
         location:d.location,asset_interests:d.product_interest,notes:d.notes,
-        industry:'other',source_type:'manual',
+        industry:document.getElementById('seedIndustry')?.value||'other',
+        source_type:'manual',
         client_id:activeBizClientId(),
         push_for_purchase:document.getElementById('leadPushOffer').checked,
         unlock_for_client:document.getElementById('leadUnlockCredits').checked,
         deduct_credits:true
       })
-      masterLeadId=seed?.master_lead?.id||null
-      if(masterLeadId){
-        d.master_lead_id=String(masterLeadId)
-        if(!d.notes)d.notes=`[pool:${masterLeadId}]`
-        else if(!d.notes.includes('[pool:'))d.notes+=` [pool:${masterLeadId}]`
-      }
+      if(!seed?.master_lead?.id)throw new Error('Could not seed lead into master pool — check your account has Lead Operations access.')
+      masterLeadId=seed.master_lead.id
+      d.master_lead_id=String(masterLeadId)
+      if(!d.notes)d.notes=`[pool:${masterLeadId}]`
+      else if(!d.notes.includes('[pool:'))d.notes+=` [pool:${masterLeadId}]`
     }
     let sbErr=null
     let ins=d
@@ -1388,43 +1412,70 @@ async function assignLead(){
   const lid=document.getElementById('assignLeadId').value,aid=document.getElementById('assignAgent').value,st=document.getElementById('assignStatus').value
   load(true);try{const{error}=await sb.from('sh_leads').update({assigned_to:aid,status:st}).eq('id',lid);if(error)throw error;toast('Assigned');closeModal('assignModal');await loadLeads()}catch(e){toast(e.message,'err')}finally{load(false)}
 }
-function previewCSV(){
-  const file=document.getElementById('csvFile').files[0];if(!file)return
-  const r=new FileReader();r.onload=e=>{
-    const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2)return toast('Need headers + 1 row','err')
-    const hdrs=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/"/g,''))
-    const rows=lines.slice(1).map(ln=>{const vals=ln.split(',').map(v=>v.trim().replace(/^"|"$/g,''));const o={};hdrs.forEach((h,i)=>o[h]=vals[i]||'');return o}).filter(r=>r.name)
-    S.csvRows=rows;document.getElementById('csvCount').textContent=`${rows.length} leads ready`
-    document.getElementById('csvTbody').innerHTML=rows.slice(0,10).map(r=>`<tr><td>${r.name}</td><td>${r.phone||''}</td><td>${r.location||''}</td><td>${r.product_interest||''}</td></tr>`).join('')
-    document.getElementById('csvPreview').style.display='block';document.getElementById('csvImportBtn').disabled=false
-  };r.readAsText(file)
+function seedFileSelected(){
+  const f=document.getElementById('seedFile').files[0]
+  document.getElementById('seedFileName').textContent=f?f.name:'.csv, .xlsx, .xls'
+  if(!f){S.seedRows=[];document.getElementById('seedPreview').style.display='none';return}
+  parseSpreadsheetFile(f).then(rows=>{
+    S.seedRows=rows
+    document.getElementById('seedPreviewCount').textContent=`${rows.length} row(s) ready to import`
+    document.getElementById('seedPreviewBody').innerHTML=rows.slice(0,8).map(r=>`<tr><td>${r.company_name}</td><td>${r.phone||'—'}</td><td>${r.email||'—'}</td><td>${r.location||'—'}</td></tr>`).join('')
+    document.getElementById('seedPreview').style.display='block'
+  }).catch(e=>{toast(e.message,'err');S.seedRows=[];document.getElementById('seedPreview').style.display='none'})
 }
-async function importCSV(){
-  if(!S.csvRows.length)return;load(true)
-  const clientId=activeBizClientId()
+async function importSpreadsheet(){
+  if(demoGuard())return
+  const btn=document.getElementById('seedImportBtn')
+  btn.textContent='Importing…';btn.disabled=true
+  shFlashClear('seedFlash')
   try{
-    let ok=0,fail=0
-    for(const r of S.csvRows){
-      const phone=r.phone||null,email=r.email||null
-      if(!r.name||(!phone&&!email)) { fail++; continue }
-      try{
-        const seed=await seedLeadToPool({
-          company_name:r.name,phone,email,
-          location:r.location||null,asset_interests:r.product_interest||null,notes:r.notes||null,
-          industry:'other',source_type:'manual',client_id:clientId,
-          push_for_purchase:false,unlock_for_client:false
-        })
-        const row={business_id:S.bizId,name:r.name,phone,email:r.email||null,location:r.location||null,product_interest:r.product_interest||null,notes:r.notes||null,status:'new'}
-        if(seed?.master_lead?.id)row.master_lead_id=String(seed.master_lead.id)
-        const{error}=await sb.from('sh_leads').insert(row)
-        if(error)throw error
-        ok++
-      }catch{fail++}
+    let rows=S.seedRows
+    if(!rows.length){
+      const file=document.getElementById('seedFile').files[0]
+      if(!file)throw new Error('Select a CSV or Excel file first.')
+      rows=await parseSpreadsheetFile(file)
+      S.seedRows=rows
     }
-    toast(`${ok} seeded to pool${fail?`, ${fail} skipped`:''}`)
-    closeModal('csvModal')
-    document.getElementById('csvFile').value='';document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').disabled=true;S.csvRows=[];await loadLeads()
-  }catch(e){toast(e.message,'err')}finally{load(false)}
+    const result=await bulkImportRows(rows,{
+      industry:document.getElementById('seedIndustry').value,
+      trackBiz:document.getElementById('seedTrackBiz').checked,
+      defaultAgent:document.getElementById('seedDefaultAgent').value
+    })
+    shFlash('seedFlash',`✅ ${result.created} added to master pool · ℹ ${result.skipped_dupe} duplicates · ⚠ ${result.skipped_incomplete} incomplete${result.tracked?` · ${result.tracked} tracked for business`:''}`,'ok')
+    document.getElementById('seedFile').value=''
+    document.getElementById('seedFileName').textContent='.csv, .xlsx, .xls'
+    document.getElementById('seedPreview').style.display='none'
+    S.seedRows=[]
+    await loadLeads()
+  }catch(e){shFlash('seedFlash',e.message,'err')}
+  finally{btn.textContent='⬆ Import to master pool';btn.disabled=false}
+}
+async function importJSONBulk(){
+  if(demoGuard())return
+  const raw=document.getElementById('seedJSON').value.trim()
+  let parsed
+  try{parsed=JSON.parse(raw)}catch{toast('Invalid JSON','err');return}
+  if(!Array.isArray(parsed))return toast('JSON must be an array of lead objects','err')
+  const btn=document.getElementById('seedJSONBtn')
+  btn.textContent='Importing…';btn.disabled=true
+  shFlashClear('seedFlash')
+  try{
+    const rows=parsed.map(normImportRow)
+    const result=await bulkImportRows(rows,{
+      industry:document.getElementById('seedIndustry').value,
+      trackBiz:document.getElementById('seedTrackBiz').checked,
+      defaultAgent:document.getElementById('seedDefaultAgent').value
+    })
+    shFlash('seedFlash',`✅ ${result.created} added · ℹ ${result.skipped_dupe} duplicates · ⚠ ${result.skipped_incomplete} incomplete`,'ok')
+    document.getElementById('seedJSON').value=''
+    await loadLeads()
+  }catch(e){shFlash('seedFlash',e.message,'err')}
+  finally{btn.textContent='✔ Import JSON';btn.disabled=false}
+}
+function downloadCSVTemplate(){
+  const cols='company_name,contact_person,phone,email,location,country,website,linkedin,asset_interests,notes\n'
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([cols],{type:'text/csv'}))
+  a.download='eams_leads_template.csv';a.click()
 }
 
 // REPORTS
@@ -1863,7 +1914,7 @@ const MAX_CTX=12000
 
 // ── State ──
 const LP={leads:[],total:0,page:1,industry:'',source:'',search:'',hasEmail:false,hasPhone:false,sortBy:'-created_at',selected:[],lastResult:null,clientId:'',view:'cards'}
-const PUSH={clients:[],leads:[],leadsTotal:0,leadsPage:1,filterInd:'',pushMode:'sector',selLeads:[],selClients:[],inited:false,clientId:''}
+const PUSH={recipients:[],leads:[],leadsTotal:0,leadsPage:1,filterInd:'',pushMode:'sector',selLeads:[],selRecipients:[],inited:false,clientId:''}
 const OFFERS={page:1,clientId:''}
 const AG={lastResult:null,productIds:new Set()}
 
@@ -2070,9 +2121,27 @@ function shFlash(elId,msg,type='ok'){
 }
 function shFlashClear(elId){const el=document.getElementById(elId);if(el)el.style.display='none'}
 
+function apiErrMsg(d,fallback){
+  if(!d)return fallback
+  if(typeof d.message==='string'&&d.message)return d.message
+  if(typeof d.detail==='string'&&d.detail)return d.detail
+  if(d.errors){
+    if(typeof d.errors==='string')return d.errors
+    if(d.errors.non_field)return Array.isArray(d.errors.non_field)?d.errors.non_field.join(' '):String(d.errors.non_field)
+    return JSON.stringify(d.errors)
+  }
+  return fallback
+}
+async function ensureApiReady(){
+  if(localStorage.getItem(LS_TOK)==='demo')return false
+  if(localStorage.getItem(LS_DTOK))return true
+  const u=JSON.parse(localStorage.getItem(LS_USR)||'{}')
+  throw new Error(u.email
+    ?'Lead Operations needs EAMS backend auth. Sign out and sign in again with your email/password (avoid demo mode).'
+    :'Sign in with your EAMS account to use Lead Operations.')
+}
 // ── API helpers ──
 function apiHeaders(json=true){
-  // Prefer Django token for Lead Ops API; fall back to portal token
   const tok=localStorage.getItem(LS_DTOK)||localStorage.getItem(LS_TOK)
   const h={}
   if(tok&&tok!=='demo')h['Authorization']=`Token ${tok}`
@@ -2080,30 +2149,34 @@ function apiHeaders(json=true){
   return h
 }
 async function apiGet(path,params={}){
+  await ensureApiReady()
   const u=new URL(API+path)
   Object.entries(params).forEach(([k,v])=>{if(v!==''&&v!=null)u.searchParams.set(k,String(v))})
   const r=await fetch(u.toString(),{headers:apiHeaders()})
-  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=apiErrMsg(d,m)}catch{}throw new Error(m)}
   return r.json()
 }
 async function apiPost(path,body,timeoutMs=30000){
+  await ensureApiReady()
   const isFD=body instanceof FormData
   const ctrl=new AbortController()
   const tid=setTimeout(()=>ctrl.abort(),timeoutMs)
   try{
     const r=await fetch(API+path,{method:'POST',headers:apiHeaders(!isFD),body:isFD?body:JSON.stringify(body),signal:ctrl.signal})
-    if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+    if(!r.ok){let m=r.statusText;try{const d=await r.json();m=apiErrMsg(d,m)}catch{}throw new Error(m)}
     return r.json()
   }finally{clearTimeout(tid)}
 }
 async function apiPatch(path,body){
+  await ensureApiReady()
   const r=await fetch(API+path,{method:'PATCH',headers:apiHeaders(),body:JSON.stringify(body)})
-  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=apiErrMsg(d,m)}catch{}throw new Error(m)}
   return r.json()
 }
 async function apiDel(path,body){
+  await ensureApiReady()
   const r=await fetch(API+path,{method:'DELETE',headers:apiHeaders(),body:JSON.stringify(body)})
-  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=d.message||d.detail||m}catch{}throw new Error(m)}
+  if(!r.ok){let m=r.statusText;try{const d=await r.json();m=apiErrMsg(d,m)}catch{}throw new Error(m)}
   return r.json().catch(()=>({}))
 }
 async function apiGetBlob(path,params={}){
@@ -2117,8 +2190,106 @@ async function apiGetBlob(path,params={}){
   return{blob,truncated,total}
 }
 function demoGuard(){
-  if(localStorage.getItem(LS_TOK)==='demo'){toast('Demo mode — connect a real account to use Lead Operations','err');return true}
+  if(localStorage.getItem(LS_TOK)==='demo'){toast('Demo mode — sign in with a real account to use Lead Operations','err');return true}
   return false
+}
+
+function normImportKey(k){
+  return String(k||'').trim().toLowerCase().replace(/\s+/g,'_')
+}
+function normImportRow(raw){
+  const row={}
+  Object.entries(raw||{}).forEach(([k,v])=>{row[normImportKey(k)]=typeof v==='string'?v.trim():String(v??'').trim()})
+  const company=(row.company_name||row.company||row.name||row.business||'').trim()
+  return{
+    company_name:company,
+    contact_person:(row.contact_person||row.contact||'').trim(),
+    phone:(row.phone||row.mobile||row.tel||'').trim(),
+    email:(row.email||row.e_mail||'').trim(),
+    website:(row.website||row.url||'').trim(),
+    linkedin:(row.linkedin||row.linkedin_url||'').trim(),
+    location:(row.location||row.city||row.territory||'').trim(),
+    country:(row.country||'Uganda').trim()||'Uganda',
+    asset_interests:(row.asset_interests||row.product_interest||row.interest||row.product||'').trim(),
+    notes:(row.notes||row.note||'').trim()
+  }
+}
+function rowHasContact(r){
+  return !!(r.phone||r.email||r.website||r.linkedin||r.contact_person)
+}
+function parseCSVText(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim())
+  if(lines.length<2)return []
+  const hdrs=lines[0].split(',').map(h=>normImportKey(h.replace(/^"|"$/g,'')))
+  return lines.slice(1).map(ln=>{
+    const vals=ln.match(/("([^"]|"")*"|[^,]*)/g)||[]
+    const clean=vals.map(v=>v.replace(/^"|"$/g,'').replace(/""/g,'"').trim())
+    const o={}
+    hdrs.forEach((h,i)=>{if(h)o[h]=clean[i]||''})
+    return normImportRow(o)
+  }).filter(r=>r.company_name)
+}
+async function parseSpreadsheetFile(file){
+  const ext=(file.name.split('.').pop()||'').toLowerCase()
+  if(ext==='csv'||file.type.includes('csv')){
+    const text=await file.text()
+    return parseCSVText(text)
+  }
+  if(ext==='xlsx'||ext==='xls'||file.type.includes('sheet')||file.type.includes('excel')){
+    if(typeof XLSX==='undefined')throw new Error('Excel parser not loaded — refresh the page and try again.')
+    const buf=await file.arrayBuffer()
+    const wb=XLSX.read(buf,{type:'array'})
+    const sheet=wb.Sheets[wb.SheetNames[0]]
+    const raw=XLSX.utils.sheet_to_json(sheet,{defval:''})
+    return raw.map(normImportRow).filter(r=>r.company_name)
+  }
+  throw new Error('Unsupported file type — use .csv, .xlsx, or .xls')
+}
+async function trackLeadForBusiness(row,opts={}){
+  const agentId=opts.agentId||''
+  const d={
+    business_id:S.bizId,
+    name:row.company_name,
+    phone:row.phone||null,
+    email:row.email||null,
+    location:row.location||null,
+    product_interest:row.asset_interests||null,
+    notes:row.notes||null,
+    website:row.website||null,
+    status:agentId?'assigned':'new'
+  }
+  if(agentId)d.assigned_to=agentId
+  if(opts.masterLeadId){
+    d.master_lead_id=String(opts.masterLeadId)
+    if(!d.notes)d.notes=`[pool:${opts.masterLeadId}]`
+    else if(!d.notes.includes('[pool:'))d.notes+=` [pool:${opts.masterLeadId}]`
+  }
+  let ins={...d}
+  let {error}=await sb.from('sh_leads').insert(ins)
+  if(error&&error.message&&error.message.includes('master_lead_id')){
+    delete ins.master_lead_id
+    ;({error}=await sb.from('sh_leads').insert(ins))
+  }
+  if(error)throw error
+}
+async function bulkImportRows(rows,{industry,trackBiz,defaultAgent}={}){
+  const valid=rows.filter(r=>r.company_name&&rowHasContact(r))
+  if(!valid.length)throw new Error('No valid rows — each lead needs company_name (or name) plus phone, email, website, or LinkedIn.')
+  const d=await apiPost('/sales-hunter/admin/upload-leads/',{
+    industry:industry||'other',
+    source_type:'csv_upload',
+    leads:valid
+  },120000)
+  let tracked=0
+  if(trackBiz&&S.bizId){
+    for(const row of valid){
+      try{
+        await trackLeadForBusiness(row,{agentId:defaultAgent||''})
+        tracked++
+      }catch(_){}
+    }
+  }
+  return{...d,tracked,validCount:valid.length,skippedFile:rows.length-valid.length}
 }
 
 // ═══════════════════════════════════════════════
@@ -2385,71 +2556,45 @@ async function lpSaveDrawer(){
 }
 
 // ═══════════════════════════════════════════════
-// UPLOAD
+// PUSH FOR PURCHASE (businesses & sales agents — credit unlock)
 // ═══════════════════════════════════════════════
-function lpuInit(){
-  const upInd=document.getElementById('upIndustry')
-  if(!upInd.options.length)upInd.innerHTML=indOpts('construction')
-  const upIndJ=document.getElementById('upIndustryJSON')
-  if(!upIndJ.options.length)upIndJ.innerHTML=indOpts('construction')
-}
-function upFileSelected(){
-  const f=document.getElementById('upFile').files[0]
-  document.getElementById('upFileName').textContent=f?f.name:'.csv only'
-}
-async function uploadCSV(){
-  if(demoGuard())return
-  const file=document.getElementById('upFile').files[0]
-  if(!file){toast('Select a CSV file first','err');return}
-  const btn=document.getElementById('upCSVBtn');btn.textContent='Uploading…';btn.disabled=true
-  shFlashClear('upFlash')
+async function pushLoadRecipients(){
+  const recipients=[]
   try{
-    const fd=new FormData()
-    fd.append('file',file)
-    fd.append('industry',document.getElementById('upIndustry').value)
-    fd.append('source_type','csv_upload')
-    const d=await apiPost('/sales-hunter/admin/upload-leads/',fd,60000)
-    shFlash('upFlash',`✅ ${d.created} created · ℹ ${d.skipped_dupe} duplicates skipped · ⚠ ${d.skipped_incomplete} incomplete rows skipped`,'ok')
-    document.getElementById('upFile').value=''
-    document.getElementById('upFileName').textContent='.csv only'
-  }catch(e){shFlash('upFlash',e.message,'err')}
-  finally{btn.textContent='⬆ Upload CSV';btn.disabled=false}
+    const{data:businesses}=await sb.from('sh_businesses').select('id,name,client_id,code,is_active').eq('is_active',true).order('name')
+    ;(businesses||[]).forEach(b=>{
+      const walletId=String(b.client_id||b.id||'').trim()
+      if(!walletId)return
+      recipients.push({key:`biz-${b.id}`,walletId,name:b.name,type:'business',subtitle:b.code?`${b.code} · Business`:'Business',bizId:b.id})
+    })
+    const{data:profiles}=await sb.from('sh_agent_profiles')
+      .select('id,full_name,user_email,profile_status,sh_businesses(id,name,client_id)')
+      .eq('profile_status','active').order('full_name')
+    ;(profiles||[]).forEach(p=>{
+      const biz=p.sh_businesses||{}
+      const walletId=String(biz.client_id||biz.id||'').trim()
+      if(!walletId)return
+      recipients.push({key:`prof-${p.id}`,walletId,name:p.full_name||p.user_email||'Agent',type:'agent',subtitle:`${biz.name||'Business'} · Registered agent`,bizId:biz.id})
+    })
+    const{data:agents}=await sb.from('sh_agents')
+      .select('id,name,region,is_active,sh_businesses(id,name,client_id)')
+      .eq('is_active',true).order('name')
+    ;(agents||[]).forEach(a=>{
+      const biz=a.sh_businesses||{}
+      const walletId=String(biz.client_id||biz.id||'').trim()
+      if(!walletId)return
+      recipients.push({key:`ag-${a.id}`,walletId,name:a.name,type:'agent',subtitle:`${biz.name||'Business'} · ${a.region||'Sales agent'}`,bizId:biz.id})
+    })
+  }catch(e){shFlash('pushFlash',e.message,'err')}
+  PUSH.recipients=recipients
 }
-async function uploadJSON(){
-  if(demoGuard())return
-  const raw=document.getElementById('upJSON').value.trim()
-  let parsed;try{parsed=JSON.parse(raw)}catch{toast('Invalid JSON','err');return}
-  const btn=document.getElementById('upJSONBtn');btn.textContent='Saving…';btn.disabled=true
-  shFlashClear('upFlash')
-  try{
-    const d=await apiPost('/sales-hunter/admin/upload-leads/',{
-      industry:document.getElementById('upIndustryJSON').value,
-      leads:parsed,source_type:'csv_upload'
-    },60000)
-    shFlash('upFlash',`✅ ${d.created} created · ℹ ${d.skipped_dupe} duplicates · ⚠ ${d.skipped_incomplete} incomplete`,'ok')
-    document.getElementById('upJSON').value=''
-  }catch(e){shFlash('upFlash',e.message,'err')}
-  finally{btn.textContent='✔ Save Leads';btn.disabled=false}
-}
-function downloadCSVTemplate(){
-  const cols='company_name,contact_person,phone,email,location,country,website,linkedin,asset_interests,notes\n'
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([cols],{type:'text/csv'}))
-  a.download='eams_leads_template.csv';a.click()
-}
-
-// ═══════════════════════════════════════════════
-// PUSH TO CLIENTS
-// ═══════════════════════════════════════════════
 async function pushInit(){
   if(demoGuard())return
   const pInd=document.getElementById('pushInd')
   if(!pInd.options.length)pInd.innerHTML=indOpts('',true)
   await lpLoadBizFilter('pushBusiness', PUSH.clientId)
-  if(!PUSH.inited){
-    try{const d=await apiGet('/sales-hunter/admin/clients/');PUSH.clients=d.clients||[]}
-    catch(e){shFlash('pushFlash',e.message,'err')}
-    PUSH.inited=true
-  }
+  await pushLoadRecipients()
+  if(!PUSH.inited)PUSH.inited=true
   pushRenderClients();await pushLoadLeads()
 }
 function pushBizFilter(){
@@ -2495,43 +2640,56 @@ function pushRender(){
   const allC=document.getElementById('pushAllClients')?.checked
   const btn=document.getElementById('pushBtn')
   const leadsLabel=PUSH.pushMode==='selected'?`${PUSH.selLeads.length} lead(s)`:'sector'
-  const clientLabel=allC?'all tenants':`${PUSH.selClients.length} client(s)`
-  btn.textContent=`📤 Push ${leadsLabel} to ${clientLabel}`
+  const recipLabel=allC?'all registered':`${PUSH.selRecipients.length} recipient(s)`
+  btn.textContent=`📤 Push ${leadsLabel} to ${recipLabel}`
 }
 function pushToggleLead(id){const i=PUSH.selLeads.indexOf(id);if(i>=0)PUSH.selLeads.splice(i,1);else PUSH.selLeads.push(id);pushRender()}
+function pushSelectedWalletIds(allRecipients){
+  if(allRecipients)return[...new Set(PUSH.recipients.map(r=>r.walletId))]
+  const keys=new Set(PUSH.selRecipients)
+  return[...new Set(PUSH.recipients.filter(r=>keys.has(r.key)).map(r=>r.walletId))]
+}
 function pushRenderClients(){
   const list=document.getElementById('pushClientsList')
-  list.innerHTML=PUSH.clients.map(c=>`
+  const biz=PUSH.recipients.filter(r=>r.type==='business')
+  const ag=PUSH.recipients.filter(r=>r.type==='agent')
+  const row=r=>`
     <label class="sh-crow">
-      <input type="checkbox" ${PUSH.selClients.includes(String(c.id))?'checked':''} onchange="pushToggleClient('${c.id}')">
-      <span style="flex:1;font-weight:600;">${c.name}</span>
-      <span class="sh-sub">${c.industry||c.country||''}</span>
-    </label>`).join('')||'<div class="empty" style="padding:16px;">No clients found.</div>'
+      <input type="checkbox" ${PUSH.selRecipients.includes(r.key)?'checked':''} onchange="pushToggleRecipient('${r.key}')">
+      <span style="flex:1;font-weight:600;">${r.name}</span>
+      <span class="badge ${r.type==='business'?'bb':'bgray'}" style="font-size:10px;margin-right:6px;">${r.type==='business'?'Business':'Agent'}</span>
+      <span class="sh-sub">${r.subtitle||''}</span>
+    </label>`
+  let html=''
+  if(biz.length){html+=`<div style="font-size:11px;font-weight:700;color:#64748B;margin:8px 0 4px;text-transform:uppercase;">Businesses</div>`+biz.map(row).join('')}
+  if(ag.length){html+=`<div style="font-size:11px;font-weight:700;color:#64748B;margin:12px 0 4px;text-transform:uppercase;">Sales agents</div>`+ag.map(row).join('')}
+  list.innerHTML=html||'<div class="empty" style="padding:16px;">No businesses or agents registered yet. Add them under Businesses or Registrations.</div>'
 }
-function pushToggleClient(id){
-  const i=PUSH.selClients.indexOf(String(id));if(i>=0)PUSH.selClients.splice(i,1);else PUSH.selClients.push(String(id))
+function pushToggleRecipient(key){
+  const i=PUSH.selRecipients.indexOf(key);if(i>=0)PUSH.selRecipients.splice(i,1);else PUSH.selRecipients.push(key)
   pushRender()
 }
 async function doPush(){
   if(demoGuard())return
-  const allClients=document.getElementById('pushAllClients').checked
+  const allRecipients=document.getElementById('pushAllClients').checked
   const qualOnly=document.getElementById('pushQuality').checked
   if(PUSH.pushMode==='selected'&&!PUSH.selLeads.length){shFlash('pushFlash','Select at least one lead.','err');return}
-  if(!PUSH.selClients.length&&!allClients){shFlash('pushFlash','Select at least one client or enable "Push to all tenants".','err');return}
+  const walletIds=pushSelectedWalletIds(allRecipients)
+  if(!walletIds.length){shFlash('pushFlash','Select at least one business or agent, or enable push to all registered.','err');return}
   const btn=document.getElementById('pushBtn');btn.disabled=true;btn.textContent='Pushing…'
   shFlashClear('pushFlash')
   try{
     const body={
       lead_ids:PUSH.pushMode==='selected'?PUSH.selLeads:undefined,
       industry:PUSH.pushMode==='sector'?PUSH.filterInd||undefined:undefined,
-      client_ids:allClients?[]:PUSH.selClients,
-      all_clients:allClients,
+      client_ids:walletIds,
+      all_clients:false,
       push_note:document.getElementById('pushNote').value.trim()||undefined,
       quality_only:qualOnly
     }
     const d=await apiPost('/sales-hunter/admin/push-leads/',body,60000)
-    shFlash('pushFlash',d.message||'Leads pushed successfully.','ok')
-    PUSH.selLeads=[];PUSH.selClients=[];pushRender()
+    shFlash('pushFlash',d.message||'Leads pushed — recipients can unlock with credits.','ok')
+    PUSH.selLeads=[];PUSH.selRecipients=[];pushRender()
   }catch(e){shFlash('pushFlash',e.message,'err')}
   finally{btn.disabled=false;pushRender()}
 }
